@@ -1,8 +1,7 @@
 # AI Fiesta v0.1.0 - Multi-Model AI Comparison Platform
 
-AI Fiesta is a cutting-edge Next.js application that enables users to compare responses from multiple AI models side-by-side using OpenRouter. With a sleek, modern interface, users can evaluate different AI models simultaneously to find the best responses for their queries.
+AI Fiesta is a cutting-edge Next.js application that enables users to compare responses from multiple AI models side-by-side using OpenRouter. With a sleek, modern interface featuring dark/light mode support, comprehensive user profiles, and advanced analytics, users can evaluate different AI models simultaneously to find the best responses for their queries.
 
-AI Fiesta Interface
 <img width="1893" height="943" alt="image" src="https://github.com/user-attachments/assets/f57b7216-4db3-4856-b507-1ee7925a4230" />
 
 
@@ -74,28 +73,56 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to start com
 - Persistent chat history with database storage
 - Model-specific response cards with rich formatting
 - Copy response functionality
+- Real-time streaming responses
+
+### 👤 User Profiles & Authentication
+- Secure authentication with Supabase Auth
+- Comprehensive user profiles with customizable settings
+- Country selection with 195+ countries support
+- Profile management and customization
+- Dark/light mode preferences per user
 
 ### 📊 Analytics Dashboard
 - Performance metrics and statistics
 - Model usage tracking
 - Response quality analysis
+- Interactive charts and visualizations
+- Response time distribution analysis
+- Model performance comparisons
 
-### 📚 Chat History
+### 📚 Chat History Management
 - Browse and search through previous conversations
 - Delete unwanted history entries
 - View model usage per conversation
 - Persistent storage in Supabase database
+- Export conversation history
 
 ### 🎨 Modern UI/UX
 - Responsive design that works on desktop and mobile devices
-- Dark/light mode support
-- Smooth animations and transitions
+- Dark/light mode support with smooth transitions
+- Smooth animations with Framer Motion
 - Intuitive navigation with tooltips
+- Modern gradient designs and visual effects
+- Particle effects and interactive backgrounds
+
+### 💰 Flexible Pricing Plans
+- Free tier with basic features
+- Pro plan (₹199/month or ₹1,999/year)
+- Pro Plus plan (₹399/month or ₹3,999/year)
+- Save 20% on annual subscriptions
+
+### 🌐 Enhanced Landing Page
+- Interactive hero section with particle effects
+- Feature showcases and tutorials
+- Modern testimonials and social proof
+- Video tutorial integration
+- Footer with social media links
 
 ### 🧠 Extensive Model Support
 - Access to 50+ AI models from leading providers
 - Detailed model information and capabilities
 - Provider-specific styling and branding
+- Model selection with filtering options
 
 ## 🏗️ Project Architecture
 
@@ -126,6 +153,22 @@ src/
 | `AIResponseCard.tsx` | Individual model response display with actions |
 | `ModelSelector.tsx` | Model selection and configuration panel |
 | `ModernHistoryInterface.tsx` | Chat history browsing and management |
+| `LandingPage.tsx` | Enhanced landing page with hero section |
+| `ModernAuthForm.tsx` | Modern authentication interface |
+| `ProfileDropdown.tsx` | User profile management dropdown |
+| `SharedSidebar.tsx` | Shared navigation sidebar component |
+
+### Key Pages
+
+| Page | Route | Description |
+|------|-------|-------------|
+| Landing Page | `/` | Homepage with features showcase |
+| Chat Interface | `/chat` | Multi-model AI comparison interface |
+| Dashboard | `/dashboard` | Analytics and performance metrics |
+| Profile | `/profile` | User profile management |
+| History | `/history` | Chat history browser |
+| Pricing | `/pricing` | Subscription plans and pricing |
+| Authentication | `/auth` | Login/signup interface |
 
 ### Database Schema
 
@@ -135,17 +178,59 @@ Chat sessions are stored in a Supabase PostgreSQL database. See [DATABASE_SCHEMA
 
 - **Framework**: Next.js 15.5.4 with App Router
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS with custom gradients
-- **UI Components**: Lucide React icons
+- **Styling**: Tailwind CSS 4.0 with custom gradients
+- **UI Components**: 
+  - Lucide React icons
+  - Framer Motion for animations
+  - Custom UI components with shadcn/ui patterns
 - **State Management**: React Context API
 - **Database**: Supabase (PostgreSQL)
-- **Authentication**: Supabase Auth
+- **Authentication**: Supabase Auth with SSR support
+- **Payment Integration**: 
+  - Stripe (@stripe/stripe-js)
+  - PayPal REST SDK
 - **Build Tool**: Turbopack
-- **Deployment**: Vercel-ready
+- **Additional Libraries**:
+  - @number-flow/react for animated numbers
+  - @tsparticles for particle effects
+  - clsx and tailwind-merge for className management
+  - uuid for unique identifiers
+- **Deployment**: Vercel-ready with Render.com support
 
 ## 🐛 Troubleshooting
 
 If you encounter issues with database functionality, please refer to [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common solutions.
+
+## 🚀 Recent Updates
+
+- ✨ Added modern authentication interface with enhanced UI
+- 🎨 Updated landing page hero section with particle effects
+- 🌓 Implemented dark/light mode support throughout the app
+- 👤 Enhanced profile page with country selection (195+ countries)
+- 📊 Improved dashboard with interactive charts and visualizations
+- 📱 Optimized mobile layout and responsiveness
+- 🔗 Added social media links in footer
+- 💳 Integrated pricing plans with INR support
+- 🎬 Added video tutorial integration
+- ⚡ Performance optimizations with Turbopack
+
+## 📱 Deployment
+
+### Vercel Deployment
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+### Render.com Deployment
+The project includes a `render.yaml` configuration file for easy deployment on Render.com. Simply connect your repository and Render will automatically deploy using the configuration.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 👨‍💻 Author
 

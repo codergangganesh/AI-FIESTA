@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "ask": [
+      "Read(!E:\\AI Fiesta\\aifiesta/**)",
+      "Edit(!E:\\AI Fiesta\\aifiesta/**)"
+    ],
+    "allow": [
+      "Read(E:\\AI Fiesta\\aifiesta/**)",
+      "Edit(E:\\AI Fiesta\\aifiesta/**)"
+    ]
+  },
+  "memoryImport": {},
+  "monitoring": {}
+}
