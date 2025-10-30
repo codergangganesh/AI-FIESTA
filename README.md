@@ -3,7 +3,7 @@
   <img src="https://github.com/user-attachments/assets/f57b7216-4db3-4856-b507-1ee7925a4230" alt="AI Fiesta Dashboard" width="100%"/>
 </div>
 
-<h1 align="center">AI Fiesta v0.1.0 🎉</h1>
+<h1 align="center">AI Fiesta 🎉</h1>
 
 <p align="center">
   <strong>Multi-Model AI Comparison Platform</strong>
