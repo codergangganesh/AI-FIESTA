@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 
 export default function DashboardProfileRedirect() {
+  const { user, loading } = useAuth()
   const router = useOptimizedRouter()
   const { darkMode, toggleDarkMode } = useDarkMode()
   const { setPageLoading } = useOptimizedLoading()

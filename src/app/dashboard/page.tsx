@@ -50,7 +50,7 @@ export default function DashboardPage() {
   const { darkMode } = useDarkMode()
   const { setPageLoading } = useOptimizedLoading()
   const supabase = createClient()
-  const realtimeSubscriptionRef = useRef<any>(null)
+  const realtimeSubscriptionRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   
   const [metrics, setMetrics] = useState<MetricCard[]>([
     {
@@ -109,7 +109,7 @@ export default function DashboardPage() {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [loadingData, setLoadingData] = useState(true)
   const [isExportOpen, setIsExportOpen] = useState(false)
-  const [availableModels, setAvailableModels] = useState<any[]>([])
+  const [availableModels, setAvailableModels] = useState<typeof AI_MODELS>([])
   const [hasUsedModels, setHasUsedModels] = useState(false)
   
   
@@ -158,7 +158,7 @@ export default function DashboardPage() {
   const updateDashboardData = async (fetchedSessions: ChatSession[] | null = null) => {
     try {
       // If no sessions provided, fetch them
-      const sessionsToUse = fetchedSessions || await dashboardService.getChatSessions(false)
+      const sessionsToUse = fetchedSessions || await dashboardService.getChatSessions(false) || []
       
       if (sessionsToUse) {
         // Check if user has used models
@@ -212,7 +212,7 @@ export default function DashboardPage() {
         const usage = dashboardService.getUsageData(filteredSessions)
         setUsageData(usage)
         // Derived metrics
-        const totalResponses = filteredSessions.reduce((sum, s) => sum + ((s as any).responses ? (s as any).responses.length : 0), 0)
+        const totalResponses = filteredSessions.reduce((sum, s) => sum + (s.responses ? s.responses.length : 0), 0)
         const avg = filteredSessions.length > 0 ? totalResponses / filteredSessions.length : 0
         setAvgResponsesPerComparison(Number.isFinite(avg) ? parseFloat(avg.toFixed(2)) : 0)
         const uniq = new Set<string>()
@@ -487,11 +487,11 @@ export default function DashboardPage() {
   }
   
   // Function to generate mock accuracy data
-  const generateAccuracyData = (metrics: string[], baseData: any[]) => {
+  const generateAccuracyData = (metrics: string[], baseData: {period: string; [key: string]: string | number}[]) => {
     // In a real application, this would come from actual model training data
     // For now, we'll generate mock data that shows improving accuracy over time
     return baseData.map((point, index) => {
-      const newPoint: any = { period: point.period };
+      const newPoint = { period: point.period } as {period: string; [key: string]: string | number};
       metrics.forEach(metric => {
         // Generate accuracy values that generally improve over time
         const baseValue = 60 + Math.min(35, index * 2); // Start at 60%, max 95%
@@ -504,11 +504,11 @@ export default function DashboardPage() {
   };
   
   // Function to generate mock loss data
-  const generateLossData = (metrics: string[], baseData: any[]) => {
+  const generateLossData = (metrics: string[], baseData: {period: string; [key: string]: string | number}[]) => {
     // In a real application, this would come from actual model training data
     // For now, we'll generate mock data that shows decreasing loss over time
     return baseData.map((point, index) => {
-      const newPoint: any = { period: point.period };
+      const newPoint = { period: point.period } as {period: string; [key: string]: string | number};
       metrics.forEach(metric => {
         // Generate loss values that generally decrease over time
         const baseValue = 5 - Math.min(4.5, index * 0.2); // Start at 5, min 0.5

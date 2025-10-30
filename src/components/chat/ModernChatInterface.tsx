@@ -17,7 +17,7 @@ import { chatHistoryService } from '@/services/chatHistory.service'
 import ProfileDropdown from '@/components/layout/ProfileDropdown'
 
 interface ModernChatInterfaceProps {
-  initialConversation?: any | null
+  initialConversation?: ChatSession | null
 }
 
 export default function ModernChatInterface({ initialConversation }: ModernChatInterfaceProps) {
@@ -50,7 +50,7 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
       const apiSessions = await chatHistoryService.getChatSessions()
       if (apiSessions && apiSessions.length > 0) {
         // Ensure timestamp is properly converted to Date objects
-        const sessionsWithDates: ChatSession[] = apiSessions.map((session: any) => ({
+        const sessionsWithDates: ChatSession[] = apiSessions.map((session) => ({
           ...session,
           timestamp: session.timestamp instanceof Date ? session.timestamp : new Date(session.timestamp),
           selectedModels: session.selectedModels || []

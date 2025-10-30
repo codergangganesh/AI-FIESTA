@@ -3,11 +3,11 @@
  */
 
 // Generate mock accuracy data for the chart
-export const generateAccuracyData = (metrics: string[], lineData: any[]) => {
+export const generateAccuracyData = (metrics: string[], lineData: {period: string; [key: string]: string | number}[]) => {
   if (!lineData || lineData.length === 0) return [];
   
   return lineData.map((dataPoint, index) => {
-    const point: { [key: string]: any } = { period: dataPoint.period };
+    const point = { period: dataPoint.period } as { period: string; [key: string]: string | number };
     
     // Generate mock accuracy values between 75% and 95% that generally increase over time
     metrics.forEach(metric => {
@@ -23,11 +23,11 @@ export const generateAccuracyData = (metrics: string[], lineData: any[]) => {
 };
 
 // Generate mock loss data for the chart
-export const generateLossData = (metrics: string[], lineData: any[]) => {
+export const generateLossData = (metrics: string[], lineData: {period: string; [key: string]: string | number}[]) => {
   if (!lineData || lineData.length === 0) return [];
   
   return lineData.map((dataPoint, index) => {
-    const point: { [key: string]: any } = { period: dataPoint.period };
+    const point = { period: dataPoint.period } as { period: string; [key: string]: string | number };
     
     // Generate mock loss values that generally decrease over time
     metrics.forEach(metric => {
