@@ -1,9 +1,132 @@
-# AI Fiesta v0.1.0 - Multi-Model AI Comparison Platform
+<!-- markdownlint-disable MD033 MD041 -->
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/f57b7216-4db3-4856-b507-1ee7925a4230" alt="AI Fiesta Dashboard" width="100%"/>
+</div>
 
-AI Fiesta is a cutting-edge Next.js application that enables users to compare responses from multiple AI models side-by-side using OpenRouter. With a sleek, modern interface featuring dark/light mode support, comprehensive user profiles, and advanced analytics, users can evaluate different AI models simultaneously to find the best responses for their queries.
+<h1 align="center">AI Fiesta v0.1.0 🎉</h1>
 
-<img width="1893" height="943" alt="image" src="https://github.com/user-attachments/assets/f57b7216-4db3-4856-b507-1ee7925a4230" />
+<p align="center">
+  <strong>Multi-Model AI Comparison Platform</strong>
+</p>
 
+<p align="center">
+  Compare responses from multiple AI models side-by-side in real-time
+</p>
+
+<div align="center">
+  
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.io/)
+[![Render](https://img.shields.io/badge/Render-Deployment-000000?style=for-the-badge&logo=render)](https://render.com/)
+[![License](https://img.shields.io/github/license/codergangganesh/ai-fiesta?style=for-the-badge)](LICENSE)
+
+</div>
+
+---
+
+## 🌟 What is AI Fiesta?
+
+AI Fiesta is a revolutionary platform that allows you to compare responses from multiple AI models simultaneously. With a sleek, modern interface featuring dark/light mode support, comprehensive user profiles, and advanced analytics, you can evaluate different AI models side-by-side to find the best responses for your queries.
+
+### 🔍 Why Choose AI Fiesta?
+
+<div align="center">
+  
+| Feature | Description |
+|--------|-------------|
+| 🤖 **Multi-Model Comparison** | Compare responses from 10+ AI models simultaneously |
+| ⚡ **Real-time Analytics** | Performance metrics and response time tracking |
+| 💾 **Persistent Storage** | Chat history stored in Supabase database |
+| 🌍 **Universal Input** | Test prompts across multiple models instantly |
+| 💰 **Flexible Pricing** | Multiple subscription tiers with INR support |
+
+</div>
+
+---
+
+## 🚀 Key Features
+
+### 💬 Advanced Chat Interface
+- Dedicated chat interface for detailed conversations
+- Persistent chat history with database storage
+- Model-specific response cards with rich formatting
+- Copy response functionality
+- Real-time streaming responses
+
+### 🎨 Modern UI/UX
+- Responsive design that works on desktop and mobile devices
+- Dark/light mode support with smooth transitions
+- Smooth animations with Framer Motion
+- Intuitive navigation with tooltips
+- Modern gradient designs and visual effects
+- Particle effects and interactive backgrounds
+
+### 👤 User Profiles & Authentication
+- Secure authentication with Supabase Auth
+- Comprehensive user profiles with customizable settings
+- Country selection with 195+ countries support
+- Profile management and customization
+- Dark/light mode preferences per user
+
+### 📊 Analytics Dashboard
+- Performance metrics and statistics
+- Model usage tracking
+- Response quality analysis
+- Interactive charts and visualizations
+- Response time distribution analysis
+- Model performance comparisons
+
+### 💰 Flexible Pricing Plans
+- Free tier with basic features
+- Pro plan (₹199/month or ₹1,999/year)
+- Pro Plus plan (₹399/month or ₹3,999/year)
+- Save 20% on annual subscriptions
+
+---
+
+## 🧠 Supported AI Models
+
+AI Fiesta supports a wide range of AI models from leading providers:
+
+<div align="center">
+  
+| Provider | Models |
+|----------|--------|
+| **OpenAI** | GPT-3.5 Turbo, GPT-4o Mini |
+| **Anthropic** | Claude 3 Haiku (Free) |
+| **Google** | Gemini Flash 1.5 (Free) |
+| **Meta** | LLaMA 3.1 8B (Free) |
+| **Mistral AI** | Mistral 7B (Free) |
+| **Microsoft** | Phi-3 Mini (Free) |
+| **Nous Research** | Hermes 3 8B (Free) |
+| **OpenRouter** | Auto Select |
+
+</div>
+
+---
+
+## 🛠️ Technical Stack
+
+<div align="center">
+  
+| Category | Technologies |
+|----------|--------------|
+| **Framework** | Next.js 15.5.4 with App Router |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS 4.0 |
+| **UI Components** | Lucide React, Framer Motion, shadcn/ui patterns |
+| **State Management** | React Context API |
+| **Database** | Supabase (PostgreSQL) |
+| **Authentication** | Supabase Auth with SSR support |
+| **Payment Integration** | Stripe, PayPal |
+| **Build Tool** | Turbopack |
+| **Deployment** | Optimized for Render with Vercel support |
+
+</div>
+
+---
 
 ## 🚀 Getting Started
 
@@ -32,176 +155,66 @@ NEXT_PUBLIC_SITE_NAME=AI Fiesta
 ```
 
 3. **Configure OpenRouter Data Policy:**
-Visit [https://openrouter.ai/settings/privacy](https://openrouter.ai/settings/privacy) and ensure that "Free model publication" is enabled, or select specific models that you want to use. The application is configured to use free-tier models with the `:free` suffix which provides basic access without cost.
+Visit [https://openrouter.ai/settings/privacy](https://openrouter.ai/settings/privacy) and ensure that "Free model publication" is enabled, or select specific models that you want to use.
 
-4. **Understanding Free Model Usage Limits:**
-The application is configured with free-tier models that have the following rate limits:
-- Free models (with `:free` suffix): 20 requests per minute, 50-200 requests per day
-- To increase limits, purchase credits on OpenRouter (removes most rate limits)
-- BYOK (Bring Your Own Key) models have different rate limits
-
-5. **Set up Supabase Database:**
+4. **Set up Supabase Database:**
 Create the required database tables using the schema defined in [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)
 
-6. **Install dependencies:**
+5. **Install dependencies:**
 ```bash
 npm install
 # or
 yarn install
 ```
 
-7. **Run the development server:**
+6. **Run the development server:**
 ```bash
 npm run dev
 # or
 yarn dev
 ```
 
-8. **Access the application:**
+7. **Access the application:**
 Open [http://localhost:3000](http://localhost:3000) in your browser to start comparing AI models.
 
-## 🎯 Key Features
+---
 
-### 🔍 Multi-Model Comparison
-- Compare responses from up to 10+ AI models simultaneously
-- Side-by-side response visualization
-- Response time tracking for performance comparison
-- Best response highlighting
+## 📱 Deployment
 
-### 💬 Advanced Chat Interface
-- Dedicated chat interface for detailed conversations
-- Persistent chat history with database storage
-- Model-specific response cards with rich formatting
-- Copy response functionality
-- Real-time streaming responses
+### Deploy on Render (Recommended)
 
-### 👤 User Profiles & Authentication
-- Secure authentication with Supabase Auth
-- Comprehensive user profiles with customizable settings
-- Country selection with 195+ countries support
-- Profile management and customization
-- Dark/light mode preferences per user
+AI Fiesta is optimized for deployment on Render with a pre-configured [render.yaml](render.yaml) file. To deploy:
 
-### 📊 Analytics Dashboard
-- Performance metrics and statistics
-- Model usage tracking
-- Response quality analysis
-- Interactive charts and visualizations
-- Response time distribution analysis
-- Model performance comparisons
+1. Fork this repository to your GitHub account
+2. Sign up for a [Render account](https://render.com/)
+3. Create a new Web Service and connect it to your forked repository
+4. Configure the following environment variables in your Render dashboard:
+   - `OPENROUTER_API_KEY` - Your OpenRouter API key
+   - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
+   - `NEXT_PUBLIC_SITE_URL` - Your Render app URL (e.g., https://ai-fiesta.onrender.com)
+   - `NEXT_PUBLIC_SITE_NAME` - AI Fiesta
 
-### 📚 Chat History Management
-- Browse and search through previous conversations
-- Delete unwanted history entries
-- View model usage per conversation
-- Persistent storage in Supabase database
-- Export conversation history
+Render will automatically build and deploy your application using the configuration in [render.yaml](render.yaml).
 
-### 🎨 Modern UI/UX
-- Responsive design that works on desktop and mobile devices
-- Dark/light mode support with smooth transitions
-- Smooth animations with Framer Motion
-- Intuitive navigation with tooltips
-- Modern gradient designs and visual effects
-- Particle effects and interactive backgrounds
+### Alternative: Vercel Deployment
+```bash
+# Install Vercel CLI
+npm i -g vercel
 
-### 💰 Flexible Pricing Plans
-- Free tier with basic features
-- Pro plan (₹199/month or ₹1,999/year)
-- Pro Plus plan (₹399/month or ₹3,999/year)
-- Save 20% on annual subscriptions
-
-### 🌐 Enhanced Landing Page
-- Interactive hero section with particle effects
-- Feature showcases and tutorials
-- Modern testimonials and social proof
-- Video tutorial integration
-- Footer with social media links
-
-### 🧠 Extensive Model Support
-- Access to 50+ AI models from leading providers
-- Detailed model information and capabilities
-- Provider-specific styling and branding
-- Model selection with filtering options
-
-## 🏗️ Project Architecture
-
-### Directory Structure
-```
-src/
-├── app/                    # Next.js app router pages
-│   ├── api/               # API routes
-│   ├── chat/              # Chat interface
-│   ├── dashboard/          # Analytics dashboard
-│   ├── history/            # Chat history
-│   └── layout.tsx          # Root layout
-├── components/             # Reusable UI components
-│   ├── chat/               # Chat-specific components
-│   ├── history/            # History components
-│   └── layout/             # Layout components
-├── lib/                    # Utility functions and data
-├── services/               # Business logic and external service integrations
-├── types/                  # TypeScript type definitions
-└── contexts/               # React context providers
+# Deploy
+vercel
 ```
 
-### Core Components
-
-| Component | Description |
-|-----------|-------------|
-| `ModernChatInterface.tsx` | Main chat interface with sidebar navigation |
-| `AIResponseCard.tsx` | Individual model response display with actions |
-| `ModelSelector.tsx` | Model selection and configuration panel |
-| `ModernHistoryInterface.tsx` | Chat history browsing and management |
-| `LandingPage.tsx` | Enhanced landing page with hero section |
-| `ModernAuthForm.tsx` | Modern authentication interface |
-| `ProfileDropdown.tsx` | User profile management dropdown |
-| `SharedSidebar.tsx` | Shared navigation sidebar component |
-
-### Key Pages
-
-| Page | Route | Description |
-|------|-------|-------------|
-| Landing Page | `/` | Homepage with features showcase |
-| Chat Interface | `/chat` | Multi-model AI comparison interface |
-| Dashboard | `/dashboard` | Analytics and performance metrics |
-| Profile | `/profile` | User profile management |
-| History | `/history` | Chat history browser |
-| Pricing | `/pricing` | Subscription plans and pricing |
-| Authentication | `/auth` | Login/signup interface |
-
-### Database Schema
-
-Chat sessions are stored in a Supabase PostgreSQL database. See [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md) for detailed schema information.
-
-## 🛠️ Technical Stack
-
-- **Framework**: Next.js 15.5.4 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4.0 with custom gradients
-- **UI Components**: 
-  - Lucide React icons
-  - Framer Motion for animations
-  - Custom UI components with shadcn/ui patterns
-- **State Management**: React Context API
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: Supabase Auth with SSR support
-- **Payment Integration**: 
-  - Stripe (@stripe/stripe-js)
-  - PayPal REST SDK
-- **Build Tool**: Turbopack
-- **Additional Libraries**:
-  - @number-flow/react for animated numbers
-  - @tsparticles for particle effects
-  - clsx and tailwind-merge for className management
-  - uuid for unique identifiers
-- **Deployment**: Vercel-ready with Render.com support
+---
 
 ## 🐛 Troubleshooting
 
 If you encounter issues with database functionality, please refer to [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common solutions.
 
-## 🚀 Recent Updates
+---
+
+## 📈 Recent Updates
 
 - ✨ Added modern authentication interface with enhanced UI
 - 🎨 Updated landing page hero section with particle effects
@@ -214,27 +227,19 @@ If you encounter issues with database functionality, please refer to [TROUBLESHO
 - 🎬 Added video tutorial integration
 - ⚡ Performance optimizations with Turbopack
 
-## 📱 Deployment
-
-### Vercel Deployment
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-```
-
-### Render.com Deployment
-The project includes a `render.yaml` configuration file for easy deployment on Render.com. Simply connect your repository and Render will automatically deploy using the configuration.
+---
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+---
+
 ## 👨‍💻 Author
 
 **Mannam Ganesh Babu** - CEO
+
+---
 
 ## 📄 License
 
