@@ -6,12 +6,16 @@ interface PopupContextType {
   openPaymentPopup: () => void
   closePaymentPopup: () => void
   isPaymentPopupOpen: boolean
+  openAuthPopup: () => void
+  closeAuthPopup: () => void
+  isAuthPopupOpen: boolean
 }
 
 const PopupContext = createContext<PopupContextType | undefined>(undefined)
 
 export function PopupProvider({ children }: { children: ReactNode }) {
   const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false)
+    const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false)
 
   const openPaymentPopup = () => {
     setIsPaymentPopupOpen(true)
@@ -21,10 +25,21 @@ export function PopupProvider({ children }: { children: ReactNode }) {
     setIsPaymentPopupOpen(false)
   }
 
+  const openAuthPopup = () => {
+    setIsAuthPopupOpen(true)
+  }
+
+  const closeAuthPopup = () => {
+    setIsAuthPopupOpen(false)
+  }
+
   const value = {
     openPaymentPopup,
     closePaymentPopup,
-    isPaymentPopupOpen
+    isPaymentPopupOpen,
+    openAuthPopup,
+    closeAuthPopup,
+    isAuthPopupOpen
   }
 
   return (

@@ -5,9 +5,10 @@ import { DarkModeProvider } from "@/contexts/DarkModeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { PopupProvider } from "@/contexts/PopupContext";
-import { LoadingProvider } from "@/contexts/LoadingContext";
-import { OptimizedLoadingProvider } from "@/contexts/OptimizedLoadingContext";
-import PricingPopup from "@/components/ui/PricingPopup";
+import { LoadingProvider } from '@/contexts/LoadingContext';
+import { OptimizedLoadingProvider } from '@/contexts/OptimizedLoadingContext';
+import PricingPopup from '@/components/ui/PricingPopup';
+import AuthPopup from '@/components/auth/AuthPopup';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
                   <OptimizedLoadingProvider>
                     {children}
                     <PricingPopup />
+                    <AuthPopup />
                   </OptimizedLoadingProvider>
                 </LoadingProvider>
               </PopupProvider>

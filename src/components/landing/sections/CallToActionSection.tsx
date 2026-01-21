@@ -4,6 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 import { ChevronRight, Shield, Award, TrendingUp, Sparkles } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { usePopup } from '@/contexts/PopupContext'
+import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
 
 interface CallToActionSectionProps {
   darkMode: boolean
@@ -12,6 +14,16 @@ interface CallToActionSectionProps {
 
 export default function CallToActionSection({ darkMode, user }: CallToActionSectionProps) {
   const { signOut } = useAuth()
+  const { openAuthPopup } = usePopup()
+  const router = useOptimizedRouter()
+
+  const handleAuthNavigation = () => {
+    if (user) {
+      router.push('/chat');
+    } else {
+      openAuthPopup();
+    }
+  };
 
   return (
     <section className={`py-24 relative overflow-hidden ${
@@ -63,9 +75,9 @@ export default function CallToActionSection({ darkMode, user }: CallToActionSect
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
-          <Link
-            href={user ? "/chat" : "/auth"}
-            className="group relative bg-white text-blue-600 px-8 py-4 rounded-2xl text-lg font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center space-x-3 overflow-hidden backdrop-blur-sm"
+          <button
+            onClick={handleAuthNavigation}
+            className="group relative bg-white text-blue-600 px-8 py-4 rounded-2xl text-lg font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center space-x-3 overflow-hidden backdrop-blur-sm cursor-pointer"
           >
             {/* Animated background on hover */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-2xl"></div>
@@ -79,7 +91,7 @@ export default function CallToActionSection({ darkMode, user }: CallToActionSect
 
             {/* Enhanced shine effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-2xl"></div>
-          </Link>
+          </button>
 
           <div className={`text-sm space-y-1 backdrop-blur-sm px-4 py-3 rounded-xl ${
             darkMode ? 'bg-white/10' : 'bg-white/20'

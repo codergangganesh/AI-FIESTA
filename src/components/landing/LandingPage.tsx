@@ -28,7 +28,7 @@ export default function LandingPage() {
   const { showLoading, hideLoading } = useLoading()
   const router = useOptimizedRouter()
   const { darkMode, toggleDarkMode } = useDarkMode()
-  const { openPaymentPopup } = usePopup()
+  const { openPaymentPopup, openAuthPopup } = usePopup()
 
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState('')
@@ -100,7 +100,7 @@ export default function LandingPage() {
     if (user) {
       router.push('/chat');
     } else {
-      router.push('/auth');
+      openAuthPopup();
     }
   };
 
@@ -108,7 +108,7 @@ export default function LandingPage() {
     if (user) {
       router.push('/chat');
     } else {
-      router.push('/auth');
+      openAuthPopup();
     }
   };
 
@@ -335,7 +335,7 @@ export default function LandingPage() {
 
                   {/* Sign in button for non-logged-in users */}
                   <button
-                    onClick={handleGoToChat}
+                    onClick={openAuthPopup}
                     className={`px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105 backdrop-blur-sm ${
                       darkMode
                         ? 'bg-gradient-to-r from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-500/20'

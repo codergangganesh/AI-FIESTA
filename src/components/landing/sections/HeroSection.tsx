@@ -4,6 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 import { ArrowRight, Play, Sparkles, Cpu, MessageSquare, Infinity, Zap, Brain } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { usePopup } from '@/contexts/PopupContext'
+import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
 import AIFiestaLogo from '../AIFiestaLogo'
 
 interface HeroSectionProps {
@@ -20,6 +22,17 @@ export default function HeroSection({
   user 
 }: HeroSectionProps) {
   // Determine which handler to use based on authentication status
+  const { openAuthPopup } = usePopup();
+  const router = useOptimizedRouter();
+
+  const handleAuthPopup = () => {
+    if (user) {
+      router.push('/chat');
+    } else {
+      openAuthPopup();
+    }
+  };
+
   const handleClick = () => {
     if (user) {
       handleGoToChat();
