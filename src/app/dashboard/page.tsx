@@ -8,6 +8,7 @@ import BarChart from '@/components/dashboard/BarChart'
 import LineChart from '@/components/dashboard/LineChart'
 import SimpleCircleChart from '@/components/dashboard/SimpleCircleChart'
 import ResponseTimeDistribution from '@/components/dashboard/ResponseTimeDistribution'
+import CombinedPerformanceChart from '@/components/dashboard/CombinedPerformanceChart'
 import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
 import OptimizedPageTransitionLoader from '@/components/ui/OptimizedPageTransitionLoader'
 import { useOptimizedLoading } from '@/contexts/OptimizedLoadingContext'
@@ -16,6 +17,7 @@ import { chatHistoryService } from '@/services/chatHistory.service'
 import { ChatSession } from '@/types/chat'
 import { createClient } from '@/utils/supabase/client'
 import { AI_MODELS } from '@/config/ai-models'
+import { generateAccuracyData, generateLossData, getMetricColorClasses } from '@/lib/chartUtils'
 
 import {
   TrendingUp,
@@ -48,7 +50,7 @@ export default function DashboardPage() {
   const { darkMode } = useDarkMode()
   const { setPageLoading } = useOptimizedLoading()
   const supabase = createClient()
-  const realtimeSubscriptionRef = useRef<any>(null)
+  const realtimeSubscriptionRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   
   const [metrics, setMetrics] = useState<MetricCard[]>([
     {
@@ -99,13 +101,15 @@ export default function DashboardPage() {
     'prompts-per-model': false,
     'throughput-by-model': false,
     'latency-trends': false,
-    'latency-distribution': false
+    'latency-distribution': false,
+    'accuracy-trends': false,
+    'loss-trends': false
   })
   
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [loadingData, setLoadingData] = useState(true)
   const [isExportOpen, setIsExportOpen] = useState(false)
-  const [availableModels, setAvailableModels] = useState<any[]>([])
+  const [availableModels, setAvailableModels] = useState<typeof AI_MODELS>([])
   const [hasUsedModels, setHasUsedModels] = useState(false)
   
   
@@ -116,6 +120,14 @@ export default function DashboardPage() {
   const [lineChartData, setLineChartData] = useState<{[key: string]: string | number; period: string}[]>([])
   const [lineChartMetrics, setLineChartMetrics] = useState<string[]>([])
   const [lineChartMetricLabels, setLineChartMetricLabels] = useState<Record<string, string>>({})
+  
+  // State for accuracy and loss data
+  const [accuracyData, setAccuracyData] = useState<{[key: string]: string | number; period: string}[]>([])
+  const [accuracyMetrics, setAccuracyMetrics] = useState<string[]>([])
+  const [accuracyMetricLabels, setAccuracyMetricLabels] = useState<Record<string, string>>({})
+  const [lossData, setLossData] = useState<{[key: string]: string | number; period: string}[]>([])
+  const [lossMetrics, setLossMetrics] = useState<string[]>([])
+  const [lossMetricLabels, setLossMetricLabels] = useState<Record<string, string>>({})
   const [userPlan] = useState('free')
   
   // Reset color map when component mounts
@@ -146,7 +158,7 @@ export default function DashboardPage() {
   const updateDashboardData = async (fetchedSessions: ChatSession[] | null = null) => {
     try {
       // If no sessions provided, fetch them
-      const sessionsToUse = fetchedSessions || await dashboardService.getChatSessions(false)
+      const sessionsToUse = fetchedSessions || await dashboardService.getChatSessions(false) || []
       
       if (sessionsToUse) {
         // Check if user has used models
@@ -200,7 +212,7 @@ export default function DashboardPage() {
         const usage = dashboardService.getUsageData(filteredSessions)
         setUsageData(usage)
         // Derived metrics
-        const totalResponses = filteredSessions.reduce((sum, s) => sum + ((s as any).responses ? (s as any).responses.length : 0), 0)
+        const totalResponses = filteredSessions.reduce((sum, s) => sum + (s.responses ? s.responses.length : 0), 0)
         const avg = filteredSessions.length > 0 ? totalResponses / filteredSessions.length : 0
         setAvgResponsesPerComparison(Number.isFinite(avg) ? parseFloat(avg.toFixed(2)) : 0)
         const uniq = new Set<string>()
@@ -225,6 +237,18 @@ export default function DashboardPage() {
           metricLabels[metric] = metric
         })
         setLineChartMetricLabels(metricLabels)
+        
+        // Generate mock accuracy data (in a real app, this would come from actual model training data)
+        const accuracyDataPoints = generateAccuracyData(metricsList, lineData);
+        setAccuracyData(accuracyDataPoints);
+        setAccuracyMetrics(metricsList);
+        setAccuracyMetricLabels(metricLabels);
+        
+        // Generate mock loss data (in a real app, this would come from actual model training data)
+        const lossDataPoints = generateLossData(metricsList, lineData);
+        setLossData(lossDataPoints);
+        setLossMetrics(metricsList);
+        setLossMetricLabels(metricLabels);
       }
     } catch (error) {
       console.error('Error updating dashboard data:', error)
@@ -461,6 +485,40 @@ export default function DashboardPage() {
         }
     }
   }
+  
+  // Function to generate mock accuracy data
+  const generateAccuracyData = (metrics: string[], baseData: {period: string; [key: string]: string | number}[]) => {
+    // In a real application, this would come from actual model training data
+    // For now, we'll generate mock data that shows improving accuracy over time
+    return baseData.map((point, index) => {
+      const newPoint = { period: point.period } as {period: string; [key: string]: string | number};
+      metrics.forEach(metric => {
+        // Generate accuracy values that generally improve over time
+        const baseValue = 60 + Math.min(35, index * 2); // Start at 60%, max 95%
+        const variance = 10 * Math.sin(index * 0.5); // Add some variance
+        const noise = (Math.random() - 0.5) * 5; // Add some noise
+        newPoint[metric] = Math.max(0, Math.min(100, baseValue + variance + noise));
+      });
+      return newPoint;
+    });
+  };
+  
+  // Function to generate mock loss data
+  const generateLossData = (metrics: string[], baseData: {period: string; [key: string]: string | number}[]) => {
+    // In a real application, this would come from actual model training data
+    // For now, we'll generate mock data that shows decreasing loss over time
+    return baseData.map((point, index) => {
+      const newPoint = { period: point.period } as {period: string; [key: string]: string | number};
+      metrics.forEach(metric => {
+        // Generate loss values that generally decrease over time
+        const baseValue = 5 - Math.min(4.5, index * 0.2); // Start at 5, min 0.5
+        const variance = 0.5 * Math.sin(index * 0.3); // Add some variance
+        const noise = (Math.random() - 0.5) * 0.3; // Add some noise
+        newPoint[metric] = Math.max(0, baseValue + variance + noise);
+      });
+      return newPoint;
+    });
+  };
 
   // Function to calculate usage percentage
   const calculateUsagePercentage = (current: number, limit: number) => {
@@ -875,24 +933,25 @@ export default function DashboardPage() {
               onToggleExpand={() => toggleChartVisibility('latency-distribution')}
             />
           </div>
+          
+          {/* Chart Section Header */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Performance Metrics</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Track your AI model performance with professional-grade analytics
+            </p>
+          </div>
+          
+          {/* Combined Accuracy and Loss Chart */}
+          <div className="grid grid-cols-1 gap-6">
+            <CombinedPerformanceChart 
+              accuracyData={accuracyData}
+              lossData={lossData}
+              title="Accuracy and Loss Trends"
+            />
+          </div>
         </div>
       </div>
     </div>
   )
-}
-
-// Helper function to get color classes for metrics
-const getMetricColorClasses = (color: string) => {
-  switch (color) {
-    case 'blue':
-      return 'from-blue-500 to-blue-600 text-white'
-    case 'purple':
-      return 'from-purple-500 to-purple-600 text-white'
-    case 'green':
-      return 'from-green-500 to-green-600 text-white'
-    case 'orange':
-      return 'from-orange-500 to-orange-600 text-white'
-    default:
-      return 'from-gray-500 to-gray-600 text-white'
-  }
 }

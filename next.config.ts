@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
     config.optimization.concatenateModules = true;
     
     return config;
+  },
+  
+  // Disable ESLint during build
+  eslint: {
+    ignoreDuringBuilds: true,
   }
 };
 

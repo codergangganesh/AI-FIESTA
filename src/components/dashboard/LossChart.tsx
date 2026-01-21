@@ -5,7 +5,7 @@ import { dashboardService } from '@/services/dashboard.service'
 import { AI_MODELS } from '@/config/ai-models'
 import { TrendingUp, Eye, EyeOff } from 'lucide-react'
 
-interface LineChartProps {
+interface LossChartProps {
   data: { period: string; [key: string]: string | number }[]
   title: string
   metrics: string[]
@@ -15,7 +15,7 @@ interface LineChartProps {
   onToggleExpand?: () => void
 }
 
-const LineChart: React.FC<LineChartProps> = ({ 
+const LossChart: React.FC<LossChartProps> = ({ 
   data, 
   title, 
   metrics, 
@@ -27,7 +27,7 @@ const LineChart: React.FC<LineChartProps> = ({
   // Show only first 4 metrics by default, unless expanded
   const displayedMetrics = isExpanded ? metrics : metrics.slice(0, 4)
   
-  // Find min and max values for scaling
+  // Find min and max values for scaling (loss values are typically between 0 and 1)
   const allValues: number[] = []
   displayedMetrics.forEach(metric => {
     data.forEach(d => {
@@ -38,7 +38,7 @@ const LineChart: React.FC<LineChartProps> = ({
   })
   
   const minValue = allValues.length > 0 ? Math.min(...allValues, 0) : 0
-  const maxValue = allValues.length > 0 ? Math.max(...allValues, 0) : 1
+  const maxValue = allValues.length > 0 ? Math.max(...allValues, 5) : 5
   const range = maxValue - minValue || 1 // Avoid division by zero
   
   // Calculate trend for each metric
@@ -94,9 +94,9 @@ const LineChart: React.FC<LineChartProps> = ({
           <div className="relative flex-grow">
             {/* Y-axis labels */}
             <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 dark:text-gray-400 py-4">
-              <span>{maxValue.toFixed(1)}</span>
-              <span>{((maxValue + minValue) / 2).toFixed(1)}</span>
-              <span>{minValue.toFixed(1)}</span>
+              <span>{maxValue.toFixed(2)}</span>
+              <span>{((maxValue + minValue) / 2).toFixed(2)}</span>
+              <span>{minValue.toFixed(2)}</span>
             </div>
             
             {/* Chart area */}
@@ -267,9 +267,9 @@ const LineChart: React.FC<LineChartProps> = ({
                     {metricLabels[metric] || metric}
                   </span>
                   {trend !== 0 && (
-                    <div className={`ml-2 flex items-center text-xs font-semibold ${trend > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      <TrendingUp className={`w-3 h-3 mr-1 ${trend < 0 ? 'rotate-180' : ''}`} />
-                      <span>{Math.abs(trend).toFixed(2)}</span>
+                    <div className={`ml-2 flex items-center text-xs font-semibold ${trend < 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <TrendingUp className={`w-3 h-3 mr-1 ${trend > 0 ? 'rotate-180' : ''}`} />
+                      <span>{Math.abs(trend).toFixed(3)}</span>
                     </div>
                   )}
                 </div>
@@ -307,7 +307,7 @@ const LineChart: React.FC<LineChartProps> = ({
                   style={{ backgroundColor: item.color }}
                 ></div>
                 <span className="mr-2 text-gray-300">{metricLabels[item.metric] || item.metric}:</span>
-                <span className="font-semibold">{item.value.toFixed(2)}</span>
+                <span className="font-semibold">{item.value.toFixed(3)}</span>
               </div>
             ))}
           </div>
@@ -318,4 +318,4 @@ const LineChart: React.FC<LineChartProps> = ({
   )
 }
 
-export default LineChart
+export default LossChart

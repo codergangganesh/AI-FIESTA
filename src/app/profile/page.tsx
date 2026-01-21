@@ -62,30 +62,30 @@ export default function ProfilePage() {
     const loadUserData = async () => {
       if (user) {
         // Get additional user data from user_metadata
-        const userData = user.user_metadata || {}
+        const userData = (user.user_metadata as Record<string, any>) || {}
         
         setFormData(prev => ({
           ...prev,
-          firstName: (userData as any)?.full_name?.split(' ')[0] || prev.firstName,
-          lastName: (userData as any)?.full_name?.split(' ')[1] || prev.lastName,
+          firstName: userData?.full_name?.split(' ')[0] || prev.firstName,
+          lastName: userData?.full_name?.split(' ')[1] || prev.lastName,
           email: user.email || prev.email,
-          phoneNumber: (userData as any)?.phone || prev.phoneNumber,
-          address: (userData as any)?.address || prev.address,
-          country: (userData as any)?.country || prev.country,
-          gender: (userData as any)?.gender || prev.gender,
-          language: (userData as any)?.language || prev.language,
+          phoneNumber: userData?.phone || prev.phoneNumber,
+          address: userData?.address || prev.address,
+          country: userData?.country || prev.country,
+          gender: userData?.gender || prev.gender,
+          language: userData?.language || prev.language,
           dateOfBirth: {
-            month: (userData as any)?.dob_month || prev.dateOfBirth.month,
-            day: (userData as any)?.dob_day || prev.dateOfBirth.day,
-            year: (userData as any)?.dob_year || prev.dateOfBirth.year
+            month: userData?.dob_month || prev.dateOfBirth.month,
+            day: userData?.dob_day || prev.dateOfBirth.day,
+            year: userData?.dob_year || prev.dateOfBirth.year
           },
           socialMedia: {
-            twitter: (userData as any)?.social_twitter || prev.socialMedia.twitter,
-            linkedin: (userData as any)?.social_linkedin || prev.socialMedia.linkedin,
-            facebook: (userData as any)?.social_facebook || prev.socialMedia.facebook,
-            github: (userData as any)?.social_github || prev.socialMedia.github
+            twitter: userData?.social_twitter || prev.socialMedia.twitter,
+            linkedin: userData?.social_linkedin || prev.socialMedia.linkedin,
+            facebook: userData?.social_facebook || prev.socialMedia.facebook,
+            github: userData?.social_github || prev.socialMedia.github
           },
-          professionalTitle: (userData as any)?.title || prev.professionalTitle
+          professionalTitle: userData?.title || prev.professionalTitle
         }))
       }
     }
@@ -110,7 +110,7 @@ export default function ProfilePage() {
       setFormData({
         ...formData,
         [parent]: {
-          ...(formData as any)[parent],
+          ...(formData as Record<string, any>)[parent],
           [child]: value
         }
       })
