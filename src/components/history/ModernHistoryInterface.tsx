@@ -14,6 +14,7 @@ import HistoryDetailModal from './HistoryDetailModal'
 import { AVAILABLE_MODELS } from '@/lib/models'
 import { AIModel } from '@/types/app'
 import { ChatResponse } from '@/types/chat'
+import AIFiestaLogo from '../landing/AIFiestaLogo'
 
 interface ChatSession {
   id: string
@@ -307,13 +308,13 @@ export default function ModernHistoryInterface() {
 
   return (
     <div className={`flex h-screen transition-all duration-700 ease-in-out ${darkMode
-        ? 'bg-gradient-to-br from-gray-900 via-violet-900/90 to-black'
-        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'
+      ? 'bg-gradient-to-br from-gray-900 via-violet-900/90 to-black'
+      : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'
       }`}>
       {/* Left Sidebar */}
       <div className={`w-80 backdrop-blur-xl border-r transition-all duration-300 relative ${darkMode
-          ? 'bg-gray-800/90 border-gray-700/50'
-          : 'bg-white/90 border-slate-200/50'
+        ? 'bg-gray-800/90 border-gray-700/50'
+        : 'bg-white/90 border-slate-200/50'
         }`}>
         {/* Sidebar Content Container */}
         <div className="flex flex-col h-full pb-20">
@@ -321,14 +322,12 @@ export default function ModernHistoryInterface() {
           <div className={`p-6 border-b transition-colors duration-200 ${darkMode ? 'border-gray-700' : 'border-slate-200/30'
             }`}>
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Brain className="w-6 h-6 text-white" />
-              </div>
+              <AIFiestaLogo size="md" darkMode={darkMode} />
               <div>
                 <Link href="/">
                   <h1 className={`text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent transition-colors duration-200 ${darkMode
-                      ? 'from-white to-gray-200'
-                      : 'from-slate-900 to-slate-700'
+                    ? 'from-white to-gray-200'
+                    : 'from-slate-900 to-slate-700'
                     }`}>
                     AI Fiesta
                   </h1>
@@ -358,12 +357,12 @@ export default function ModernHistoryInterface() {
             <Link
               href="/chat"
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group relative ${pathname === '/chat'
-                  ? darkMode
-                    ? 'text-white bg-gray-700/50 border border-gray-600'
-                    : 'text-slate-900 bg-slate-100/50 border border-slate-200'
-                  : darkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
+                ? darkMode
+                  ? 'text-white bg-gray-700/50 border border-gray-600'
+                  : 'text-slate-900 bg-slate-100/50 border border-slate-200'
+                : darkMode
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
                 }`}
               title="Current Chat"
             >
@@ -379,12 +378,12 @@ export default function ModernHistoryInterface() {
             <Link
               href="/history"
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group relative ${pathname === '/history'
-                  ? darkMode
-                    ? 'text-white bg-gray-700/50 border border-gray-600'
-                    : 'text-slate-900 bg-slate-100/50 border border-slate-200'
-                  : darkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
+                ? darkMode
+                  ? 'text-white bg-gray-700/50 border border-gray-600'
+                  : 'text-slate-900 bg-slate-100/50 border border-slate-200'
+                : darkMode
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
                 }`}
               title="History"
             >
@@ -400,12 +399,12 @@ export default function ModernHistoryInterface() {
             <Link
               href="/dashboard"
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group relative ${pathname === '/dashboard'
-                  ? darkMode
-                    ? 'text-white bg-gray-700/50 border border-gray-600'
-                    : 'text-slate-900 bg-slate-100/50 border border-slate-200'
-                  : darkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
+                ? darkMode
+                  ? 'text-white bg-gray-700/50 border border-gray-600'
+                  : 'text-slate-900 bg-slate-100/50 border border-slate-200'
+                : darkMode
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
                 }`}
               title="Dashboard"
             >
@@ -422,8 +421,8 @@ export default function ModernHistoryInterface() {
 
         {/* Profile Section at Bottom */}
         <div className={`absolute bottom-0 left-0 right-0 p-4 border-t transition-all duration-300 ${darkMode
-            ? 'bg-gray-800/90 border-gray-700/50 backdrop-blur-xl'
-            : 'bg-white/90 border-slate-200/50 backdrop-blur-xl'
+          ? 'bg-gray-800/90 border-gray-700/50 backdrop-blur-xl'
+          : 'bg-white/90 border-slate-200/50 backdrop-blur-xl'
           }`}>
           <div className="relative">
             <div
@@ -462,13 +461,13 @@ export default function ModernHistoryInterface() {
                   aria-hidden="true"
                 />
                 <div className={`absolute bottom-full right-0 mb-2 w-72 rounded-2xl shadow-2xl transition-all duration-300 transform origin-bottom z-50 ${darkMode
-                    ? 'bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700/50 backdrop-blur-2xl'
-                    : 'bg-gradient-to-b from-white to-gray-50 border border-gray-200/70 backdrop-blur-2xl'
+                  ? 'bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700/50 backdrop-blur-2xl'
+                  : 'bg-gradient-to-b from-white to-gray-50 border border-gray-200/70 backdrop-blur-2xl'
                   }`}>
                   {/* User Profile Header */}
                   <div className={`px-5 py-4 rounded-t-2xl ${darkMode
-                      ? 'bg-gradient-to-r from-gray-800/80 to-gray-900/80'
-                      : 'bg-gradient-to-r from-gray-50/80 to-white/80'
+                    ? 'bg-gradient-to-r from-gray-800/80 to-gray-900/80'
+                    : 'bg-gradient-to-r from-gray-50/80 to-white/80'
                     }`}>
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
@@ -495,8 +494,8 @@ export default function ModernHistoryInterface() {
                         </p>
                         <div className="mt-1">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${darkMode
-                              ? 'bg-indigo-900/40 text-indigo-300'
-                              : 'bg-indigo-100 text-indigo-800'
+                            ? 'bg-indigo-900/40 text-indigo-300'
+                            : 'bg-indigo-100 text-indigo-800'
                             }`}>
                             Member
                           </span>
@@ -510,16 +509,16 @@ export default function ModernHistoryInterface() {
                     <Link href="/profile">
                       <div
                         className={`flex items-center space-x-4 w-full px-5 py-3 text-left transition-all duration-200 ${darkMode
-                            ? 'hover:bg-blue-500/10'
-                            : 'hover:bg-blue-50'
+                          ? 'hover:bg-blue-500/10'
+                          : 'hover:bg-blue-50'
                           }`}
                         onClick={() => {
                           setShowProfileDropdown(false);
                         }}
                       >
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${darkMode
-                            ? 'bg-blue-500/20 text-blue-400'
-                            : 'bg-blue-100 text-blue-600'
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : 'bg-blue-100 text-blue-600'
                           }`}>
                           <User className="w-5 h-5" />
                         </div>
@@ -538,13 +537,13 @@ export default function ModernHistoryInterface() {
                         openPaymentPopup();
                       }}
                       className={`flex items-center space-x-4 w-full px-5 py-3 text-left transition-all duration-200 group ${darkMode
-                          ? 'hover:bg-indigo-500/10'
-                          : 'hover:bg-indigo-50'
+                        ? 'hover:bg-indigo-500/10'
+                        : 'hover:bg-indigo-50'
                         }`}
                     >
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${darkMode
-                          ? 'bg-indigo-500/20 text-indigo-400'
-                          : 'bg-indigo-100 text-indigo-600'
+                        ? 'bg-indigo-500/20 text-indigo-400'
+                        : 'bg-indigo-100 text-indigo-600'
                         }`}>
                         <CreditCard className="w-5 h-5" />
                       </div>
@@ -559,8 +558,8 @@ export default function ModernHistoryInterface() {
                     {/* Theme Toggle */}
                     <div
                       className={`flex items-center justify-between px-5 py-3 transition-all duration-200 ${darkMode
-                          ? 'hover:bg-amber-500/10'
-                          : 'hover:bg-amber-50'
+                        ? 'hover:bg-amber-500/10'
+                        : 'hover:bg-amber-50'
                         }`}
                       onClick={() => {
                         setShowProfileDropdown(false);
@@ -569,8 +568,8 @@ export default function ModernHistoryInterface() {
                     >
                       <div className="flex items-center space-x-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${darkMode
-                            ? 'bg-amber-500/20 text-amber-400'
-                            : 'bg-amber-100 text-amber-600'
+                          ? 'bg-amber-500/20 text-amber-400'
+                          : 'bg-amber-100 text-amber-600'
                           }`}>
                           {darkMode ? (
                             <Sun className="w-5 h-5" />
@@ -603,8 +602,8 @@ export default function ModernHistoryInterface() {
                     {/* Account Actions */}
                     <div
                       className={`flex items-center space-x-4 w-full px-5 py-3 text-left transition-all duration-200 ${darkMode
-                          ? 'hover:bg-rose-500/10'
-                          : 'hover:bg-rose-50'
+                        ? 'hover:bg-rose-500/10'
+                        : 'hover:bg-rose-50'
                         }`}
                       onClick={() => {
                         setShowProfileDropdown(false);
@@ -612,8 +611,8 @@ export default function ModernHistoryInterface() {
                       }}
                     >
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${darkMode
-                          ? 'bg-rose-500/20 text-rose-400'
-                          : 'bg-rose-100 text-rose-600'
+                        ? 'bg-rose-500/20 text-rose-400'
+                        : 'bg-rose-100 text-rose-600'
                         }`}>
                         <Trash2 className="w-5 h-5" />
                       </div>
@@ -627,8 +626,8 @@ export default function ModernHistoryInterface() {
 
                     <div
                       className={`flex items-center space-x-4 w-full px-5 py-3 text-left transition-all duration-200 ${darkMode
-                          ? 'hover:bg-rose-500/10'
-                          : 'hover:bg-rose-50'
+                        ? 'hover:bg-rose-500/10'
+                        : 'hover:bg-rose-50'
                         }`}
                       onClick={() => {
                         setShowProfileDropdown(false);
@@ -636,8 +635,8 @@ export default function ModernHistoryInterface() {
                       }}
                     >
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${darkMode
-                          ? 'bg-rose-500/20 text-rose-400'
-                          : 'bg-rose-100 text-rose-600'
+                        ? 'bg-rose-500/20 text-rose-400'
+                        : 'bg-rose-100 text-rose-600'
                         }`}>
                         <LogOut className="w-5 h-5" />
                       </div>
@@ -660,8 +659,8 @@ export default function ModernHistoryInterface() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
         <div className={`backdrop-blur-xl border-b p-6 transition-all duration-300 z-50 ${darkMode
-            ? 'bg-gray-800/80 border-gray-700/50'
-            : 'bg-white/80 border-slate-200/50'
+          ? 'bg-gray-800/80 border-gray-700/50'
+          : 'bg-white/80 border-slate-200/50'
           }`}>
           <div className="max-w-7xl mx-auto">
             <h1 className={`text-2xl font-bold mb-4 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
@@ -681,8 +680,8 @@ export default function ModernHistoryInterface() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-300 text-sm placeholder:text-slate-500 backdrop-blur-sm ${darkMode
-                      ? 'bg-gray-700/50 border border-gray-600/50 text-white placeholder:text-gray-400 hover:bg-gray-700/70'
-                      : 'bg-white border border-slate-200/50 text-slate-900 hover:border-slate-300/50'
+                    ? 'bg-gray-700/50 border border-gray-600/50 text-white placeholder:text-gray-400 hover:bg-gray-700/70'
+                    : 'bg-white border border-slate-200/50 text-slate-900 hover:border-slate-300/50'
                     }`}
                 />
               </div>
@@ -699,8 +698,8 @@ export default function ModernHistoryInterface() {
                     loadChatSessions();
                   }}
                   className={`px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-2 backdrop-blur-sm ${darkMode
-                      ? 'bg-gray-800/60 border border-gray-700/50 text-gray-300 hover:bg-gray-700/80 hover:border-gray-600/70 hover:shadow-lg'
-                      : 'bg-white/80 border border-slate-200/50 text-slate-700 hover:border-slate-300/70 hover:shadow-lg'
+                    ? 'bg-gray-800/60 border border-gray-700/50 text-gray-300 hover:bg-gray-700/80 hover:border-gray-600/70 hover:shadow-lg'
+                    : 'bg-white/80 border border-slate-200/50 text-slate-700 hover:border-slate-300/70 hover:shadow-lg'
                     }`}
                   title="Refresh history"
                 >
@@ -712,8 +711,8 @@ export default function ModernHistoryInterface() {
                   <button
                     onClick={() => setShowDeleteAllPopup(true)}
                     className={`px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-2 backdrop-blur-sm ${darkMode
-                        ? 'bg-red-600/80 hover:bg-red-700/90 text-white border border-red-500/30 hover:border-red-400/50 hover:shadow-lg'
-                        : 'bg-red-500 hover:bg-red-600 text-white border border-red-400/30 hover:border-red-300/50 hover:shadow-lg'
+                      ? 'bg-red-600/80 hover:bg-red-700/90 text-white border border-red-500/30 hover:border-red-400/50 hover:shadow-lg'
+                      : 'bg-red-500 hover:bg-red-600 text-white border border-red-400/30 hover:border-red-300/50 hover:shadow-lg'
                       }`}
                     title="Delete all history"
                   >
@@ -727,8 +726,8 @@ export default function ModernHistoryInterface() {
                     id="sort-button"
                     onClick={() => setShowSortFilterDropdown(showSortFilterDropdown === 'sort' ? null : 'sort')}
                     className={`flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-200 ${darkMode
-                        ? 'bg-gray-700/50 border border-gray-600/50 text-gray-300 hover:bg-gray-700/70'
-                        : 'bg-white border border-slate-200/50 text-slate-700 hover:border-slate-300/50'
+                      ? 'bg-gray-700/50 border border-gray-600/50 text-gray-300 hover:bg-gray-700/70'
+                      : 'bg-white border border-slate-200/50 text-slate-700 hover:border-slate-300/50'
                       }`}
                   >
                     <SortDesc className="w-4 h-4" />
@@ -738,8 +737,8 @@ export default function ModernHistoryInterface() {
                   {/* Sort Dropdown Menu */}
                   {showSortFilterDropdown === 'sort' && (
                     <div id="sort-dropdown" className={`absolute right-0 mt-2 w-48 rounded-2xl border shadow-2xl z-[9999] overflow-hidden backdrop-blur-xl ${darkMode
-                        ? 'bg-gray-800/90 border-gray-700/50'
-                        : 'bg-white/90 border-slate-200/50'
+                      ? 'bg-gray-800/90 border-gray-700/50'
+                      : 'bg-white/90 border-slate-200/50'
                       }`}>
                       <div className="py-2">
                         <div className="px-4 py-2">
@@ -754,12 +753,12 @@ export default function ModernHistoryInterface() {
                                 setShowSortFilterDropdown(null)
                               }}
                               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center justify-between ${sortBy === 'newest'
-                                  ? darkMode
-                                    ? 'bg-blue-900/30 text-blue-300'
-                                    : 'bg-blue-100 text-blue-700'
-                                  : darkMode
-                                    ? 'text-gray-300 hover:bg-gray-700/50'
-                                    : 'text-slate-700 hover:bg-slate-100'
+                                ? darkMode
+                                  ? 'bg-blue-900/30 text-blue-300'
+                                  : 'bg-blue-100 text-blue-700'
+                                : darkMode
+                                  ? 'text-gray-300 hover:bg-gray-700/50'
+                                  : 'text-slate-700 hover:bg-slate-100'
                                 }`}
                             >
                               <span>Newest First</span>
@@ -773,12 +772,12 @@ export default function ModernHistoryInterface() {
                                 setShowSortFilterDropdown(null)
                               }}
                               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center justify-between ${sortBy === 'oldest'
-                                  ? darkMode
-                                    ? 'bg-blue-900/30 text-blue-300'
-                                    : 'bg-blue-100 text-blue-700'
-                                  : darkMode
-                                    ? 'text-gray-300 hover:bg-gray-700/50'
-                                    : 'text-slate-700 hover:bg-slate-100'
+                                ? darkMode
+                                  ? 'bg-blue-900/30 text-blue-300'
+                                  : 'bg-blue-100 text-blue-700'
+                                : darkMode
+                                  ? 'text-gray-300 hover:bg-gray-700/50'
+                                  : 'text-slate-700 hover:bg-slate-100'
                                 }`}
                             >
                               <span>Oldest First</span>
@@ -792,12 +791,12 @@ export default function ModernHistoryInterface() {
                                 setShowSortFilterDropdown(null)
                               }}
                               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center justify-between ${sortBy === 'mostResponses'
-                                  ? darkMode
-                                    ? 'bg-blue-900/30 text-blue-300'
-                                    : 'bg-blue-100 text-blue-700'
-                                  : darkMode
-                                    ? 'text-gray-300 hover:bg-gray-700/50'
-                                    : 'text-slate-700 hover:bg-slate-100'
+                                ? darkMode
+                                  ? 'bg-blue-900/30 text-blue-300'
+                                  : 'bg-blue-100 text-blue-700'
+                                : darkMode
+                                  ? 'text-gray-300 hover:bg-gray-700/50'
+                                  : 'text-slate-700 hover:bg-slate-100'
                                 }`}
                             >
                               <span>Most Responses</span>
@@ -818,8 +817,8 @@ export default function ModernHistoryInterface() {
                     id="filter-button"
                     onClick={() => setShowSortFilterDropdown(showSortFilterDropdown === 'filter' ? null : 'filter')}
                     className={`flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-200 ${darkMode
-                        ? 'bg-gray-700/50 border border-gray-600/50 text-gray-300 hover:bg-gray-700/70'
-                        : 'bg-white border border-slate-200/50 text-slate-700 hover:border-slate-300/50'
+                      ? 'bg-gray-700/50 border border-gray-600/50 text-gray-300 hover:bg-gray-700/70'
+                      : 'bg-white border border-slate-200/50 text-slate-700 hover:border-slate-300/50'
                       }`}
                   >
                     <Filter className="w-4 h-4" />
@@ -829,8 +828,8 @@ export default function ModernHistoryInterface() {
                   {/* Filter Dropdown Menu */}
                   {showSortFilterDropdown === 'filter' && (
                     <div id="filter-dropdown" className={`absolute right-0 mt-2 w-48 rounded-2xl border shadow-2xl z-[9999] overflow-hidden backdrop-blur-xl ${darkMode
-                        ? 'bg-gray-800/90 border-gray-700/50'
-                        : 'bg-white/90 border-slate-200/50'
+                      ? 'bg-gray-800/90 border-gray-700/50'
+                      : 'bg-white/90 border-slate-200/50'
                       }`}>
                       <div className="py-2">
                         <div className={`px-4 py-2 border-t ${darkMode ? 'border-gray-700/50' : 'border-slate-200/50'
@@ -846,12 +845,12 @@ export default function ModernHistoryInterface() {
                                 setShowSortFilterDropdown(null)
                               }}
                               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center justify-between ${filterByModel === 'all'
-                                  ? darkMode
-                                    ? 'bg-blue-900/30 text-blue-300'
-                                    : 'bg-blue-100 text-blue-700'
-                                  : darkMode
-                                    ? 'text-gray-300 hover:bg-gray-700/50'
-                                    : 'text-slate-700 hover:bg-slate-100'
+                                ? darkMode
+                                  ? 'bg-blue-900/30 text-blue-300'
+                                  : 'bg-blue-100 text-blue-700'
+                                : darkMode
+                                  ? 'text-gray-300 hover:bg-gray-700/50'
+                                  : 'text-slate-700 hover:bg-slate-100'
                                 }`}
                             >
                               <span>All Models</span>
@@ -869,12 +868,12 @@ export default function ModernHistoryInterface() {
                                     setShowSortFilterDropdown(null)
                                   }}
                                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center justify-between ${filterByModel === modelId
-                                      ? darkMode
-                                        ? 'bg-blue-900/30 text-blue-300'
-                                        : 'bg-blue-100 text-blue-700'
-                                      : darkMode
-                                        ? 'text-gray-300 hover:bg-gray-700/50'
-                                        : 'text-slate-700 hover:bg-slate-100'
+                                    ? darkMode
+                                      ? 'bg-blue-900/30 text-blue-300'
+                                      : 'bg-blue-100 text-blue-700'
+                                    : darkMode
+                                      ? 'text-gray-300 hover:bg-gray-700/50'
+                                      : 'text-slate-700 hover:bg-slate-100'
                                     }`}
                                 >
                                   <span>{model?.provider || modelId}</span>
@@ -966,12 +965,12 @@ export default function ModernHistoryInterface() {
                       <button
                         onClick={() => setViewMode('grid')}
                         className={`p-2 rounded-lg transition-colors ${viewMode === 'grid'
-                            ? darkMode
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-blue-500 text-white shadow'
-                            : darkMode
-                              ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+                          ? darkMode
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-blue-500 text-white shadow'
+                          : darkMode
+                            ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                           }`}
                         title="Grid View"
                       >
@@ -980,12 +979,12 @@ export default function ModernHistoryInterface() {
                       <button
                         onClick={() => setViewMode('list')}
                         className={`p-2 rounded-lg transition-colors ${viewMode === 'list'
-                            ? darkMode
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-blue-500 text-white shadow'
-                            : darkMode
-                              ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+                          ? darkMode
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-blue-500 text-white shadow'
+                          : darkMode
+                            ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                           }`}
                         title="List View"
                       >
@@ -1001,8 +1000,8 @@ export default function ModernHistoryInterface() {
                         <div
                           key={session.id}
                           className={`rounded-2xl border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 backdrop-blur-sm overflow-hidden ${darkMode
-                              ? 'bg-gradient-to-br from-gray-800/60 to-gray-900/60 border-gray-700/50 hover:border-gray-600/70'
-                              : 'bg-gradient-to-br from-white/60 to-slate-50/60 border-slate-200/50 hover:border-slate-300/70'
+                            ? 'bg-gradient-to-br from-gray-800/60 to-gray-900/60 border-gray-700/50 hover:border-gray-600/70'
+                            : 'bg-gradient-to-br from-white/60 to-slate-50/60 border-slate-200/50 hover:border-slate-300/70'
                             }`}
                         >
                           <div
@@ -1024,8 +1023,8 @@ export default function ModernHistoryInterface() {
                                   handleDeleteSession(session.id);
                                 }}
                                 className={`p-1.5 rounded-lg transition-colors duration-200 ${darkMode
-                                    ? 'text-gray-400 hover:text-red-400 hover:bg-gray-700'
-                                    : 'text-slate-400 hover:text-red-500 hover:bg-slate-100'
+                                  ? 'text-gray-400 hover:text-red-400 hover:bg-gray-700'
+                                  : 'text-slate-400 hover:text-red-500 hover:bg-slate-100'
                                   }`}
                                 title="Delete conversation"
                               >
@@ -1086,8 +1085,8 @@ export default function ModernHistoryInterface() {
                                     <span
                                       key={modelId}
                                       className={`text-xs px-2.5 py-1 rounded-full flex items-center space-x-1 ${darkMode
-                                          ? 'bg-gray-700/50'
-                                          : 'bg-slate-100'
+                                        ? 'bg-gray-700/50'
+                                        : 'bg-slate-100'
                                         }`}
                                     >
                                       <span>{model?.provider.charAt(0) || modelId.charAt(0)}</span>
@@ -1097,8 +1096,8 @@ export default function ModernHistoryInterface() {
                                 })}
                                 {session.selectedModels.length > 3 && (
                                   <span className={`text-xs px-2.5 py-1 rounded-full ${darkMode
-                                      ? 'bg-gray-700/50'
-                                      : 'bg-slate-100'
+                                    ? 'bg-gray-700/50'
+                                    : 'bg-slate-100'
                                     }`}>
                                     +{session.selectedModels.length - 3}
                                   </span>
@@ -1134,8 +1133,8 @@ export default function ModernHistoryInterface() {
                         <div
                           key={session.id}
                           className={`rounded-2xl border transition-all duration-300 backdrop-blur-sm ${darkMode
-                              ? 'bg-gray-800/60 border-gray-700/50 hover:border-gray-600/70 hover:shadow-xl'
-                              : 'bg-white/60 border-slate-200/50 hover:border-slate-300/70 hover:shadow-lg'
+                            ? 'bg-gray-800/60 border-gray-700/50 hover:border-gray-600/70 hover:shadow-xl'
+                            : 'bg-white/60 border-slate-200/50 hover:border-slate-300/70 hover:shadow-lg'
                             }`}
                         >
                           <div
@@ -1157,8 +1156,8 @@ export default function ModernHistoryInterface() {
                                   handleDeleteSession(session.id);
                                 }}
                                 className={`p-1 rounded-lg transition-colors duration-200 ${darkMode
-                                    ? 'text-gray-400 hover:text-red-400 hover:bg-gray-700'
-                                    : 'text-slate-400 hover:text-red-500 hover:bg-slate-100'
+                                  ? 'text-gray-400 hover:text-red-400 hover:bg-gray-700'
+                                  : 'text-slate-400 hover:text-red-500 hover:bg-slate-100'
                                   }`}
                                 title="Delete conversation"
                               >
@@ -1179,8 +1178,8 @@ export default function ModernHistoryInterface() {
                                     <span
                                       key={modelId}
                                       className={`text-xs px-2 py-1 rounded-full ${darkMode
-                                          ? 'bg-gray-700 text-gray-300'
-                                          : 'bg-slate-100 text-slate-700'
+                                        ? 'bg-gray-700 text-gray-300'
+                                        : 'bg-slate-100 text-slate-700'
                                         }`}
                                     >
                                       {model?.provider || modelId}
@@ -1189,8 +1188,8 @@ export default function ModernHistoryInterface() {
                                 })}
                                 {session.selectedModels.length > 3 && (
                                   <span className={`text-xs px-2 py-1 rounded-full ${darkMode
-                                      ? 'bg-gray-700 text-gray-300'
-                                      : 'bg-slate-100 text-slate-700'
+                                    ? 'bg-gray-700 text-gray-300'
+                                    : 'bg-slate-100 text-slate-700'
                                     }`}>
                                     +{session.selectedModels.length - 3}
                                   </span>
@@ -1228,8 +1227,8 @@ export default function ModernHistoryInterface() {
       {showDeleteAllPopup && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className={`rounded-2xl border shadow-2xl max-w-md w-full backdrop-blur-xl ${darkMode
-              ? 'bg-gradient-to-br from-gray-800/80 to-gray-900/80 border-gray-700/50'
-              : 'bg-gradient-to-br from-white/80 to-gray-100/80 border-slate-200/50'
+            ? 'bg-gradient-to-br from-gray-800/80 to-gray-900/80 border-gray-700/50'
+            : 'bg-gradient-to-br from-white/80 to-gray-100/80 border-slate-200/50'
             }`}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -1241,8 +1240,8 @@ export default function ModernHistoryInterface() {
                   onClick={() => setShowDeleteAllPopup(false)}
                   disabled={isDeletingAll} // Disable close button during deletion
                   className={`p-2 rounded-lg transition-colors duration-200 ${darkMode
-                      ? 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                      : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
                     } ${isDeletingAll ? 'opacity-50 cursor-not-allowed' : ''}`}
                   aria-label="Close"
                   title="Close"
@@ -1276,8 +1275,8 @@ export default function ModernHistoryInterface() {
                     <button
                       onClick={() => setShowDeleteAllPopup(false)}
                       className={`px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${darkMode
-                          ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                          : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                         }`}
                     >
                       Cancel
@@ -1304,8 +1303,8 @@ export default function ModernHistoryInterface() {
         >
           <div
             className={`relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border shadow-2xl ${darkMode
-                ? 'bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700'
-                : 'bg-gradient-to-br from-white to-gray-100 border-gray-200'
+              ? 'bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700'
+              : 'bg-gradient-to-br from-white to-gray-100 border-gray-200'
               }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -1323,10 +1322,10 @@ export default function ModernHistoryInterface() {
               <div className="mb-6">
                 <div className="flex items-center space-x-4 mb-4">
                   <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg ${selectedResponse?.isBestResponse
-                      ? 'bg-gradient-to-br from-amber-500 to-yellow-500'
-                      : darkMode
-                        ? 'bg-gradient-to-br from-blue-600 to-purple-600'
-                        : 'bg-gradient-to-br from-blue-500 to-purple-500'
+                    ? 'bg-gradient-to-br from-amber-500 to-yellow-500'
+                    : darkMode
+                      ? 'bg-gradient-to-br from-blue-600 to-purple-600'
+                      : 'bg-gradient-to-br from-blue-500 to-purple-500'
                     }`}>
                     {selectedResponse?.model?.displayName?.charAt(0)}
                   </div>
@@ -1336,12 +1335,12 @@ export default function ModernHistoryInterface() {
                     </h2>
                     <div className="flex flex-wrap items-center gap-2 mt-2">
                       <span className={`text-sm font-medium px-3 py-1 rounded-full ${selectedResponse?.isBestResponse
-                          ? darkMode
-                            ? 'bg-amber-900/40 text-amber-300'
-                            : 'bg-amber-100 text-amber-700'
-                          : darkMode
-                            ? 'bg-gray-700 text-gray-300'
-                            : 'bg-slate-100 text-slate-600'
+                        ? darkMode
+                          ? 'bg-amber-900/40 text-amber-300'
+                          : 'bg-amber-100 text-amber-700'
+                        : darkMode
+                          ? 'bg-gray-700 text-gray-300'
+                          : 'bg-slate-100 text-slate-600'
                         }`}>
                         {selectedResponse?.model?.provider}
                       </span>
@@ -1354,8 +1353,8 @@ export default function ModernHistoryInterface() {
                       )}
                       {selectedResponse?.responseTime !== undefined && selectedResponse?.responseTime > 0 && (
                         <div className={`text-sm font-medium px-3 py-1 rounded-full ${darkMode
-                            ? 'bg-blue-900/40 text-blue-300'
-                            : 'bg-blue-100 text-blue-700'
+                          ? 'bg-blue-900/40 text-blue-300'
+                          : 'bg-blue-100 text-blue-700'
                           }`}>
                           Response Time: {selectedResponse?.responseTime?.toFixed(2)}s
                         </div>
@@ -1417,8 +1416,8 @@ export default function ModernHistoryInterface() {
                           }
                         }}
                         className={`flex items-center space-x-2 px-5 py-2.5 rounded-lg font-medium transition-all ${darkMode
-                            ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                            : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
+                          ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                           }`}
                       >
                         <Copy className="w-4 h-4" />
@@ -1430,10 +1429,10 @@ export default function ModernHistoryInterface() {
                   <div className="h-full flex items-center justify-center p-8">
                     <div className="text-center">
                       <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${selectedResponse?.isBestResponse
-                          ? 'bg-gradient-to-br from-amber-100 to-yellow-100'
-                          : darkMode
-                            ? 'bg-gray-700'
-                            : 'bg-gradient-to-br from-slate-100 to-slate-200'
+                        ? 'bg-gradient-to-br from-amber-100 to-yellow-100'
+                        : darkMode
+                          ? 'bg-gray-700'
+                          : 'bg-gradient-to-br from-slate-100 to-slate-200'
                         }`}>
                         <Sparkles className={`w-10 h-10 ${selectedResponse?.isBestResponse ? 'text-amber-500' : darkMode ? 'text-slate-400' : 'text-slate-400'
                           }`} />
