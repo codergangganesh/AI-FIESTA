@@ -34,6 +34,7 @@ export default function LandingPage() {
   const [popupMessage, setPopupMessage] = useState('')
   const [showAllModels, setShowAllModels] = useState(false)
   const [showVideoTutorial, setShowVideoTutorial] = useState(false)
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false)
   const searchParams = useSearchParams()
 
   // Listen for the custom event to open the overlay
@@ -68,6 +69,19 @@ export default function LandingPage() {
       return () => clearTimeout(timer)
     }
   }, [searchParams])
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showProfileDropdown && !target.closest('.profile-dropdown-container')) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfileDropdown]);
 
   const getUserInitials = () => {
     if (!user?.email) return 'U'
@@ -124,8 +138,8 @@ export default function LandingPage() {
 
   return (
     <div className={`min-h-screen transition-all duration-700 ease-in-out ${darkMode
-        ? 'bg-gradient-to-br from-gray-900 via-violet-900/90 to-black'
-        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'
+      ? 'bg-gradient-to-br from-gray-900 via-violet-900/90 to-black'
+      : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'
       }`}>
       {/* Add the AllModelsOverlay component */}
       <AllModelsOverlay
@@ -145,7 +159,7 @@ export default function LandingPage() {
         <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${darkMode ? 'bg-violet-500/20' : 'bg-blue-400/30'}`}></div>
         <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${darkMode ? 'bg-purple-500/20' : 'bg-purple-400/30'}`} style={{ animationDelay: '1s' }}></div>
         <div className={`absolute top-3/4 left-1/2 w-64 h-64 rounded-full blur-2xl animate-pulse ${darkMode ? 'bg-blue-500/15' : 'bg-pink-400/20'}`} style={{ animationDelay: '2s' }}></div>
-        
+
         {/* Additional ambient lights for more depth */}
         <div className={`absolute top-1/3 right-1/3 w-64 h-64 rounded-full blur-3xl ${darkMode ? 'bg-indigo-500/10' : 'bg-cyan-300/20'}`} style={{ animationDelay: '0.5s' }}></div>
         <div className={`absolute bottom-1/3 left-1/5 w-48 h-48 rounded-full blur-3xl ${darkMode ? 'bg-pink-500/10' : 'bg-orange-300/20'}`} style={{ animationDelay: '1.5s' }}></div>
@@ -154,14 +168,12 @@ export default function LandingPage() {
       {/* Success Message Popup */}
       {showSuccessPopup && (
         <div className="fixed top-4 right-4 z-[100] animate-fade-in">
-          <div className={`border backdrop-blur-xl px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 animate-fade-in transform transition-all duration-300 hover:scale-105 ${
-            darkMode 
-              ? 'bg-gray-800/80 border-gray-700/50 text-green-400' 
-              : 'bg-white/80 border-green-200 text-green-700'
-          }`}>
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-              darkMode ? 'bg-green-900/50' : 'bg-green-100'
+          <div className={`border backdrop-blur-xl px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 animate-fade-in transform transition-all duration-300 hover:scale-105 ${darkMode
+            ? 'bg-gray-800/80 border-gray-700/50 text-green-400'
+            : 'bg-white/80 border-green-200 text-green-700'
             }`}>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${darkMode ? 'bg-green-900/50' : 'bg-green-100'
+              }`}>
               <svg className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
@@ -185,22 +197,20 @@ export default function LandingPage() {
       )}
 
       {/* Header - Made sticky */}
-      <header className={`sticky top-0 z-50 backdrop-blur-xl border-b transition-all duration-500 ${
-        darkMode
-          ? 'bg-gray-900/70 border-gray-800/50 shadow-xl'
-          : 'bg-white/70 border-slate-200/50 shadow-lg'
-      }`}>
+      <header className={`sticky top-0 z-50 backdrop-blur-xl border-b transition-all duration-500 ${darkMode
+        ? 'bg-gray-900/70 border-gray-800/50 shadow-xl'
+        : 'bg-white/70 border-slate-200/50 shadow-lg'
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo that redirects to Chat section */}
             <div className="flex items-center space-x-3">
               <Link href="/" className="flex items-center space-x-3">
                 <AIFiestaLogo size="md" darkMode={darkMode} simplified />
-                <h1 className={`text-2xl font-bold bg-gradient-to-r transition-all duration-300 ${
-                  darkMode
-                    ? 'from-white to-gray-300'
-                    : 'from-slate-900 to-slate-700'
-                } bg-clip-text text-transparent`}>
+                <h1 className={`text-2xl font-bold bg-gradient-to-r transition-all duration-300 ${darkMode
+                  ? 'from-white to-gray-300'
+                  : 'from-slate-900 to-slate-700'
+                  } bg-clip-text text-transparent`}>
                   AI Fiesta
                 </h1>
               </Link>
@@ -216,19 +226,17 @@ export default function LandingPage() {
                   >
                     {/* Animated gradient background */}
                     <div className="absolute inset-0 rounded-full">
-                      <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${
-                        darkMode 
-                          ? 'from-yellow-500/20 to-amber-600/20' 
-                          : 'from-yellow-400/30 to-yellow-600/30'
-                      } opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                      <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${darkMode
+                        ? 'from-yellow-500/20 to-amber-600/20'
+                        : 'from-yellow-400/30 to-yellow-600/30'
+                        } opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
                     </div>
 
                     {/* Modern text styling */}
-                    <span className={`relative text-sm font-semibold bg-gradient-to-r transition-all duration-300 ${
-                      darkMode
-                        ? 'from-gray-100 to-gray-300 group-hover:from-yellow-300 group-hover:to-yellow-100'
-                        : 'from-slate-800 to-slate-900 group-hover:from-yellow-600 group-hover:to-yellow-800'
-                    } bg-clip-text text-transparent`}>
+                    <span className={`relative text-sm font-semibold bg-gradient-to-r transition-all duration-300 ${darkMode
+                      ? 'from-gray-100 to-gray-300 group-hover:from-yellow-300 group-hover:to-yellow-100'
+                      : 'from-slate-800 to-slate-900 group-hover:from-yellow-600 group-hover:to-yellow-800'
+                      } bg-clip-text text-transparent`}>
                       Pricing
                     </span>
                   </button>
@@ -238,22 +246,22 @@ export default function LandingPage() {
                     {/* Dark mode toggle button */}
                     <button
                       onClick={toggleDarkMode}
-                      className={`p-2 rounded-full transition-all duration-300 ${
-                        darkMode
-                          ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 hover:text-yellow-300 shadow-lg shadow-gray-900/30'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900 shadow-md shadow-gray-300/30'
-                      }`}
+                      className={`p-2 rounded-full transition-all duration-300 ${darkMode
+                        ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 hover:text-yellow-300 shadow-lg shadow-gray-900/30'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900 shadow-md shadow-gray-300/30'
+                        }`}
                       aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
                     >
                       {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
 
-                    <div className="relative group">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold cursor-pointer transition-all duration-300 hover:scale-105 ${
-                        darkMode 
-                          ? 'bg-gradient-to-br from-violet-600 to-purple-700 ring-2 ring-white/30 shadow-lg shadow-violet-500/20' 
+                    <div className="relative profile-dropdown-container">
+                      <div
+                        onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold cursor-pointer transition-all duration-300 hover:scale-105 ${darkMode
+                          ? 'bg-gradient-to-br from-violet-600 to-purple-700 ring-2 ring-white/30 shadow-lg shadow-violet-500/20'
                           : 'bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/30'
-                      }`}
+                          }`}
                       >
                         {profilePicture ? (
                           <img src={profilePicture} alt="Profile" className="w-full h-full rounded-full object-cover" />
@@ -264,46 +272,48 @@ export default function LandingPage() {
                         )}
                       </div>
                       {/* Dropdown menu */}
-                      <div className={`absolute right-0 mt-2 w-48 rounded-2xl shadow-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 backdrop-blur-xl ${
-                        darkMode
+                      {showProfileDropdown && (
+                        <div className={`absolute right-0 mt-2 w-48 rounded-2xl shadow-2xl py-3 backdrop-blur-xl z-50 ${darkMode
                           ? 'bg-gray-800/90 border border-gray-700/50'
                           : 'bg-white/90 border border-slate-200/50'
-                      }`}>
-                        <Link
-                          href="/chat"
-                          className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
-                            darkMode
+                          }`}>
+                          <Link
+                            href="/chat"
+                            onClick={() => setShowProfileDropdown(false)}
+                            className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${darkMode
                               ? 'text-gray-200 hover:bg-gray-700/80'
                               : 'text-slate-700 hover:bg-slate-100'
-                          }`}>
-                          <MessageSquare className="w-4 h-4" />
-                          <span>Chat</span>
-                        </Link>
-                        <Link
-                          href="/profile"
-                          className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
-                            darkMode
+                              }`}>
+                            <MessageSquare className="w-4 h-4" />
+                            <span>Chat</span>
+                          </Link>
+                          <Link
+                            href="/profile"
+                            onClick={() => setShowProfileDropdown(false)}
+                            className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${darkMode
                               ? 'text-gray-200 hover:bg-gray-700/80'
                               : 'text-slate-700 hover:bg-slate-100'
-                          }`}>
-                          <UserIcon className="w-4 h-4" />
-                          <span>Profile</span>
-                        </Link>
-                        <div className={`border-t my-2 ${
-                          darkMode ? 'border-gray-700/50' : 'border-slate-200/50'
-                        }`}></div>
+                              }`}>
+                            <UserIcon className="w-4 h-4" />
+                            <span>Profile</span>
+                          </Link>
+                          <div className={`border-t my-2 ${darkMode ? 'border-gray-700/50' : 'border-slate-200/50'
+                            }`}></div>
 
-                        <button
-                          onClick={handleSignOut}
-                          className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 w-full text-left ${
-                            darkMode
+                          <button
+                            onClick={() => {
+                              setShowProfileDropdown(false);
+                              handleSignOut();
+                            }}
+                            className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 w-full text-left ${darkMode
                               ? 'text-red-200 hover:bg-red-700/80'
                               : 'text-slate-700 hover:bg-slate-100'
-                          }`}>
-                          <LogOut className="w-4 h-4" />
-                          <span>Logout</span>
-                        </button>
-                      </div>
+                              }`}>
+                            <LogOut className="w-4 h-4" />
+                            <span>Logout</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </>
@@ -312,11 +322,10 @@ export default function LandingPage() {
                   {/* Dark mode toggle button for non-logged-in users */}
                   <button
                     onClick={toggleDarkMode}
-                    className={`p-2 rounded-full transition-all duration-300 ${
-                      darkMode
-                        ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 hover:text-yellow-300 shadow-lg shadow-gray-900/30'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900 shadow-md shadow-gray-300/30'
-                    }`}
+                    className={`p-2 rounded-full transition-all duration-300 ${darkMode
+                      ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 hover:text-yellow-300 shadow-lg shadow-gray-900/30'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900 shadow-md shadow-gray-300/30'
+                      }`}
                     aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
                   >
                     {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -325,23 +334,21 @@ export default function LandingPage() {
                   {/* Pricing button for non-logged-in users */}
                   <button
                     onClick={openPaymentPopup}
-                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 backdrop-blur-sm ${
-                      darkMode
-                        ? 'bg-gray-800/60 border border-gray-700/50 text-gray-300 hover:bg-gray-700/80'
-                        : 'bg-white/70 border border-slate-200/50 text-slate-700 hover:bg-white/90'
-                    }`}>
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 backdrop-blur-sm ${darkMode
+                      ? 'bg-gray-800/60 border border-gray-700/50 text-gray-300 hover:bg-gray-700/80'
+                      : 'bg-white/70 border border-slate-200/50 text-slate-700 hover:bg-white/90'
+                      }`}>
                     Pricing
                   </button>
 
                   {/* Sign in button for non-logged-in users */}
                   <button
                     onClick={openAuthPopup}
-                    className={`px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105 backdrop-blur-sm ${
-                      darkMode
-                        ? 'bg-gradient-to-r from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-500/20'
-                        : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/30'
-                    }`}>
-                   Get Started
+                    className={`px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105 backdrop-blur-sm ${darkMode
+                      ? 'bg-gradient-to-r from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-500/20'
+                      : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/30'
+                      }`}>
+                    Get Started
                   </button>
                 </div>
               )}
@@ -350,75 +357,67 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <HeroSection 
-        darkMode={darkMode} 
-        handleGetStarted={handleGetStarted} 
-        handleGoToChat={handleGoToChat} 
-        user={user} 
+      <HeroSection
+        darkMode={darkMode}
+        handleGetStarted={handleGetStarted}
+        handleGoToChat={handleGoToChat}
+        user={user}
       />
-      
+
       <FeaturesSection darkMode={darkMode} />
-      
+
       {/* Modern AI Models Section */}
       <ModernModelShowcase />
-      
-      <HowItWorksSection 
-        darkMode={darkMode} 
-        setShowVideoTutorial={setShowVideoTutorial} 
+
+      <HowItWorksSection
+        darkMode={darkMode}
+        setShowVideoTutorial={setShowVideoTutorial}
       />
-      
+
       {/* Modern Feedback and Pricing Section */}
       <div className="px-4 sm:px-6">
         <ModernFeedbackAndPricing />
       </div>
-      
+
       {/* Testimonials Section */}
-      <section className={`py-24 relative ${
-        darkMode
-          ? 'bg-gradient-to-br from-gray-900 via-violet-900/20 to-black'
-          : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
-      }`}>
+      <section className={`py-24 relative ${darkMode
+        ? 'bg-gradient-to-br from-gray-900 via-violet-900/20 to-black'
+        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
+        }`}>
         {/* Enhanced Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className={`absolute top-1/4 right-1/4 w-64 h-64 rounded-full blur-2xl ${
-            darkMode ? 'bg-blue-500/10' : 'bg-blue-300/20'
-          }`}></div>
-          <div className={`absolute bottom-1/4 left-1/4 w-64 h-64 rounded-full blur-2xl ${
-            darkMode ? 'bg-purple-500/10' : 'bg-purple-300/20'
-          }`}></div>
-          
+          <div className={`absolute top-1/4 right-1/4 w-64 h-64 rounded-full blur-2xl ${darkMode ? 'bg-blue-500/10' : 'bg-blue-300/20'
+            }`}></div>
+          <div className={`absolute bottom-1/4 left-1/4 w-64 h-64 rounded-full blur-2xl ${darkMode ? 'bg-purple-500/10' : 'bg-purple-300/20'
+            }`}></div>
+
           {/* Additional ambient elements */}
-          <div className={`absolute top-1/3 left-1/3 w-48 h-48 rounded-full blur-2xl ${
-            darkMode ? 'bg-violet-500/10' : 'bg-indigo-300/20'
-          }`}></div>
-          <div className={`absolute bottom-1/3 right-1/3 w-32 h-32 rounded-full blur-2xl ${
-            darkMode ? 'bg-cyan-500/10' : 'bg-cyan-300/20'
-          }`}></div>
+          <div className={`absolute top-1/3 left-1/3 w-48 h-48 rounded-full blur-2xl ${darkMode ? 'bg-violet-500/10' : 'bg-indigo-300/20'
+            }`}></div>
+          <div className={`absolute bottom-1/3 right-1/3 w-32 h-32 rounded-full blur-2xl ${darkMode ? 'bg-cyan-500/10' : 'bg-cyan-300/20'
+            }`}></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <div className={`inline-flex items-center space-x-2 backdrop-blur-xl rounded-full px-5 py-2.5 mb-6 relative overflow-hidden transition-all duration-300 ${
-              darkMode
-                ? 'bg-gray-800/60 border border-gray-700/50 shadow-xl shadow-violet-500/10'
-                : 'bg-white/70 border border-slate-200/50 shadow-xl shadow-blue-500/10'
-            }`}>
+            <div className={`inline-flex items-center space-x-2 backdrop-blur-xl rounded-full px-5 py-2.5 mb-6 relative overflow-hidden transition-all duration-300 ${darkMode
+              ? 'bg-gray-800/60 border border-gray-700/50 shadow-xl shadow-violet-500/10'
+              : 'bg-white/70 border border-slate-200/50 shadow-xl shadow-blue-500/10'
+              }`}>
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 via-transparent to-yellow-400/10 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
               <Star className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
               <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-slate-700'}`}>
                 Trusted by Thousands
               </span>
             </div>
-            <h2 className={`text-4xl sm:text-5xl font-bold bg-gradient-to-r transition-all duration-500 ${
-              darkMode
-                ? 'from-white to-gray-300'
-                : 'from-slate-900 to-slate-700'
-            } bg-clip-text text-transparent mb-6`}>
+            <h2 className={`text-4xl sm:text-5xl font-bold bg-gradient-to-r transition-all duration-500 ${darkMode
+              ? 'from-white to-gray-300'
+              : 'from-slate-900 to-slate-700'
+              } bg-clip-text text-transparent mb-6`}>
               What Our Users Say
             </h2>
-            <p className={`text-xl max-w-2xl mx-auto ${
-              darkMode ? 'text-gray-300' : 'text-slate-600'
-            }`}>
+            <p className={`text-xl max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-slate-600'
+              }`}>
               Join researchers, developers, and AI enthusiasts who love AI Fiesta
             </p>
           </div>
@@ -426,16 +425,14 @@ export default function LandingPage() {
           {/* Enhanced Flowing Feedback Container */}
           <div className="relative overflow-hidden py-6 rounded-3xl backdrop-blur-sm border border-white/20 shadow-2xl">
             {/* Enhanced gradient overlays for fade effect */}
-            <div className={`absolute left-0 top-0 bottom-0 w-20 z-10 ${
-              darkMode 
-                ? 'bg-gradient-to-r from-gray-900 via-violet-900/20 to-black/0' 
-                : 'bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50/0'
-            }`}></div>
-            <div className={`absolute right-0 top-0 bottom-0 w-20 z-10 ${
-              darkMode 
-                ? 'bg-gradient-to-l from-gray-900 via-violet-900/20 to-black/0' 
-                : 'bg-gradient-to-l from-slate-50 via-blue-50 to-indigo-50/0'
-            }`}></div>
+            <div className={`absolute left-0 top-0 bottom-0 w-20 z-10 ${darkMode
+              ? 'bg-gradient-to-r from-gray-900 via-violet-900/20 to-black/0'
+              : 'bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50/0'
+              }`}></div>
+            <div className={`absolute right-0 top-0 bottom-0 w-20 z-10 ${darkMode
+              ? 'bg-gradient-to-l from-gray-900 via-violet-900/20 to-black/0'
+              : 'bg-gradient-to-l from-slate-50 via-blue-50 to-indigo-50/0'
+              }`}></div>
 
             {/* Enhanced Flowing Feedback Track */}
             <div className="flex animate-flowing-feedback">
@@ -489,42 +486,37 @@ export default function LandingPage() {
                       gradient: "from-indigo-500 to-blue-500"
                     }
                   ].map((testimonial, index) => (
-                    <div 
-                      key={`${loopIndex}-${index}`} 
-                      className={`flex-shrink-0 w-80 mx-4 backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 hover:scale-105 ${
-                        darkMode
-                          ? 'bg-gray-800/70 border-gray-700/50 shadow-xl shadow-violet-500/10'
-                          : 'bg-white/80 border border-slate-200/50 shadow-xl shadow-blue-500/10'
-                      }`}>
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className={`w-12 h-12 bg-gradient-to-br ${testimonial.gradient} rounded-full flex items-center justify-center text-white font-bold shadow-lg ${
-                          darkMode ? 'shadow-violet-500/30' : 'shadow-blue-500/30'
+                    <div
+                      key={`${loopIndex}-${index}`}
+                      className={`flex-shrink-0 w-80 mx-4 backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 hover:scale-105 ${darkMode
+                        ? 'bg-gray-800/70 border-gray-700/50 shadow-xl shadow-violet-500/10'
+                        : 'bg-white/80 border border-slate-200/50 shadow-xl shadow-blue-500/10'
                         }`}>
+                      <div className="flex items-center space-x-4 mb-4">
+                        <div className={`w-12 h-12 bg-gradient-to-br ${testimonial.gradient} rounded-full flex items-center justify-center text-white font-bold shadow-lg ${darkMode ? 'shadow-violet-500/30' : 'shadow-blue-500/30'
+                          }`}>
                           {testimonial.avatar}
                         </div>
                         <div>
-                          <div className={`font-bold ${
-                            darkMode ? 'text-white' : 'text-slate-900'
-                          }`}>
+                          <div className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'
+                            }`}>
                             {testimonial.name}
                           </div>
-                          <div className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>
+                          <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                            }`}>
                             {testimonial.role}, {testimonial.company}
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-1 mb-3">
                         {[...Array(testimonial.rating)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                         ))}
                       </div>
-                      
-                      <p className={`text-sm leading-relaxed ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
+
+                      <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
                         &quot;{testimonial.text}&quot;
                       </p>
                     </div>
@@ -537,67 +529,55 @@ export default function LandingPage() {
           {/* Enhanced Trust indicators */}
           <div className="mt-16 text-center">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
-              <div className={`text-center p-4 rounded-2xl backdrop-blur-xl ${
-                darkMode
-                  ? 'bg-gray-800/60 border border-gray-700/50 shadow-lg shadow-violet-500/10'
-                  : 'bg-white/70 border border-slate-200/50 shadow-lg shadow-blue-500/10'
-              }`}>
-                <div className={`text-2xl font-bold mb-1 ${
-                  darkMode ? 'text-white' : 'text-slate-900'
+              <div className={`text-center p-4 rounded-2xl backdrop-blur-xl ${darkMode
+                ? 'bg-gray-800/60 border border-gray-700/50 shadow-lg shadow-violet-500/10'
+                : 'bg-white/70 border border-slate-200/50 shadow-lg shadow-blue-500/10'
                 }`}>
+                <div className={`text-2xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'
+                  }`}>
                   10K+
                 </div>
-                <div className={`text-sm font-semibold ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>
+                <div className={`text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>
                   Active Users
                 </div>
               </div>
-              <div className={`text-center p-4 rounded-2xl backdrop-blur-xl ${
-                darkMode
-                  ? 'bg-gray-800/60 border border-gray-700/50 shadow-lg shadow-violet-500/10'
-                  : 'bg-white/70 border border-slate-200/50 shadow-lg shadow-blue-500/10'
-              }`}>
-                <div className={`text-2xl font-bold mb-1 ${
-                  darkMode ? 'text-white' : 'text-slate-900'
+              <div className={`text-center p-4 rounded-2xl backdrop-blur-xl ${darkMode
+                ? 'bg-gray-800/60 border border-gray-700/50 shadow-lg shadow-violet-500/10'
+                : 'bg-white/70 border border-slate-200/50 shadow-lg shadow-blue-500/10'
                 }`}>
+                <div className={`text-2xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'
+                  }`}>
                   500K+
                 </div>
-                <div className={`text-sm font-semibold ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>
+                <div className={`text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>
                   Comparisons Made
                 </div>
               </div>
-              <div className={`text-center p-4 rounded-2xl backdrop-blur-xl ${
-                darkMode
-                  ? 'bg-gray-800/60 border border-gray-700/50 shadow-lg shadow-violet-500/10'
-                  : 'bg-white/70 border border-slate-200/50 shadow-lg shadow-blue-500/10'
-              }`}>
-                <div className={`text-2xl font-bold mb-1 ${
-                  darkMode ? 'text-white' : 'text-slate-900'
+              <div className={`text-center p-4 rounded-2xl backdrop-blur-xl ${darkMode
+                ? 'bg-gray-800/60 border border-gray-700/50 shadow-lg shadow-violet-500/10'
+                : 'bg-white/70 border border-slate-200/50 shadow-lg shadow-blue-500/10'
                 }`}>
+                <div className={`text-2xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'
+                  }`}>
                   99.9%
                 </div>
-                <div className={`text-sm font-semibold ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>
+                <div className={`text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>
                   Uptime
                 </div>
               </div>
-              <div className={`text-center p-4 rounded-2xl backdrop-blur-xl ${
-                darkMode
-                  ? 'bg-gray-800/60 border border-gray-700/50 shadow-lg shadow-violet-500/10'
-                  : 'bg-white/70 border border-slate-200/50 shadow-lg shadow-blue-500/10'
-              }`}>
-                <div className={`text-2xl font-bold mb-1 ${
-                  darkMode ? 'text-white' : 'text-slate-900'
+              <div className={`text-center p-4 rounded-2xl backdrop-blur-xl ${darkMode
+                ? 'bg-gray-800/60 border border-gray-700/50 shadow-lg shadow-violet-500/10'
+                : 'bg-white/70 border border-slate-200/50 shadow-lg shadow-blue-500/10'
                 }`}>
+                <div className={`text-2xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'
+                  }`}>
                   4.9/5
                 </div>
-                <div className={`text-sm font-semibold ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>
+                <div className={`text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>
                   User Rating
                 </div>
               </div>
@@ -605,11 +585,11 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      
+
       <CallToActionSection darkMode={darkMode} user={user} />
-      
+
       <SiteFooter darkMode={darkMode} />
-      
+
       {/* Custom CSS for animations */}
       <style jsx>{`
         @keyframes flowing-feedback {
