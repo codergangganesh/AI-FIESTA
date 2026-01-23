@@ -6,6 +6,7 @@ import { ChevronRight, Shield, Award, TrendingUp, Sparkles } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePopup } from '@/contexts/PopupContext'
 import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
+import ScrollReveal from '@/components/ui/scroll-reveal'
 
 interface CallToActionSectionProps {
   darkMode: boolean
@@ -26,11 +27,10 @@ export default function CallToActionSection({ darkMode, user }: CallToActionSect
   };
 
   return (
-    <section className={`py-24 relative overflow-hidden ${
-      darkMode
-        ? 'bg-gradient-to-br from-violet-900 via-purple-900 to-black'
-        : 'bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600'
-    }`}>
+    <section className={`py-24 relative overflow-hidden ${darkMode
+      ? 'bg-transparent'
+      : 'bg-transparent'
+      }`}>
       {/* Enhanced Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
@@ -40,39 +40,37 @@ export default function CallToActionSection({ darkMode, user }: CallToActionSect
       </div>
 
       {/* Enhanced gradient overlay for depth */}
-      <div className={`absolute inset-0 bg-gradient-to-t ${
-        darkMode ? 'from-black/30 via-transparent to-transparent' : 'from-black/20 via-transparent to-transparent'
-      }`}></div>
+      <div className={`absolute inset-0 bg-gradient-to-t ${darkMode ? 'from-black/30 via-transparent to-transparent' : 'from-black/5 via-transparent to-transparent'
+        }`}></div>
 
       {/* Additional ambient lights */}
-      <div className={`absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-3xl ${
-        darkMode ? 'bg-blue-500/20' : 'bg-blue-400/30'
-      }`}></div>
-      <div className={`absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl ${
-        darkMode ? 'bg-purple-500/20' : 'bg-purple-400/30'
-      }`}></div>
+      <div className={`absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-3xl ${darkMode ? 'bg-blue-500/20' : 'bg-blue-400/30'
+        }`}></div>
+      <div className={`absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl ${darkMode ? 'bg-purple-500/20' : 'bg-purple-400/30'
+        }`}></div>
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Enhanced heading with animated underline */}
-        <div className="relative inline-block mb-6">
-          <h2 className={`text-4xl sm:text-5xl font-bold relative z-10 transition-all duration-500 ${
-            darkMode ? 'text-white' : 'text-white'
-          }`}>
-            Ready to Compare AI Models?
-          </h2>
-          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full"></div>
-        </div>
+        <ScrollReveal>
+          <div className="relative inline-block mb-6">
+            <h2 className={`text-4xl sm:text-5xl font-bold relative z-10 transition-all duration-500 ${darkMode ? 'text-white' : 'text-slate-900'
+              }`}>
+              Ready to Compare AI Models?
+            </h2>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full"></div>
+          </div>
+        </ScrollReveal>
 
-        <p className={`text-xl mb-12 max-w-2xl mx-auto leading-relaxed ${
-          darkMode ? 'text-blue-200' : 'text-blue-100'
-        }`}>
-          Join thousands of researchers and developers who trust AI Fiesta for their AI model comparisons.
-          <span className={`block mt-2 font-bold ${
-            darkMode ? 'text-white/90' : 'text-white/90'
-          }`}>
-            Start your journey to AI excellence today.
-          </span>
-        </p>
+        <ScrollReveal delay={0.2}>
+          <p className={`text-xl mb-12 max-w-2xl mx-auto leading-relaxed ${darkMode ? 'text-blue-200' : 'text-slate-600'
+            }`}>
+            Join thousands of researchers and developers who trust AI Fiesta for their AI model comparisons.
+            <span className={`block mt-2 font-bold ${darkMode ? 'text-white/90' : 'text-slate-800'
+              }`}>
+              Start your journey to AI excellence today.
+            </span>
+          </p>
+        </ScrollReveal>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
           <button
@@ -93,9 +91,8 @@ export default function CallToActionSection({ darkMode, user }: CallToActionSect
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-2xl"></div>
           </button>
 
-          <div className={`text-sm space-y-1 backdrop-blur-sm px-4 py-3 rounded-xl ${
-            darkMode ? 'bg-white/10' : 'bg-white/20'
-          }`}>
+          <div className={`text-sm space-y-1 backdrop-blur-sm px-4 py-3 rounded-xl ${darkMode ? 'bg-white/10' : 'bg-white/20'
+            }`}>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <span className="font-semibold">Free to use</span>
@@ -109,15 +106,15 @@ export default function CallToActionSection({ darkMode, user }: CallToActionSect
 
         {/* Enhanced Trust badges */}
         <div className="flex flex-wrap justify-center items-center gap-8 opacity-90">
-          <div className="flex items-center space-x-2 text-white/90 backdrop-blur-sm px-4 py-2 rounded-full bg-white/10">
+          <div className={`flex items-center space-x-2 backdrop-blur-sm px-4 py-2 rounded-full ${darkMode ? 'text-white/90 bg-white/10' : 'text-slate-700 bg-slate-200/50'}`}>
             <Shield className="w-4 h-4" />
             <span className="text-sm font-semibold">SOC 2 Compliant</span>
           </div>
-          <div className="flex items-center space-x-2 text-white/90 backdrop-blur-sm px-4 py-2 rounded-full bg-white/10">
+          <div className={`flex items-center space-x-2 backdrop-blur-sm px-4 py-2 rounded-full ${darkMode ? 'text-white/90 bg-white/10' : 'text-slate-700 bg-slate-200/50'}`}>
             <Award className="w-4 h-4" />
             <span className="text-sm font-semibold">99.9% Uptime</span>
           </div>
-          <div className="flex items-center space-x-2 text-white/90 backdrop-blur-sm px-4 py-2 rounded-full bg-white/10">
+          <div className={`flex items-center space-x-2 backdrop-blur-sm px-4 py-2 rounded-full ${darkMode ? 'text-white/90 bg-white/10' : 'text-slate-700 bg-slate-200/50'}`}>
             <TrendingUp className="w-4 h-4" />
             <span className="text-sm font-semibold">10K+ Users</span>
           </div>

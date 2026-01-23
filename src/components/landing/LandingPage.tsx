@@ -22,6 +22,8 @@ import FeaturesSection from './sections/FeaturesSection'
 import HowItWorksSection from './sections/HowItWorksSection'
 import CallToActionSection from './sections/CallToActionSection'
 import SiteFooter from './sections/SiteFooter'
+import CelestialSphere from '@/components/ui/celestial-sphere'
+import { EtheralShadow } from '@/components/ui/etheral-shadow'
 
 export default function LandingPage() {
   const { user, signOut } = useAuth()
@@ -139,8 +141,19 @@ export default function LandingPage() {
   return (
     <div className={`min-h-screen transition-all duration-700 ease-in-out ${darkMode
       ? 'bg-gradient-to-br from-gray-900 via-violet-900/90 to-black'
-      : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'
+      : 'bg-gradient-to-br from-gray-900 via-violet-900/90 to-black'
       }`}>
+
+      {/* Celestial Sphere Background */}
+      <CelestialSphere
+        hue={darkMode ? 210.0 : 210.0}
+        speed={darkMode ? 0.4 : 0.4}
+        zoom={1.2}
+        particleSize={4.0}
+        className={`fixed inset-0 z-0 pointer-events-none transition-all duration-700 ${darkMode ? 'opacity-80' : 'opacity-80'
+          }`}
+      />
+
       {/* Add the AllModelsOverlay component */}
       <AllModelsOverlay
         show={showAllModels}
@@ -156,13 +169,13 @@ export default function LandingPage() {
 
       {/* Enhanced Glowing effect overlay */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${darkMode ? 'bg-violet-500/20' : 'bg-blue-400/30'}`}></div>
-        <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${darkMode ? 'bg-purple-500/20' : 'bg-purple-400/30'}`} style={{ animationDelay: '1s' }}></div>
-        <div className={`absolute top-3/4 left-1/2 w-64 h-64 rounded-full blur-2xl animate-pulse ${darkMode ? 'bg-blue-500/15' : 'bg-pink-400/20'}`} style={{ animationDelay: '2s' }}></div>
+        <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${darkMode ? 'bg-violet-500/20' : 'bg-violet-500/20'}`}></div>
+        <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${darkMode ? 'bg-purple-500/20' : 'bg-purple-500/20'}`} style={{ animationDelay: '1s' }}></div>
+        <div className={`absolute top-3/4 left-1/2 w-64 h-64 rounded-full blur-2xl animate-pulse ${darkMode ? 'bg-blue-500/15' : 'bg-blue-500/15'}`} style={{ animationDelay: '2s' }}></div>
 
         {/* Additional ambient lights for more depth */}
-        <div className={`absolute top-1/3 right-1/3 w-64 h-64 rounded-full blur-3xl ${darkMode ? 'bg-indigo-500/10' : 'bg-cyan-300/20'}`} style={{ animationDelay: '0.5s' }}></div>
-        <div className={`absolute bottom-1/3 left-1/5 w-48 h-48 rounded-full blur-3xl ${darkMode ? 'bg-pink-500/10' : 'bg-orange-300/20'}`} style={{ animationDelay: '1.5s' }}></div>
+        <div className={`absolute top-1/3 right-1/3 w-64 h-64 rounded-full blur-3xl ${darkMode ? 'bg-indigo-500/10' : 'bg-indigo-500/10'}`} style={{ animationDelay: '0.5s' }}></div>
+        <div className={`absolute bottom-1/3 left-1/5 w-48 h-48 rounded-full blur-3xl ${darkMode ? 'bg-pink-500/10' : 'bg-pink-500/10'}`} style={{ animationDelay: '1.5s' }}></div>
       </div>
 
       {/* Success Message Popup */}
@@ -199,7 +212,7 @@ export default function LandingPage() {
       {/* Header - Made sticky */}
       <header className={`sticky top-0 z-50 backdrop-blur-xl border-b transition-all duration-500 ${darkMode
         ? 'bg-gray-900/70 border-gray-800/50 shadow-xl'
-        : 'bg-white/70 border-slate-200/50 shadow-lg'
+        : 'bg-gray-900/70 border-gray-800/50 shadow-xl'
         }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -209,7 +222,7 @@ export default function LandingPage() {
                 <AIFiestaLogo size="md" darkMode={darkMode} simplified />
                 <h1 className={`text-2xl font-bold bg-gradient-to-r transition-all duration-300 ${darkMode
                   ? 'from-white to-gray-300'
-                  : 'from-slate-900 to-slate-700'
+                  : 'from-white to-gray-300'
                   } bg-clip-text text-transparent`}>
                   AI Fiesta
                 </h1>
@@ -233,9 +246,9 @@ export default function LandingPage() {
                     </div>
 
                     {/* Modern text styling */}
-                    <span className={`relative text-sm font-semibold bg-gradient-to-r transition-all duration-300 ${darkMode
+                    <span className={`relative text-sm font-semibold bg-gradient-to-r transition-all duration-300 ${true
                       ? 'from-gray-100 to-gray-300 group-hover:from-yellow-300 group-hover:to-yellow-100'
-                      : 'from-slate-800 to-slate-900 group-hover:from-yellow-600 group-hover:to-yellow-800'
+                      : 'from-gray-100 to-gray-300 group-hover:from-yellow-300 group-hover:to-yellow-100'
                       } bg-clip-text text-transparent`}>
                       Pricing
                     </span>
@@ -248,7 +261,7 @@ export default function LandingPage() {
                       onClick={toggleDarkMode}
                       className={`p-2 rounded-full transition-all duration-300 ${darkMode
                         ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 hover:text-yellow-300 shadow-lg shadow-gray-900/30'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900 shadow-md shadow-gray-300/30'
+                        : 'bg-gray-800 text-yellow-400 hover:bg-gray-700 hover:text-yellow-300 shadow-lg shadow-gray-900/30'
                         }`}
                       aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
                     >
@@ -358,19 +371,19 @@ export default function LandingPage() {
       </header>
 
       <HeroSection
-        darkMode={darkMode}
+        darkMode={true}
         handleGetStarted={handleGetStarted}
         handleGoToChat={handleGoToChat}
         user={user}
       />
 
-      <FeaturesSection darkMode={darkMode} />
+      <FeaturesSection darkMode={true} />
 
       {/* Modern AI Models Section */}
       <ModernModelShowcase />
 
       <HowItWorksSection
-        darkMode={darkMode}
+        darkMode={true}
         setShowVideoTutorial={setShowVideoTutorial}
       />
 
@@ -381,8 +394,8 @@ export default function LandingPage() {
 
       {/* Testimonials Section */}
       <section className={`py-24 relative ${darkMode
-        ? 'bg-gradient-to-br from-gray-900 via-violet-900/20 to-black'
-        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
+        ? 'bg-transparent'
+        : 'bg-transparent'
         }`}>
         {/* Enhanced Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -416,7 +429,7 @@ export default function LandingPage() {
               } bg-clip-text text-transparent mb-6`}>
               What Our Users Say
             </h2>
-            <p className={`text-xl max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-slate-600'
+            <p className={`text-xl max-w-2xl mx-auto ${true ? 'text-gray-300' : 'text-gray-300'
               }`}>
               Join researchers, developers, and AI enthusiasts who love AI Fiesta
             </p>
@@ -490,7 +503,7 @@ export default function LandingPage() {
                       key={`${loopIndex}-${index}`}
                       className={`flex-shrink-0 w-80 mx-4 backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 hover:scale-105 ${darkMode
                         ? 'bg-gray-800/70 border-gray-700/50 shadow-xl shadow-violet-500/10'
-                        : 'bg-white/80 border border-slate-200/50 shadow-xl shadow-blue-500/10'
+                        : 'bg-gray-800/70 border-gray-700/50 shadow-xl shadow-violet-500/10'
                         }`}>
                       <div className="flex items-center space-x-4 mb-4">
                         <div className={`w-12 h-12 bg-gradient-to-br ${testimonial.gradient} rounded-full flex items-center justify-center text-white font-bold shadow-lg ${darkMode ? 'shadow-violet-500/30' : 'shadow-blue-500/30'
@@ -498,11 +511,11 @@ export default function LandingPage() {
                           {testimonial.avatar}
                         </div>
                         <div>
-                          <div className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'
+                          <div className={`font-bold ${true ? 'text-white' : 'text-white'
                             }`}>
                             {testimonial.name}
                           </div>
-                          <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                          <div className={`text-xs ${true ? 'text-gray-400' : 'text-gray-400'
                             }`}>
                             {testimonial.role}, {testimonial.company}
                           </div>
@@ -515,7 +528,7 @@ export default function LandingPage() {
                         ))}
                       </div>
 
-                      <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                      <p className={`text-sm leading-relaxed ${true ? 'text-gray-300' : 'text-gray-300'
                         }`}>
                         &quot;{testimonial.text}&quot;
                       </p>
@@ -586,9 +599,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <CallToActionSection darkMode={darkMode} user={user} />
+      <CallToActionSection darkMode={true} user={user} />
 
-      <SiteFooter darkMode={darkMode} />
+      <SiteFooter darkMode={true} />
 
       {/* Custom CSS for animations */}
       <style jsx>{`

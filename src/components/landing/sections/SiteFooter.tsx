@@ -30,8 +30,8 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
 
   return (
     <footer className={`relative overflow-hidden ${darkMode
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white'
-        : 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white'
+      ? 'bg-transparent text-white'
+      : 'bg-transparent text-slate-900'
       }`}>
       {/* Enhanced background pattern */}
       <div className="absolute inset-0 opacity-10">
@@ -56,13 +56,13 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
               <div className="flex items-center space-x-3 mb-6">
                 <AIFiestaLogo size="lg" darkMode={darkMode} />
                 <span className={`text-2xl font-bold bg-gradient-to-r transition-all duration-500 ${darkMode
-                    ? 'from-white to-blue-200'
-                    : 'from-white to-blue-200'
+                  ? 'from-white to-blue-200'
+                  : 'from-white to-blue-200'
                   } bg-clip-text text-transparent`}>
                   AI Fiesta
                 </span>
               </div>
-              <p className={`leading-relaxed mb-6 max-w-md ${darkMode ? 'text-gray-400' : 'text-slate-400'
+              <p className={`leading-relaxed mb-6 max-w-md ${darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>
                 The ultimate platform for comparing AI models. Send one message to multiple AI models and find the perfect response for every task.
               </p>
@@ -81,7 +81,7 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
 
             {/* Quick links */}
             <div>
-              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-white'}`}>
+              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Platform
               </h4>
               <ul className="space-y-2">
@@ -93,7 +93,7 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2 ${darkMode ? 'text-gray-400' : 'text-slate-400'
+                      className={`hover:text-blue-500 transition-colors duration-200 text-sm flex items-center space-x-2 ${darkMode ? 'text-gray-400' : 'text-slate-600'
                         }`}
                     >
                       <ChevronRight className="w-3 h-3" />
@@ -106,7 +106,7 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
 
             {/* AI Models */}
             <div>
-              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-white'}`}>
+              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 AI Models
               </h4>
               <ul className="space-y-2">
@@ -125,7 +125,7 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
                   <li key={index}>
                     <Link
                       href="/chat"
-                      className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2 group ${darkMode ? 'text-gray-400' : 'text-slate-400'
+                      className={`hover:text-blue-500 transition-colors duration-200 text-sm flex items-center space-x-2 group ${darkMode ? 'text-gray-400' : 'text-slate-600'
                         }`}>
                       <div className={`w-2 h-2 rounded-full group-hover:bg-blue-300 transition-colors duration-200 ${darkMode ? 'bg-blue-400' : 'bg-blue-400'
                         }`}></div>
@@ -138,7 +138,7 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
 
             {/* Social Links */}
             <div>
-              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-white'}`}>
+              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Connect
               </h4>
               <ul className="space-y-3">
@@ -150,7 +150,7 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
                         href={social.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-3 ${darkMode ? 'text-gray-400' : 'text-slate-400'
+                        className={`hover:text-blue-500 transition-colors duration-200 text-sm flex items-center space-x-3 ${darkMode ? 'text-gray-400' : 'text-slate-600'
                           }`}
                       >
                         <Icon className="w-4 h-4" />
@@ -164,7 +164,7 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
 
             {/* Payment Details */}
             <div>
-              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-white'}`}>
+              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Payment Details
               </h4>
               <ul className="space-y-2">
@@ -176,7 +176,7 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2 ${darkMode ? 'text-gray-400' : 'text-slate-400'
+                      className={`hover:text-blue-500 transition-colors duration-200 text-sm flex items-center space-x-2 ${darkMode ? 'text-gray-400' : 'text-slate-600'
                         }`}>
                       <ChevronRight className="w-3 h-3" />
                       <span>{link.name}</span>
@@ -201,21 +201,21 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
               <div className="hidden md:flex items-center space-x-4 text-xs text-slate-500">
                 <Link
                   href="/privacy"
-                  className={`hover:text-slate-300 transition-colors ${darkMode ? 'text-slate-500' : 'text-slate-500'
+                  className={`hover:text-slate-700 transition-colors ${darkMode ? 'text-slate-500' : 'text-slate-600'
                     }`}>
                   Privacy
                 </Link>
                 <span>•</span>
                 <Link
                   href="/terms"
-                  className={`hover:text-slate-300 transition-colors ${darkMode ? 'text-slate-500' : 'text-slate-500'
+                  className={`hover:text-slate-700 transition-colors ${darkMode ? 'text-slate-500' : 'text-slate-600'
                     }`}>
                   Terms
                 </Link>
                 <span>•</span>
                 <Link
                   href="/support"
-                  className={`hover:text-slate-300 transition-colors ${darkMode ? 'text-slate-500' : 'text-slate-500'
+                  className={`hover:text-slate-700 transition-colors ${darkMode ? 'text-slate-500' : 'text-slate-600'
                     }`}>
                   Support
                 </Link>

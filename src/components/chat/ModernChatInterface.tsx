@@ -15,6 +15,7 @@ import { useDarkMode } from '@/contexts/DarkModeContext'
 import { usePopup } from '@/contexts/PopupContext'
 import { chatHistoryService } from '@/services/chatHistory.service'
 import ProfileDropdown from '@/components/layout/ProfileDropdown'
+import AIFiestaLogo from '@/components/landing/AIFiestaLogo'
 
 interface ModernChatInterfaceProps {
   initialConversation?: ChatSession | null
@@ -376,17 +377,13 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
           <div className={`p-6 border-b transition-colors duration-200 ${darkMode ? 'border-gray-700' : 'border-slate-200/30'
             }`}>
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Brain className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className={`text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent transition-colors duration-200 ${darkMode
-                  ? 'from-white to-gray-200'
-                  : 'from-slate-900 to-slate-700'
-                  }`}>
-                  AI Fiesta
-                </h1>
-              </div>
+              <AIFiestaLogo size="md" darkMode={darkMode} />
+              <h1 className={`text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent transition-colors duration-200 ${darkMode
+                ? 'from-white to-gray-200'
+                : 'from-slate-900 to-slate-700'
+                }`}>
+                AI Fiesta
+              </h1>
             </div>
 
             {/* New Chat Button */}
