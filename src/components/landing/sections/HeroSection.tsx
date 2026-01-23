@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Play, Sparkles, Cpu, MessageSquare, Infinity, Zap, Brain, Paperclip, Palette, Send } from 'lucide-react'
+import { ArrowRight, Play, Sparkles, Cpu, MessageSquare, Infinity, Zap, Brain, Paperclip, Palette, Send, ChevronDown, Check } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePopup } from '@/contexts/PopupContext'
 import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
 import { useDarkMode } from '@/contexts/DarkModeContext'
 import AIFiestaLogo from '../AIFiestaLogo'
+import { AVAILABLE_MODELS } from '@/lib/models'
 
 interface HeroSectionProps {
   darkMode: boolean
@@ -27,6 +28,11 @@ export default function HeroSection({
   const router = useOptimizedRouter();
   const { toggleDarkMode } = useDarkMode();
   const [testInput, setTestInput] = useState('');
+  const [selectedModels, setSelectedModels] = useState<string[]>(() => {
+    if (!AVAILABLE_MODELS || AVAILABLE_MODELS.length === 0) return [];
+    return AVAILABLE_MODELS.slice(0, 2).map(m => m.id);
+  });
+  const [showModelDropdown, setShowModelDropdown] = useState(false);
 
   const handleAuthPopup = () => {
     if (user) {
@@ -46,8 +52,9 @@ export default function HeroSection({
 
   const handleTestSubmit = () => {
     if (testInput.trim()) {
-      // Store message in localStorage for persistence across auth flow
+      // Store message and selected models in localStorage for persistence across auth flow
       localStorage.setItem('pendingMessage', testInput.trim());
+      localStorage.setItem('pendingModels', JSON.stringify(selectedModels));
 
       if (user) {
         // User is authenticated, go directly to chat
@@ -60,8 +67,22 @@ export default function HeroSection({
     }
   };
 
+  const handleModelToggle = (modelId: string) => {
+    setSelectedModels(prev => {
+      const isSelected = prev.includes(modelId);
+      if (isSelected) {
+        // Don't allow deselecting if it's the last model
+        if (prev.length === 1) return prev;
+        return prev.filter(id => id !== modelId);
+      }
+      // Enforce max 3 models
+      if (prev.length >= 3) return prev;
+      return [...prev, modelId];
+    });
+  };
+
   return (
-    <section className="relative pt-20 pb-32 overflow-hidden">
+    <section className="relative pt-20 pb-32">
       {/* Enhanced Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${darkMode ? 'bg-violet-500/20' : 'bg-blue-400/30'}`}></div>
@@ -207,9 +228,9 @@ export default function HeroSection({
 
 
           {/* Test Input Area - Matching Reference Image */}
-          <div className="mb-12 max-w-5xl mx-auto relative z-10">
+          <div className="mb-12 max-w-5xl mx-auto relative z-50">
             <div
-              className={`backdrop-blur-xl rounded-3xl border transition-all duration-300 overflow-hidden ${darkMode
+              className={`backdrop-blur-xl rounded-3xl border transition-all duration-300 ${darkMode
                 ? 'bg-gray-800/60 border-gray-700/50 shadow-2xl shadow-violet-500/20'
                 : 'bg-white/70 border-slate-200/50 shadow-2xl shadow-blue-500/20'
                 }`}
@@ -238,17 +259,112 @@ export default function HeroSection({
               <div className={`flex items-center justify-between px-6 py-4 border-t ${darkMode ? 'border-gray-700/50' : 'border-slate-200/50'
                 }`}>
                 <div className="flex items-center space-x-3">
-                  {/* Attach Button */}
-                  <button
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${darkMode
-                      ? 'bg-gray-700/50 hover:bg-gray-700/80 text-gray-300'
-                      : 'bg-slate-100/50 hover:bg-slate-200/80 text-slate-700'
-                      }`}
-                    title="Attach files"
-                  >
-                    <Paperclip className="w-4 h-4" />
-                    <span className="text-sm font-medium">Attach</span>
-                  </button>
+                  {/* Model Selection Dropdown */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowModelDropdown(!showModelDropdown)}
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${darkMode
+                        ? 'bg-gray-700/50 hover:bg-gray-700/80 text-gray-300'
+                        : 'bg-slate-100/50 hover:bg-slate-200/80 text-slate-700'
+                        }`}
+                      title="Select models"
+                    >
+                      <Brain className="w-4 h-4" />
+                      <span className="text-sm font-medium">{selectedModels.length} Models</span>
+                      <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showModelDropdown ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {showModelDropdown && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => setShowModelDropdown(false)}
+                        ></div>
+                        <div className={`absolute top-full left-0 mt-2 w-80 p-2 rounded-2xl shadow-2xl border z-[100] transform origin-top transition-all duration-200 backdrop-blur-2xl ${darkMode
+                          ? 'bg-gray-900/95 border-gray-700/50 shadow-black/50'
+                          : 'bg-white/95 border-slate-200/60 shadow-slate-200/50'
+                          }`}>
+                          <div className={`px-3 py-3 mb-1 flex items-center justify-between border-b ${darkMode ? 'border-gray-700/50' : 'border-slate-100'
+                            }`}>
+                            <div className="flex items-center space-x-2">
+                              <Sparkles className={`w-3.5 h-3.5 ${darkMode ? 'text-violet-400' : 'text-blue-500'}`} />
+                              <span className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-slate-600'
+                                }`}>
+                                Model Selection
+                              </span>
+                            </div>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${selectedModels.length === 3
+                              ? darkMode ? 'bg-amber-500/10 text-amber-300 border-amber-500/20' : 'bg-amber-50 text-amber-600 border-amber-200'
+                              : darkMode ? 'bg-gray-800 text-gray-400 border-gray-700' : 'bg-slate-100 text-slate-500 border-slate-200'
+                              }`}>
+                              {selectedModels.length}/3 SELECTED
+                            </span>
+                          </div>
+                          <div className="space-y-0.5 max-h-[500px] overflow-y-auto custom-scrollbar p-1">
+                            {AVAILABLE_MODELS && AVAILABLE_MODELS.length > 0 ? (
+                              AVAILABLE_MODELS.map((model) => {
+                                const isSelected = selectedModels.includes(model.id);
+                                return (
+                                  <button
+                                    key={model.id}
+                                    onClick={() => handleModelToggle(model.id)}
+                                    className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden ${isSelected
+                                      ? darkMode
+                                        ? 'bg-violet-600/10 border border-violet-500/30'
+                                        : 'bg-blue-50 border border-blue-200'
+                                      : darkMode
+                                        ? 'border border-transparent hover:bg-gray-800/50'
+                                        : 'border border-transparent hover:bg-slate-50'
+                                      }`}
+                                  >
+                                    {isSelected && (
+                                      <div className={`absolute left-0 top-0 bottom-0 w-1 ${darkMode ? 'bg-violet-500' : 'bg-blue-500'
+                                        }`} />
+                                    )}
+                                    <div className="flex-1 text-left pl-2">
+                                      <div className="flex items-center space-x-2">
+                                        <span className={`font-semibold text-sm ${isSelected
+                                          ? darkMode ? 'text-white' : 'text-slate-900'
+                                          : darkMode ? 'text-gray-300' : 'text-slate-700'
+                                          }`}>{model.label}</span>
+                                        {model.provider && (
+                                          <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium border uppercase tracking-wider ${darkMode
+                                            ? 'border-gray-700 bg-gray-800/50 text-gray-400'
+                                            : 'border-slate-200 bg-slate-100 text-slate-400'
+                                            }`}>
+                                            {model.provider}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className={`text-xs mt-1 truncate max-w-[200px] ${isSelected
+                                        ? darkMode ? 'text-violet-200/80' : 'text-blue-600/80'
+                                        : darkMode ? 'text-gray-500 group-hover:text-gray-400' : 'text-slate-400 group-hover:text-slate-500'
+                                        }`}>
+                                        {model.description || 'AI Model'}
+                                      </div>
+                                    </div>
+
+                                    {isSelected ? (
+                                      <div className={`w-5 h-5 rounded-full flex items-center justify-center shadow-lg transform scale-100 transition-all ${darkMode ? 'bg-violet-500 text-white shadow-violet-500/30' : 'bg-blue-500 text-white shadow-blue-500/30'
+                                        }`}>
+                                        <Check className="w-3 h-3" strokeWidth={3} />
+                                      </div>
+                                    ) : (
+                                      <div className={`w-5 h-5 rounded-full border-2 transition-all opacity-50 group-hover:opacity-100 ${darkMode ? 'border-gray-600 bg-transparent' : 'border-slate-300 bg-transparent'
+                                        }`} />
+                                    )}
+                                  </button>
+                                );
+                              })
+                            ) : (
+                              <div className="p-4 text-center text-sm text-gray-500">No models available</div>
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
 
                   {/* Theme Button */}
                   <button
@@ -261,19 +377,6 @@ export default function HeroSection({
                   >
                     <Palette className="w-4 h-4" />
                     <span className="text-sm font-medium">Theme</span>
-                  </button>
-
-                  {/* Chat Button */}
-                  <button
-                    onClick={handleTestSubmit}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${darkMode
-                      ? 'bg-gray-700/50 hover:bg-gray-700/80 text-gray-300'
-                      : 'bg-slate-100/50 hover:bg-slate-200/80 text-slate-700'
-                      }`}
-                    title="Start chat"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    <span className="text-sm font-medium">Chat</span>
                   </button>
                 </div>
 

@@ -4,6 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 import { ChevronRight, Brain, Twitter, Linkedin, Facebook, Github } from 'lucide-react'
 
+import AIFiestaLogo from '../AIFiestaLogo'
+
 interface SiteFooterProps {
   darkMode: boolean
   socialLinks?: {
@@ -27,11 +29,10 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
   const validSocialLinks = defaultSocialLinks.filter(link => link.url)
 
   return (
-    <footer className={`relative overflow-hidden ${
-      darkMode
+    <footer className={`relative overflow-hidden ${darkMode
         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white'
         : 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white'
-    }`}>
+      }`}>
       {/* Enhanced background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
@@ -41,12 +42,10 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
       </div>
 
       {/* Additional ambient lights for footer */}
-      <div className={`absolute top-1/4 left-1/4 w-48 h-48 rounded-full blur-3xl ${
-        darkMode ? 'bg-violet-500/10' : 'bg-blue-500/10'
-      }`}></div>
-      <div className={`absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full blur-3xl ${
-        darkMode ? 'bg-purple-500/10' : 'bg-purple-500/10'
-      }`}></div>
+      <div className={`absolute top-1/4 left-1/4 w-48 h-48 rounded-full blur-3xl ${darkMode ? 'bg-violet-500/10' : 'bg-blue-500/10'
+        }`}></div>
+      <div className={`absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full blur-3xl ${darkMode ? 'bg-purple-500/10' : 'bg-purple-500/10'
+        }`}></div>
 
       {/* Main footer content */}
       <div className="relative py-16">
@@ -55,24 +54,16 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
             {/* Brand section */}
             <div className="md:col-span-2">
               <div className="flex items-center space-x-3 mb-6">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ${
-                  darkMode 
-                    ? 'bg-gradient-to-br from-violet-600 to-purple-700 shadow-violet-500/30' 
-                    : 'bg-gradient-to-br from-blue-500 to-purple-600 shadow-blue-500/30'
-                }`}>
-                  <Brain className="w-7 h-7 text-white" />
-                </div>
-                <span className={`text-2xl font-bold bg-gradient-to-r transition-all duration-500 ${
-                  darkMode
+                <AIFiestaLogo size="lg" darkMode={darkMode} />
+                <span className={`text-2xl font-bold bg-gradient-to-r transition-all duration-500 ${darkMode
                     ? 'from-white to-blue-200'
                     : 'from-white to-blue-200'
-                } bg-clip-text text-transparent`}>
+                  } bg-clip-text text-transparent`}>
                   AI Fiesta
                 </span>
               </div>
-              <p className={`leading-relaxed mb-6 max-w-md ${
-                darkMode ? 'text-gray-400' : 'text-slate-400'
-              }`}>
+              <p className={`leading-relaxed mb-6 max-w-md ${darkMode ? 'text-gray-400' : 'text-slate-400'
+                }`}>
                 The ultimate platform for comparing AI models. Send one message to multiple AI models and find the perfect response for every task.
               </p>
               <div className="flex items-center space-x-4">
@@ -97,14 +88,13 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
                 {[
                   { name: 'Compare Models', href: '/chat' },
                   { name: 'View Comparisons', href: '/dashboard' },
-                 
+
                 ].map((link, index) => (
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2 ${
-                        darkMode ? 'text-gray-400' : 'text-slate-400'
-                      }`}
+                      className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2 ${darkMode ? 'text-gray-400' : 'text-slate-400'
+                        }`}
                     >
                       <ChevronRight className="w-3 h-3" />
                       <span>{link.name}</span>
@@ -135,12 +125,10 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
                   <li key={index}>
                     <Link
                       href="/chat"
-                      className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2 group ${
-                        darkMode ? 'text-gray-400' : 'text-slate-400'
-                      }`}>
-                      <div className={`w-2 h-2 rounded-full group-hover:bg-blue-300 transition-colors duration-200 ${
-                        darkMode ? 'bg-blue-400' : 'bg-blue-400'
-                      }`}></div>
+                      className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2 group ${darkMode ? 'text-gray-400' : 'text-slate-400'
+                        }`}>
+                      <div className={`w-2 h-2 rounded-full group-hover:bg-blue-300 transition-colors duration-200 ${darkMode ? 'bg-blue-400' : 'bg-blue-400'
+                        }`}></div>
                       <span className="hover:underline">{model}</span>
                     </Link>
                   </li>
@@ -162,9 +150,8 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
                         href={social.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-3 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-400'
-                        }`}
+                        className={`hover:text-white transition-colors duration-200 text-sm flex items-center space-x-3 ${darkMode ? 'text-gray-400' : 'text-slate-400'
+                          }`}
                       >
                         <Icon className="w-4 h-4" />
                         <span>{social.name}</span>
@@ -203,9 +190,8 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
       </div>
 
       {/* Bottom section */}
-      <div className={`border-t py-8 ${
-        darkMode ? 'border-gray-800/50' : 'border-slate-700/50'
-      }`}>
+      <div className={`border-t py-8 ${darkMode ? 'border-gray-800/50' : 'border-slate-700/50'
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="flex items-center space-x-6">

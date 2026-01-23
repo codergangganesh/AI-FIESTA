@@ -153,8 +153,24 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
   }, [message])
 
   // Check for pending message from landing page
+  // Check for pending message and models from landing page
   useEffect(() => {
     const pendingMessage = localStorage.getItem('pendingMessage');
+    const pendingModelsStr = localStorage.getItem('pendingModels');
+
+    // If we have pending models, update selection first
+    if (pendingModelsStr) {
+      try {
+        const pendingModels = JSON.parse(pendingModelsStr);
+        if (Array.isArray(pendingModels) && pendingModels.length > 0) {
+          setSelectedModels(pendingModels);
+          localStorage.removeItem('pendingModels');
+        }
+      } catch (e) {
+        console.error('Failed to parse pending models', e);
+      }
+    }
+
     if (pendingMessage && pendingMessage.trim()) {
       // Set the message in the input
       setMessage(pendingMessage);
@@ -164,7 +180,12 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
 
       // Auto-submit after a short delay to ensure component is ready
       const submitTimer = setTimeout(() => {
-        if (selectedModels.length > 0) {
+        // Use the current models or the ones we just set
+        // Note: state update might not be reflected immediately in closure, but since we updated it above
+        // and react batches updates, we should rely on checking if we have valid models
+        const modelsToUse = pendingModelsStr ? JSON.parse(pendingModelsStr) : selectedModels;
+
+        if (modelsToUse.length > 0) {
           // Create a synthetic form event
           const syntheticEvent = {
             preventDefault: () => { },
@@ -176,7 +197,7 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
 
       return () => clearTimeout(submitTimer);
     }
-  }, [selectedModels.length]); // Only run when selectedModels changes or on mount
+  }, []); // Run once on mount
 
 
 
