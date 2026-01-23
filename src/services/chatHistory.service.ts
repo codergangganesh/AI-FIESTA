@@ -12,18 +12,18 @@ export class ChatHistoryService {
     try {
       // Create a Supabase client that can access the current session
       const supabase = createClient()
-      
+
       // Check if user is authenticated
       const { data: { session: userSession }, error: sessionError } = await supabase.auth.getSession()
-      
+
       if (sessionError || !userSession) {
         console.error('Error saving chat session - No valid session:', sessionError?.message || 'No session found')
         return false
       }
-      
+
       // Log the session data being sent
       console.log('Saving chat session:', JSON.stringify(session, null, 2))
-      
+
       const response = await fetch('/api/chat-sessions', {
         method: 'POST',
         headers: {
@@ -55,10 +55,10 @@ export class ChatHistoryService {
 
       const result = await response.json()
       console.log('Successfully saved chat session:', result)
-      
+
       // Invalidate cache after successful save
       this.clearCache()
-      
+
       return true
     } catch (error) {
       console.error('Error saving chat session - Network error:', error)
@@ -89,21 +89,21 @@ export class ChatHistoryService {
 
       // Create a Supabase client that can access the current session
       const supabase = createClient()
-      
+
       // Check if user is authenticated
       const { data: { session: userSession }, error: sessionError } = await supabase.auth.getSession()
-      
+
       if (sessionError || !userSession) {
         console.error('Error fetching chat sessions - No valid session:', sessionError?.message || 'No session found')
         this.isFetching = false
         return null
       }
-      
+
       console.log('Fetching chat sessions')
       const response = await fetch('/api/chat-sessions')
-      
+
       console.log('Response status:', response.status)
-      
+
       if (!response.ok) {
         const errorText = await response.text()
         console.error('Error fetching chat sessions - HTTP Status:', response.status)
@@ -122,16 +122,16 @@ export class ChatHistoryService {
         this.isFetching = false
         return null
       }
-      
+
       const result = await response.json()
       // Handle both old and new response formats
       const chatSessions: ChatSession[] = Array.isArray(result) ? result : result.sessions
       console.log('Successfully fetched chat sessions:', chatSessions?.length || 0)
-      
+
       // Update cache
       this.chatSessionsCache = chatSessions
       this.lastFetchTime = now
-      
+
       this.isFetching = false
       return chatSessions
     } catch (error) {
@@ -151,15 +151,15 @@ export class ChatHistoryService {
     try {
       // Create a Supabase client that can access the current session
       const supabase = createClient()
-      
+
       // Check if user is authenticated
       const { data: { session: userSession }, error: sessionError } = await supabase.auth.getSession()
-      
+
       if (sessionError || !userSession) {
         console.error('Error deleting chat session - No valid session:', sessionError?.message || 'No session found')
         return false
       }
-      
+
       console.log('Deleting chat session:', sessionId)
       const response = await fetch('/api/chat-sessions', {
         method: 'DELETE',
@@ -191,10 +191,10 @@ export class ChatHistoryService {
 
       const result = await response.json()
       console.log('Successfully deleted chat session:', result)
-      
+
       // Invalidate cache after successful delete
       this.clearCache()
-      
+
       return true
     } catch (error) {
       console.error('Error deleting chat session - Network error:', error)
