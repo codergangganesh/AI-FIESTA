@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Search, Clock, MessageSquare, Trash2, User, LogOut, Cog, Brain, Plus, BarChart3, ChevronDown, CreditCard, Moon, Sun, X, Filter, SortDesc, Calendar, ArrowUpDown, Sparkles, AlertCircle, Copy, Grid3X3, List, Check } from 'lucide-react'
+import { Search, Clock, MessageSquare, Trash2, User, LogOut, Cog, Brain, Plus, BarChart3, ChevronDown, CreditCard, Moon, Sun, X, Filter, SortDesc, Calendar, ArrowUpDown, Sparkles, AlertCircle, Copy, Grid3X3, List, Check, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePathname } from 'next/navigation'
@@ -701,9 +701,10 @@ export default function ModernHistoryInterface() {
                     ? 'bg-gray-800/60 border border-gray-700/50 text-gray-300 hover:bg-gray-700/80 hover:border-gray-600/70 hover:shadow-lg'
                     : 'bg-white/80 border border-slate-200/50 text-slate-700 hover:border-slate-300/70 hover:shadow-lg'
                     }`}
-                  title="Refresh history"
+                  title="Log history"
                 >
-                  <span className="font-medium">Refresh</span>
+                  <RotateCcw className="w-5 h-5" />
+                  <span className="font-medium"></span>
                 </button>
 
                 {/* Delete All Button - Only show when there are sessions (text-only) */}
