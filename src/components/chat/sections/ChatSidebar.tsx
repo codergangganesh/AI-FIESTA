@@ -110,7 +110,7 @@ export default function ChatSidebar({
             {/* New Chat Button */}
             <button
               onClick={handleNewChat}
-              className="w-full flex items-center justify-center space-x-3 px-4 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] group relative"
+              className="w-full flex items-center justify-center space-x-3 px-4 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-all duration-200 hover:shadow-lg shadow-indigo-500/20 transform hover:scale-[1.02] active:scale-[0.98] group relative"
               title="Start New Comparison"
             >
               <Plus className="w-5 h-5 transition-transform group-hover:rotate-90" />

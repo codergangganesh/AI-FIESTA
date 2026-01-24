@@ -338,7 +338,7 @@ export default function ModernHistoryInterface() {
             {/* New Chat Button */}
             <Link href="/chat">
               <button
-                className="w-full flex items-center justify-center space-x-3 px-4 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] group relative"
+                className="w-full flex items-center justify-center space-x-3 px-4 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-all duration-200 hover:shadow-lg shadow-indigo-500/20 transform hover:scale-[1.02] active:scale-[0.98] group relative"
                 title="Start New Comparison"
               >
                 <Plus className="w-5 h-5 transition-transform group-hover:rotate-90" />
@@ -928,7 +928,7 @@ export default function ModernHistoryInterface() {
                   </p>
                   <button
                     onClick={() => loadChatSessions()}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-all duration-200 hover:shadow-lg shadow-indigo-500/20 transform hover:scale-[1.02] active:scale-[0.98]"
                   >
                     Try Again
                   </button>
@@ -951,7 +951,7 @@ export default function ModernHistoryInterface() {
                       : 'Start a new conversation to see it appear here'}
                   </p>
                   <Link href="/chat">
-                    <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] text-lg flex items-center space-x-2">
+                    <button className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold transition-all duration-200 hover:shadow-lg shadow-indigo-500/20 transform hover:scale-[1.02] active:scale-[0.98] text-lg flex items-center space-x-2">
                       <Plus className="w-5 h-5" />
                       <span>Start New Chat</span>
                     </button>

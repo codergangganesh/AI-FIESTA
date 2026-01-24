@@ -32,7 +32,7 @@ import {
   EyeOff
 } from 'lucide-react'
 import SimpleProfileIcon from '@/components/layout/SimpleProfileIcon'
-import NotificationBell from '@/components/ui/NotificationBell'
+
 
 
 interface MetricCard {
@@ -531,9 +531,6 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex items-center space-x-3">
-                {/* Notification Bell */}
-                <NotificationBell />
-
                 {/* Simple Profile Icon */}
                 <SimpleProfileIcon />
 
@@ -542,8 +539,8 @@ export default function DashboardPage() {
                   <button
                     onClick={() => setIsExportOpen(!isExportOpen)}
                     className={`p-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md ${darkMode
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white'
-                      : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white'
+                      ? 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-indigo-500/20'
+                      : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20'
                       }`}
                     title="Export"
                   >
@@ -617,15 +614,13 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                <div className={`px-4 py-2 rounded-xl transition-colors duration-200 ${darkMode
-                  ? 'bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-700/30'
-                  : 'bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-200'
+                <div className={`px-4 py-2 rounded-xl border transition-all duration-200 ${darkMode
+                  ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300'
+                  : 'bg-indigo-50 border-indigo-200 text-indigo-700'
                   }`}>
                   <div className="flex items-center space-x-2">
-                    <Sparkles className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'
-                      }`} />
-                    <span className={`text-sm font-medium ${darkMode ? 'text-blue-300' : 'text-blue-700'
-                      }`}>
+                    <Sparkles className="w-4 h-4" />
+                    <span className="text-sm font-semibold">
                       {getPlanDisplayName()}
                     </span>
                   </div>
@@ -650,7 +645,12 @@ export default function DashboardPage() {
                     }`}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-xl bg-gradient-to-r ${getMetricColorClasses(metric.color)}`}>
+                    <div className={`p-3 rounded-xl ${metric.color === 'blue' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' :
+                        metric.color === 'purple' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' :
+                          metric.color === 'green' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' :
+                            metric.color === 'orange' ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/20' :
+                              'bg-slate-600 text-white shadow-lg shadow-slate-500/20'
+                      }`}>
                       <Icon className="w-6 h-6" />
                     </div>
                     <div className={`flex items-center space-x-1 text-sm ${metric.trend === 'up' ? 'text-green-500' : 'text-red-500'
@@ -689,9 +689,9 @@ export default function DashboardPage() {
                 : 'bg-white/80 border border-slate-200/50'
                 }`}>
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-r ${darkMode
-                    ? 'from-blue-600 to-blue-700 text-white'
-                    : 'from-blue-500 to-blue-600 text-white'
+                  <div className={`p-3 rounded-xl ${darkMode
+                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                    : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                     }`}>
                     <Activity className="w-6 h-6" />
                   </div>
@@ -733,9 +733,9 @@ export default function DashboardPage() {
                 : 'bg-white/80 border border-slate-200/50'
                 }`}>
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-r ${darkMode
-                    ? 'from-purple-600 to-purple-700 text-white'
-                    : 'from-purple-500 to-purple-600 text-white'
+                  <div className={`p-3 rounded-xl ${darkMode
+                    ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+                    : 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
                     }`}>
                     <GitCompare className="w-6 h-6" />
                   </div>
@@ -777,9 +777,9 @@ export default function DashboardPage() {
                 : 'bg-white/80 border border-slate-200/50'
                 }`}>
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-r ${darkMode
-                    ? 'from-indigo-600 to-purple-600 text-white'
-                    : 'from-indigo-500 to-purple-500 text-white'
+                  <div className={`p-3 rounded-xl ${darkMode
+                    ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+                    : 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
                     }`}>
                     <MessageSquare className="w-6 h-6" />
                   </div>
