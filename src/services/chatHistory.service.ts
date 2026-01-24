@@ -1,5 +1,6 @@
 import { ChatSession } from '@/types/chat'
 import { createClient } from '@/utils/supabase/client'
+import { dashboardService } from './dashboard.service'
 
 export class ChatHistoryService {
   // Add cache for chat sessions with expiration
@@ -58,6 +59,8 @@ export class ChatHistoryService {
 
       // Invalidate cache after successful save
       this.clearCache()
+      // Also clear dashboard cache as it depends on chat history
+      dashboardService.clearCache()
 
       return true
     } catch (error) {
@@ -145,6 +148,36 @@ export class ChatHistoryService {
   clearCache() {
     this.chatSessionsCache = null
     this.lastFetchTime = null
+    // Also clear dashboard cache to keep metrics in sync
+    if (typeof window !== 'undefined') {
+      dashboardService.clearCache()
+    }
+  }
+
+  // Method to get cached sessions instantly
+  getCachedChatSessions(): ChatSession[] | null {
+    const now = Date.now()
+    if (this.chatSessionsCache && this.lastFetchTime && (now - this.lastFetchTime) < this.CACHE_DURATION) {
+      return this.chatSessionsCache
+    }
+    return null
+  }
+
+  // Method to manually update cache with a new session for instant loading
+  updateCacheWithNewSession(session: ChatSession) {
+    if (!this.chatSessionsCache) {
+      this.chatSessionsCache = [session]
+    } else {
+      // Avoid duplicates
+      const index = this.chatSessionsCache.findIndex(s => s.id === session.id)
+      if (index !== -1) {
+        this.chatSessionsCache[index] = session
+      } else {
+        this.chatSessionsCache = [session, ...this.chatSessionsCache]
+      }
+    }
+    this.lastFetchTime = Date.now()
+    dashboardService.clearCache()
   }
 
   async deleteChatSession(sessionId: string): Promise<boolean> {

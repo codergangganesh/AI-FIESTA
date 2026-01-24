@@ -280,6 +280,14 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
           }
           : session
       ))
+
+      // Trigger instant cache update for other components (History/Dashboard)
+      const updatedSession = {
+        ...newSession,
+        responses: data.results,
+        responseTime: data.responseTime || responseTime
+      }
+      chatHistoryService.updateCacheWithNewSession(updatedSession)
     } catch (error: unknown) {
       // Type the error properly
       const errorMessage = error instanceof Error ? error.message : String(error)
