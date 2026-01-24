@@ -132,9 +132,9 @@ export default function SharedSidebar({
 
   return (
     // Updated sidebar background to match Chat/History pages
-    <div className={`fixed left-0 top-0 h-full w-80 backdrop-blur-xl border-r transition-all duration-300 z-10 ${darkMode
-      ? 'bg-gray-800/90 border-gray-700/50'
-      : 'bg-white/90 border-slate-200/50'
+    <div className={`fixed left-0 top-0 h-full w-80 backdrop-blur-xl border-r transition-colors duration-200 z-10 ${darkMode
+      ? 'bg-gray-800/80 border-gray-700'
+      : 'bg-white/80 border-slate-200/50'
       }`}>
       <div className="flex flex-col h-full pb-20">
         {/* Header with Logo */}

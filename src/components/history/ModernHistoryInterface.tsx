@@ -307,14 +307,14 @@ export default function ModernHistoryInterface() {
   }, [showSortFilterDropdown]);
 
   return (
-    <div className={`flex h-screen transition-all duration-700 ease-in-out ${darkMode
-      ? 'bg-gradient-to-br from-gray-900 via-violet-900/90 to-black'
-      : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'
+    <div className={`flex h-screen transition-colors duration-200 ${darkMode
+      ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
+      : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
       }`}>
       {/* Left Sidebar */}
-      <div className={`w-80 backdrop-blur-xl border-r transition-all duration-300 relative ${darkMode
-        ? 'bg-gray-800/90 border-gray-700/50'
-        : 'bg-white/90 border-slate-200/50'
+      <div className={`w-80 backdrop-blur-xl border-r transition-colors duration-200 relative ${darkMode
+        ? 'bg-gray-800/80 border-gray-700'
+        : 'bg-white/80 border-slate-200/50'
         }`}>
         {/* Sidebar Content Container */}
         <div className="flex flex-col h-full pb-20">
@@ -658,9 +658,9 @@ export default function ModernHistoryInterface() {
       {/* Main History Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className={`backdrop-blur-xl border-b p-6 transition-all duration-300 z-50 ${darkMode
-          ? 'bg-gray-800/80 border-gray-700/50'
-          : 'bg-white/80 border-slate-200/50'
+        <div className={`backdrop-blur-sm border-b p-6 transition-colors duration-200 z-50 ${darkMode
+          ? 'bg-gray-800/60 border-gray-700/30'
+          : 'bg-white/60 border-slate-200/30'
           }`}>
           <div className="max-w-7xl mx-auto">
             <h1 className={`text-2xl font-bold mb-4 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
