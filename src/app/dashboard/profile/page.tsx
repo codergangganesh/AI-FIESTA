@@ -24,7 +24,7 @@ export default function DashboardProfileRedirect() {
   const router = useOptimizedRouter()
   const { darkMode, toggleDarkMode } = useDarkMode()
   const { setPageLoading } = useOptimizedLoading()
-  
+
   // Redirect unauthenticated users to the auth page
   useEffect(() => {
     if (!loading && !user) {
@@ -48,10 +48,10 @@ export default function DashboardProfileRedirect() {
   return <ProfileContent user={user} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
 }
 
-function ProfileContent({ user, darkMode, toggleDarkMode }: { 
-  user: { email?: string; user_metadata?: { full_name?: string; avatar_url?: string } } | null, 
-  darkMode: boolean, 
-  toggleDarkMode: () => void 
+function ProfileContent({ user, darkMode, toggleDarkMode }: {
+  user: { email?: string; user_metadata?: { full_name?: string; avatar_url?: string } } | null,
+  darkMode: boolean,
+  toggleDarkMode: () => void
 }) {
   // Form data state
   const [formData, setFormData] = useState({
@@ -72,7 +72,7 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
     }
   })
 
-  const [saveStatus, setSaveStatus] = useState<{type: 'success' | 'error' | null, message: string}>({type: null, message: ''})
+  const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error' | null, message: string }>({ type: null, message: '' })
 
   // Update form data when user data changes
   useEffect(() => {
@@ -127,30 +127,30 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
   }
 
   const handleSaveProfile = () => {
-    setSaveStatus({type: 'success', message: 'Profile updated successfully!'})
-    setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+    setSaveStatus({ type: 'success', message: 'Profile updated successfully!' })
+    setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
   }
 
   const handleSaveNotifications = () => {
-    setSaveStatus({type: 'success', message: 'Notification preferences updated!'})
-    setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+    setSaveStatus({ type: 'success', message: 'Notification preferences updated!' })
+    setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
   }
 
   const handleSaveSecurity = () => {
     if (formData.newPassword !== formData.confirmNewPassword) {
-      setSaveStatus({type: 'error', message: 'New passwords do not match.'})
-      setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+      setSaveStatus({ type: 'error', message: 'New passwords do not match.' })
+      setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
       return
     }
-    
-    setSaveStatus({type: 'success', message: 'Password updated successfully!'})
+
+    setSaveStatus({ type: 'success', message: 'Password updated successfully!' })
     setFormData({
       ...formData,
       currentPassword: '',
       newPassword: '',
       confirmNewPassword: ''
     })
-    setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+    setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
   }
 
   const handleSaveAppearance = () => {
@@ -160,9 +160,9 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
     } else if (formData.appearance.theme === 'light' && darkMode) {
       toggleDarkMode()
     }
-    
-    setSaveStatus({type: 'success', message: 'Appearance settings updated!'})
-    setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+
+    setSaveStatus({ type: 'success', message: 'Appearance settings updated!' })
+    setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
   }
 
   // Function to get user display name
@@ -174,17 +174,17 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
   const getUserAvatar = () => {
     if (user?.user_metadata?.avatar_url) {
       return (
-        <img 
-          src={user.user_metadata.avatar_url} 
-          alt="Profile" 
+        <img
+          src={user.user_metadata.avatar_url}
+          alt="Profile"
           className="w-24 h-24 rounded-full object-cover"
         />
       )
     }
-    
+
     const displayName = getUserDisplayName()
     const initial = displayName.charAt(0).toUpperCase()
-    
+
     return (
       <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg mb-4">
         <span className="text-2xl font-bold text-white">
@@ -202,29 +202,25 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
   ]
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${
-      darkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900' 
+    <div className={`min-h-screen transition-colors duration-200 ${darkMode
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
         : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
-    }`}>
+      }`}>
       <SharedSidebar />
-      
+
       {/* Adjusted layout to match chat interface with flex and responsive margins */}
       <div className="lg:ml-80 ml-16 transition-all duration-300">
-        <div className={`backdrop-blur-sm border-b transition-colors duration-200 ${
-          darkMode 
-            ? 'bg-gray-800/60 border-gray-700/30' 
+        <div className={`backdrop-blur-sm border-b transition-colors duration-200 ${darkMode
+            ? 'bg-gray-800/60 border-gray-700/30'
             : 'bg-white/60 border-slate-200/30'
-        }`}>
+          }`}>
           <div className="px-6 py-6">
-            <h1 className={`text-3xl font-bold transition-colors duration-200 ${
-              darkMode ? 'text-white' : 'text-slate-900'
-            }`}>
+            <h1 className={`text-3xl font-bold transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
+              }`}>
               Profile Settings
             </h1>
-            <p className={`mt-1 transition-colors duration-200 ${
-              darkMode ? 'text-gray-300' : 'text-slate-600'
-            }`}>
+            <p className={`mt-1 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-600'
+              }`}>
               Manage your profile information and preferences
             </p>
           </div>
@@ -234,11 +230,10 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className={`rounded-2xl p-6 transition-colors duration-200 ${
-                darkMode 
-                  ? 'bg-gray-800/60 border border-gray-700/50' 
+              <div className={`rounded-2xl p-6 transition-colors duration-200 ${darkMode
+                  ? 'bg-gray-800/60 border border-gray-700/50'
                   : 'bg-white/80 border border-slate-200/50'
-              }`}>
+                }`}>
                 <div className="flex flex-col items-center mb-6">
                   <div className="relative">
                     {getUserAvatar()}
@@ -246,29 +241,26 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                       <Camera className="w-4 h-4 text-slate-600 dark:text-gray-300" />
                     </button>
                   </div>
-                  <h2 className={`text-xl font-bold transition-colors duration-200 ${
-                    darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
+                  <h2 className={`text-xl font-bold transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
+                    }`}>
                     {getUserDisplayName()}
                   </h2>
-                  <p className={`text-sm transition-colors duration-200 ${
-                    darkMode ? 'text-gray-300' : 'text-slate-600'
-                  }`}>
+                  <p className={`text-sm transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-600'
+                    }`}>
                     Member since {formData.joinDate}
                   </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   {tabs.map((tab) => {
                     const Icon = tab.icon
                     return (
                       <button
                         key={tab.id}
-                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                          darkMode 
-                            ? 'text-gray-300 hover:text-white hover:bg-gray-700/50' 
+                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${darkMode
+                            ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
                             : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
-                        }`}
+                          }`}
                       >
                         <Icon className="w-5 h-5" />
                         <span className="font-medium">{tab.label}</span>
@@ -281,22 +273,20 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
 
             {/* Main Content */}
             <div className="lg:col-span-3">
-              <div className={`rounded-2xl p-6 transition-colors duration-200 ${
-                darkMode 
-                  ? 'bg-gray-800/60 border border-gray-700/50' 
+              <div className={`rounded-2xl p-6 transition-colors duration-200 ${darkMode
+                  ? 'bg-gray-800/60 border border-gray-700/50'
                   : 'bg-white/80 border border-slate-200/50'
-              }`}>
+                }`}>
                 {/* Save Status Notification */}
                 {saveStatus.type && (
-                  <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 ${
-                    saveStatus.type === 'success' 
-                      ? darkMode 
-                        ? 'bg-green-900/30 border border-green-700/50 text-green-300' 
+                  <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 ${saveStatus.type === 'success'
+                      ? darkMode
+                        ? 'bg-green-900/30 border border-green-700/50 text-green-300'
                         : 'bg-green-50 border border-green-200 text-green-700'
-                      : darkMode 
-                        ? 'bg-red-900/30 border border-red-700/50 text-red-300' 
+                      : darkMode
+                        ? 'bg-red-900/30 border border-red-700/50 text-red-300'
                         : 'bg-red-50 border border-red-200 text-red-700'
-                  }`}>
+                    }`}>
                     {saveStatus.type === 'success' ? (
                       <CheckCircle className="w-5 h-5" />
                     ) : (
@@ -308,17 +298,15 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
 
                 {/* Profile Section */}
                 <div className="mb-8">
-                  <h2 className={`text-2xl font-bold mb-6 transition-colors duration-200 ${
-                    darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
+                  <h2 className={`text-2xl font-bold mb-6 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
+                    }`}>
                     Profile Information
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
+                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
                         Full Name
                       </label>
                       <input
@@ -326,19 +314,17 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${
-                          darkMode 
-                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400' 
+                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${darkMode
+                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
                             : 'bg-white border-slate-200/50 text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
-                        }`}
+                          }`}
                         placeholder="Enter your full name"
                       />
                     </div>
-                    
+
                     <div>
-                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
+                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
                         Email Address
                       </label>
                       <input
@@ -346,16 +332,15 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${
-                          darkMode 
-                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400' 
+                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${darkMode
+                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
                             : 'bg-white border-slate-200/50 text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
-                        }`}
+                          }`}
                         placeholder="Enter your email"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mt-6">
                     <button
                       onClick={handleSaveProfile}
@@ -368,29 +353,25 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                 </div>
 
                 {/* Divider */}
-                <div className={`my-8 h-px ${
-                  darkMode ? 'bg-gray-700/50' : 'bg-slate-200/50'
-                }`}></div>
+                <div className={`my-8 h-px ${darkMode ? 'bg-gray-700/50' : 'bg-slate-200/50'
+                  }`}></div>
 
                 {/* Notifications Section */}
                 <div className="mb-8">
-                  <h2 className={`text-2xl font-bold mb-6 transition-colors duration-200 ${
-                    darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
+                  <h2 className={`text-2xl font-bold mb-6 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
+                    }`}>
                     Notifications
                   </h2>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className={`font-medium transition-colors duration-200 ${
-                          darkMode ? 'text-gray-200' : 'text-slate-800'
-                        }`}>
+                        <h3 className={`font-medium transition-colors duration-200 ${darkMode ? 'text-gray-200' : 'text-slate-800'
+                          }`}>
                           Email Notifications
                         </h3>
-                        <p className={`text-sm transition-colors duration-200 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>
+                        <p className={`text-sm transition-colors duration-200 ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>
                           Receive email notifications about your account
                         </p>
                       </div>
@@ -402,24 +383,21 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                           onChange={handleInputChange}
                           className="sr-only peer"
                         />
-                        <div className={`w-11 h-6 rounded-full peer ${
-                          darkMode 
-                            ? 'bg-gray-700 peer-checked:bg-blue-600' 
+                        <div className={`w-11 h-6 rounded-full peer ${darkMode
+                            ? 'bg-gray-700 peer-checked:bg-blue-600'
                             : 'bg-slate-300 peer-checked:bg-blue-600'
-                        } peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
+                          } peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
                       </label>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className={`font-medium transition-colors duration-200 ${
-                          darkMode ? 'text-gray-200' : 'text-slate-800'
-                        }`}>
+                        <h3 className={`font-medium transition-colors duration-200 ${darkMode ? 'text-gray-200' : 'text-slate-800'
+                          }`}>
                           Product Updates
                         </h3>
-                        <p className={`text-sm transition-colors duration-200 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>
+                        <p className={`text-sm transition-colors duration-200 ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>
                           Get notified about new features and updates
                         </p>
                       </div>
@@ -431,24 +409,21 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                           onChange={handleInputChange}
                           className="sr-only peer"
                         />
-                        <div className={`w-11 h-6 rounded-full peer ${
-                          darkMode 
-                            ? 'bg-gray-700 peer-checked:bg-blue-600' 
+                        <div className={`w-11 h-6 rounded-full peer ${darkMode
+                            ? 'bg-gray-700 peer-checked:bg-blue-600'
                             : 'bg-slate-300 peer-checked:bg-blue-600'
-                        } peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
+                          } peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
                       </label>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className={`font-medium transition-colors duration-200 ${
-                          darkMode ? 'text-gray-200' : 'text-slate-800'
-                        }`}>
+                        <h3 className={`font-medium transition-colors duration-200 ${darkMode ? 'text-gray-200' : 'text-slate-800'
+                          }`}>
                           Security Alerts
                         </h3>
-                        <p className={`text-sm transition-colors duration-200 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>
+                        <p className={`text-sm transition-colors duration-200 ${darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>
                           Important notifications about your account security
                         </p>
                       </div>
@@ -460,15 +435,14 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                           onChange={handleInputChange}
                           className="sr-only peer"
                         />
-                        <div className={`w-11 h-6 rounded-full peer ${
-                          darkMode 
-                            ? 'bg-gray-700 peer-checked:bg-blue-600' 
+                        <div className={`w-11 h-6 rounded-full peer ${darkMode
+                            ? 'bg-gray-700 peer-checked:bg-blue-600'
                             : 'bg-slate-300 peer-checked:bg-blue-600'
-                        } peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
+                          } peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
                       </label>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6">
                     <button
                       onClick={handleSaveNotifications}
@@ -481,23 +455,20 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                 </div>
 
                 {/* Divider */}
-                <div className={`my-8 h-px ${
-                  darkMode ? 'bg-gray-700/50' : 'bg-slate-200/50'
-                }`}></div>
+                <div className={`my-8 h-px ${darkMode ? 'bg-gray-700/50' : 'bg-slate-200/50'
+                  }`}></div>
 
                 {/* Security Section */}
                 <div className="mb-8">
-                  <h2 className={`text-2xl font-bold mb-6 transition-colors duration-200 ${
-                    darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
+                  <h2 className={`text-2xl font-bold mb-6 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
+                    }`}>
                     Security
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
+                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
                         Current Password
                       </label>
                       <input
@@ -505,21 +476,19 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                         name="currentPassword"
                         value={formData.currentPassword}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${
-                          darkMode 
-                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400' 
+                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${darkMode
+                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
                             : 'bg-white border-slate-200/50 text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
-                        }`}
+                          }`}
                         placeholder="Enter your current password"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                     <div>
-                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
+                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
                         New Password
                       </label>
                       <input
@@ -527,19 +496,17 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                         name="newPassword"
                         value={formData.newPassword}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${
-                          darkMode 
-                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400' 
+                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${darkMode
+                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
                             : 'bg-white border-slate-200/50 text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
-                        }`}
+                          }`}
                         placeholder="Enter your new password"
                       />
                     </div>
-                    
+
                     <div>
-                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
+                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
                         Confirm New Password
                       </label>
                       <input
@@ -547,16 +514,15 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                         name="confirmNewPassword"
                         value={formData.confirmNewPassword}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${
-                          darkMode 
-                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400' 
+                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${darkMode
+                            ? 'bg-gray-700/50 border-gray-600/50 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
                             : 'bg-white border-slate-200/50 text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
-                        }`}
+                          }`}
                         placeholder="Confirm your new password"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mt-6">
                     <button
                       onClick={handleSaveSecurity}
@@ -569,55 +535,49 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                 </div>
 
                 {/* Divider */}
-                <div className={`my-8 h-px ${
-                  darkMode ? 'bg-gray-700/50' : 'bg-slate-200/50'
-                }`}></div>
+                <div className={`my-8 h-px ${darkMode ? 'bg-gray-700/50' : 'bg-slate-200/50'
+                  }`}></div>
 
                 {/* Appearance Section */}
                 <div>
-                  <h2 className={`text-2xl font-bold mb-6 transition-colors duration-200 ${
-                    darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
+                  <h2 className={`text-2xl font-bold mb-6 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
+                    }`}>
                     Appearance
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
+                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
                         Theme
                       </label>
                       <select
                         name="appearance.theme"
                         value={formData.appearance.theme}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${
-                          darkMode 
-                            ? 'bg-gray-700/50 border-gray-600/50 text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400' 
+                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${darkMode
+                            ? 'bg-gray-700/50 border-gray-600/50 text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
                             : 'bg-white border-slate-200/50 text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
-                        }`}
+                          }`}
                       >
                         <option value="light">Light</option>
                         <option value="dark">Dark</option>
                       </select>
                     </div>
-                    
+
                     <div>
-                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
+                      <label className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
                         Language
                       </label>
                       <select
                         name="appearance.language"
                         value={formData.appearance.language}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${
-                          darkMode 
-                            ? 'bg-gray-700/50 border-gray-600/50 text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400' 
+                        className={`w-full px-4 py-3 rounded-xl border transition-colors duration-200 ${darkMode
+                            ? 'bg-gray-700/50 border-gray-600/50 text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
                             : 'bg-white border-slate-200/50 text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400'
-                        }`}
+                          }`}
                       >
                         <option value="en">English</option>
                         <option value="es">Spanish</option>
@@ -626,7 +586,7 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
                       </select>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6">
                     <button
                       onClick={handleSaveAppearance}

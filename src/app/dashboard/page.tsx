@@ -496,8 +496,8 @@ export default function DashboardPage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-200 ${darkMode
-        ? 'bg-black'
-        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
+      ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
+      : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
       }`}>
       <SharedSidebar />
 
@@ -505,8 +505,8 @@ export default function DashboardPage() {
       <div className="lg:ml-80 ml-16 transition-all duration-300">
         {/* Header */}
         <div className={`backdrop-blur-sm border-b transition-colors duration-200 ${darkMode
-            ? 'bg-gray-800/60 border-gray-700/30'
-            : 'bg-white/60 border-slate-200/30'
+          ? 'bg-gray-800/60 border-gray-700/30'
+          : 'bg-white/60 border-slate-200/30'
           }`}>
           <div className="px-6 py-6">
             <div className="flex items-center justify-between">
@@ -542,8 +542,8 @@ export default function DashboardPage() {
                   <button
                     onClick={() => setIsExportOpen(!isExportOpen)}
                     className={`p-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md ${darkMode
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white'
-                        : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white'
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white'
+                      : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white'
                       }`}
                     title="Export"
                   >
@@ -554,8 +554,8 @@ export default function DashboardPage() {
                   {isExportOpen && (
                     <div
                       className={`absolute right-0 w-56 rounded-xl shadow-xl z-20 overflow-hidden transform transition-all duration-200 ease-in-out mt-2 ${darkMode
-                          ? 'bg-gray-800/95 border border-gray-700 backdrop-blur-xl'
-                          : 'bg-white/95 border border-slate-200 backdrop-blur-xl'
+                        ? 'bg-gray-800/95 border border-gray-700 backdrop-blur-xl'
+                        : 'bg-white/95 border border-slate-200 backdrop-blur-xl'
                         }`}
                     >
                       <div className="py-1">
@@ -569,8 +569,8 @@ export default function DashboardPage() {
                         <button
                           onClick={exportToJSON}
                           className={`w-full text-left px-4 py-3 text-sm transition-colors duration-200 flex items-center justify-between ${darkMode
-                              ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
-                              : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
+                            ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
+                            : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
                             }`}
                         >
                           <div className="flex items-center space-x-2">
@@ -585,8 +585,8 @@ export default function DashboardPage() {
                         <button
                           onClick={exportToCSV}
                           className={`w-full text-left px-4 py-3 text-sm transition-colors duration-200 flex items-center justify-between ${darkMode
-                              ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
-                              : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
+                            ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
+                            : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
                             }`}>
                           <div className="flex items-center space-x-2">
                             <div className={`w-8 h-8 rounded-md flex items-center justify-center ${darkMode ? 'bg-green-900/30' : 'bg-green-100'
@@ -600,8 +600,8 @@ export default function DashboardPage() {
                         <button
                           onClick={exportToPDF}
                           className={`w-full text-left px-4 py-3 text-sm transition-colors duration-200 flex items-center justify-between ${darkMode
-                              ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
-                              : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
+                            ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
+                            : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
                             }`}>
                           <div className="flex items-center space-x-2">
                             <div className={`w-8 h-8 rounded-md flex items-center justify-center ${darkMode ? 'bg-red-900/30' : 'bg-red-100'
@@ -618,8 +618,8 @@ export default function DashboardPage() {
                 </div>
 
                 <div className={`px-4 py-2 rounded-xl transition-colors duration-200 ${darkMode
-                    ? 'bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-700/30'
-                    : 'bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-200'
+                  ? 'bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-700/30'
+                  : 'bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-200'
                   }`}>
                   <div className="flex items-center space-x-2">
                     <Sparkles className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'
@@ -645,8 +645,8 @@ export default function DashboardPage() {
                 <div
                   key={index}
                   className={`rounded-2xl p-6 transition-all duration-200 hover:scale-105 ${darkMode
-                      ? 'bg-gray-800/60 border border-gray-700/50'
-                      : 'bg-white/80 border border-slate-200/50'
+                    ? 'bg-gray-800/60 border border-gray-700/50'
+                    : 'bg-white/80 border border-slate-200/50'
                     }`}
                 >
                   <div className="flex items-center justify-between mb-4">
@@ -685,13 +685,13 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* API Calls Usage */}
               <div className={`rounded-2xl p-6 transition-all duration-200 ${darkMode
-                  ? 'bg-gray-800/60 border border-gray-700/50'
-                  : 'bg-white/80 border border-slate-200/50'
+                ? 'bg-gray-800/60 border border-gray-700/50'
+                : 'bg-white/80 border border-slate-200/50'
                 }`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className={`p-3 rounded-xl bg-gradient-to-r ${darkMode
-                      ? 'from-blue-600 to-blue-700 text-white'
-                      : 'from-blue-500 to-blue-600 text-white'
+                    ? 'from-blue-600 to-blue-700 text-white'
+                    : 'from-blue-500 to-blue-600 text-white'
                     }`}>
                     <Activity className="w-6 h-6" />
                   </div>
@@ -729,13 +729,13 @@ export default function DashboardPage() {
 
               {/* Model Comparisons Usage */}
               <div className={`rounded-2xl p-6 transition-all duration-200 ${darkMode
-                  ? 'bg-gray-800/60 border border-gray-700/50'
-                  : 'bg-white/80 border border-slate-200/50'
+                ? 'bg-gray-800/60 border border-gray-700/50'
+                : 'bg-white/80 border border-slate-200/50'
                 }`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className={`p-3 rounded-xl bg-gradient-to-r ${darkMode
-                      ? 'from-purple-600 to-purple-700 text-white'
-                      : 'from-purple-500 to-purple-600 text-white'
+                    ? 'from-purple-600 to-purple-700 text-white'
+                    : 'from-purple-500 to-purple-600 text-white'
                     }`}>
                     <GitCompare className="w-6 h-6" />
                   </div>
@@ -773,13 +773,13 @@ export default function DashboardPage() {
 
               {/* Avg Responses per Comparison */}
               <div className={`rounded-2xl p-6 transition-all duration-200 ${darkMode
-                  ? 'bg-gray-800/60 border border-gray-700/50'
-                  : 'bg-white/80 border border-slate-200/50'
+                ? 'bg-gray-800/60 border border-gray-700/50'
+                : 'bg-white/80 border border-slate-200/50'
                 }`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className={`p-3 rounded-xl bg-gradient-to-r ${darkMode
-                      ? 'from-indigo-600 to-purple-600 text-white'
-                      : 'from-indigo-500 to-purple-500 text-white'
+                    ? 'from-indigo-600 to-purple-600 text-white'
+                    : 'from-indigo-500 to-purple-500 text-white'
                     }`}>
                     <MessageSquare className="w-6 h-6" />
                   </div>
