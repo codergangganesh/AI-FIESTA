@@ -3,13 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Enable performance optimizations
   reactStrictMode: true,
-  
+
   // Enable automatic static optimization
   poweredByHeader: false,
-  
+
   // Enable compression
   compress: true,
-  
+
   // Enable prefetching for faster navigation
   experimental: {
     optimizeCss: true,
@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
       'framer-motion'
     ]
   },
-  
+
   // Configure webpack for better performance
   webpack: (config, { isServer }) => {
     // Reduce bundle size by excluding unnecessary modules
@@ -29,17 +29,13 @@ const nextConfig: NextConfig = {
         fs: false,
       };
     }
-    
+
     // Enable tree shaking
     config.optimization.concatenateModules = true;
-    
+
     return config;
   },
-  
-  // Disable ESLint during build
-  eslint: {
-    ignoreDuringBuilds: true,
-  }
+
 };
 
 export default nextConfig;

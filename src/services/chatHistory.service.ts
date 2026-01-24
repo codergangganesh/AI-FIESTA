@@ -1,6 +1,7 @@
 import { ChatSession } from '@/types/chat'
 import { createClient } from '@/utils/supabase/client'
-import { dashboardService } from './dashboard.service'
+
+type Listener = () => void
 
 export class ChatHistoryService {
   // Add cache for chat sessions with expiration
@@ -8,6 +9,18 @@ export class ChatHistoryService {
   private lastFetchTime: number | null = null
   private readonly CACHE_DURATION = 5 * 60 * 1000 // 5 minutes cache
   private isFetching = false // Prevent concurrent fetches
+  private listeners: Listener[] = []
+
+  subscribe(listener: Listener) {
+    this.listeners.push(listener)
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener)
+    }
+  }
+
+  private notifyListeners() {
+    this.listeners.forEach(listener => listener())
+  }
 
   async saveChatSession(session: ChatSession): Promise<boolean> {
     try {
@@ -59,8 +72,8 @@ export class ChatHistoryService {
 
       // Invalidate cache after successful save
       this.clearCache()
-      // Also clear dashboard cache as it depends on chat history
-      dashboardService.clearCache()
+      // Notify listeners (e.g., dashboard service) that data has changed
+      this.notifyListeners()
 
       return true
     } catch (error) {
@@ -148,10 +161,8 @@ export class ChatHistoryService {
   clearCache() {
     this.chatSessionsCache = null
     this.lastFetchTime = null
-    // Also clear dashboard cache to keep metrics in sync
-    if (typeof window !== 'undefined') {
-      dashboardService.clearCache()
-    }
+    // Notify listeners to clear their caches as well
+    this.notifyListeners()
   }
 
   // Method to get cached sessions instantly
@@ -177,7 +188,7 @@ export class ChatHistoryService {
       }
     }
     this.lastFetchTime = Date.now()
-    dashboardService.clearCache()
+    this.notifyListeners()
   }
 
   async deleteChatSession(sessionId: string): Promise<boolean> {
