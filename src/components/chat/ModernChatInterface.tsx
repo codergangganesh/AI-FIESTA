@@ -470,11 +470,7 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
           ? 'bg-gray-800/95 border-gray-700 backdrop-blur-xl'
           : 'bg-white/95 border-slate-200/30 backdrop-blur-xl'
           }`}>
-          <ProfileDropdown
-            darkMode={darkMode}
-            onToggleDarkMode={toggleDarkMode}
-            onNewConversation={handleNewChat}
-          />
+          <ProfileDropdown />
         </div>
       </div>
 
