@@ -38,6 +38,11 @@ export class DashboardService {
 
   constructor() {
     this.loadCumulativeMetricsFromStorage()
+
+    // Subscribe to chat history updates to clear cache when data changes
+    chatHistoryService.subscribe(() => {
+      this.clearCache()
+    })
   }
 
   // Load cumulative metrics from localStorage

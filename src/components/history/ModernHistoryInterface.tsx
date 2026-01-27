@@ -75,10 +75,25 @@ export default function ModernHistoryInterface() {
 
   // Optimized function to load chat sessions with caching
   const loadChatSessions = useCallback(async () => {
-    // Check if we have valid cached data
+    // Check if we have valid cached data in the service first for instant loading
+    const serviceCache = chatHistoryService.getCachedChatSessions();
+    if (serviceCache) {
+      console.log('Using service-cached chat sessions');
+      const sessionsWithResponseCount = serviceCache.map(session => ({
+        ...session,
+        timestamp: session.timestamp instanceof Date ? session.timestamp : new Date(session.timestamp),
+        responseCount: session.responses ? session.responses.length : 0
+      }));
+      setChatSessions(sessionsWithResponseCount);
+      setFilteredSessions(sessionsWithResponseCount);
+      setIsLoading(false);
+      return;
+    }
+
+    // Check internal cache
     const now = Date.now();
     if (chatSessionsCache && lastFetchTime && (now - lastFetchTime) < CACHE_DURATION) {
-      console.log('Using cached chat sessions');
+      console.log('Using local-cached chat sessions');
       setChatSessions(chatSessionsCache);
       setFilteredSessions(chatSessionsCache);
       setIsLoading(false);

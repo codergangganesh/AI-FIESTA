@@ -1,12 +1,26 @@
 import { ChatSession } from '@/types/chat'
 import { createClient } from '@/utils/supabase/client'
 
+type Listener = () => void
+
 export class ChatHistoryService {
   // Add cache for chat sessions with expiration
   private chatSessionsCache: ChatSession[] | null = null
   private lastFetchTime: number | null = null
   private readonly CACHE_DURATION = 5 * 60 * 1000 // 5 minutes cache
   private isFetching = false // Prevent concurrent fetches
+  private listeners: Listener[] = []
+
+  subscribe(listener: Listener) {
+    this.listeners.push(listener)
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener)
+    }
+  }
+
+  private notifyListeners() {
+    this.listeners.forEach(listener => listener())
+  }
 
   async saveChatSession(session: ChatSession): Promise<boolean> {
     try {
@@ -58,6 +72,8 @@ export class ChatHistoryService {
 
       // Invalidate cache after successful save
       this.clearCache()
+      // Notify listeners (e.g., dashboard service) that data has changed
+      this.notifyListeners()
 
       return true
     } catch (error) {
@@ -145,6 +161,34 @@ export class ChatHistoryService {
   clearCache() {
     this.chatSessionsCache = null
     this.lastFetchTime = null
+    // Notify listeners to clear their caches as well
+    this.notifyListeners()
+  }
+
+  // Method to get cached sessions instantly
+  getCachedChatSessions(): ChatSession[] | null {
+    const now = Date.now()
+    if (this.chatSessionsCache && this.lastFetchTime && (now - this.lastFetchTime) < this.CACHE_DURATION) {
+      return this.chatSessionsCache
+    }
+    return null
+  }
+
+  // Method to manually update cache with a new session for instant loading
+  updateCacheWithNewSession(session: ChatSession) {
+    if (!this.chatSessionsCache) {
+      this.chatSessionsCache = [session]
+    } else {
+      // Avoid duplicates
+      const index = this.chatSessionsCache.findIndex(s => s.id === session.id)
+      if (index !== -1) {
+        this.chatSessionsCache[index] = session
+      } else {
+        this.chatSessionsCache = [session, ...this.chatSessionsCache]
+      }
+    }
+    this.lastFetchTime = Date.now()
+    this.notifyListeners()
   }
 
   async deleteChatSession(sessionId: string): Promise<boolean> {
