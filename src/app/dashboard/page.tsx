@@ -11,6 +11,7 @@ import ResponseTimeDistribution from '@/components/dashboard/ResponseTimeDistrib
 import CombinedPerformanceChart from '@/components/dashboard/CombinedPerformanceChart'
 import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
 import OptimizedPageTransitionLoader from '@/components/ui/OptimizedPageTransitionLoader'
+import SimpleLoader from '@/components/ui/SimpleLoader'
 import { useOptimizedLoading } from '@/contexts/OptimizedLoadingContext'
 import { dashboardService } from '@/services/dashboard.service'
 import { chatHistoryService } from '@/services/chatHistory.service'
@@ -354,7 +355,7 @@ export default function DashboardPage() {
 
   // Show loading while checking auth status
   if (loading || loadingData) {
-    return <OptimizedPageTransitionLoader message="Loading dashboard..." />
+    return <SimpleLoader message="Loading dashboard..." />
   }
 
   // Show nothing while redirecting
@@ -646,10 +647,10 @@ export default function DashboardPage() {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className={`p-3 rounded-xl ${metric.color === 'blue' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' :
-                        metric.color === 'purple' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' :
-                          metric.color === 'green' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' :
-                            metric.color === 'orange' ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/20' :
-                              'bg-slate-600 text-white shadow-lg shadow-slate-500/20'
+                      metric.color === 'purple' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' :
+                        metric.color === 'green' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' :
+                          metric.color === 'orange' ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/20' :
+                            'bg-slate-600 text-white shadow-lg shadow-slate-500/20'
                       }`}>
                       <Icon className="w-6 h-6" />
                     </div>
