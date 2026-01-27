@@ -104,53 +104,79 @@ export default function ModernHistoryInterface() {
     setError(null);
 
     try {
-      // Try to load from API
+      // 1. Fetch from API
       const apiSessions = await chatHistoryService.getChatSessions();
-      if (apiSessions) {
-        // Convert to the format expected by the history interface
-        const sessionsWithResponseCount: ChatSession[] = apiSessions.map((session: any) => ({
-          ...session,
-          // Ensure timestamp is a proper Date object
-          timestamp: session.timestamp instanceof Date ? session.timestamp : new Date(session.timestamp),
-          responseCount: session.responses ? session.responses.length : 0
-        }));
 
-        // Update cache
-        chatSessionsCache = sessionsWithResponseCount;
-        lastFetchTime = now;
-
-        setChatSessions(sessionsWithResponseCount);
-        setFilteredSessions(sessionsWithResponseCount);
-        setIsLoading(false);
-        return;
-      }
-
-      // Fallback to localStorage if no API sessions
+      // 2. Fetch from LocalStorage
+      let localSessions: ChatSession[] = [];
       const savedSessions = localStorage.getItem('aiFiestaChatSessions');
       if (savedSessions) {
         try {
           const parsedSessions = JSON.parse(savedSessions);
-          // Convert timestamp strings back to Date objects
-          const sessionsWithDates: ChatSession[] = parsedSessions.map((session: any) => ({
+          localSessions = parsedSessions.map((session: any) => ({
             ...session,
-            // Ensure timestamp is a proper Date object
             timestamp: session.timestamp instanceof Date ? session.timestamp : new Date(session.timestamp),
             responseCount: session.responses ? session.responses.length : 0
           }));
-
-          // Update cache
-          chatSessionsCache = sessionsWithDates;
-          lastFetchTime = now;
-
-          setChatSessions(sessionsWithDates);
-          setFilteredSessions(sessionsWithDates);
         } catch (e) {
           console.error('Failed to parse saved sessions:', e);
         }
       }
+
+      let finalSessions: ChatSession[] = [];
+
+      if (apiSessions) {
+        // Convert API sessions format
+        const formattedApiSessions = apiSessions.map((session: any) => ({
+          ...session,
+          timestamp: session.timestamp instanceof Date ? session.timestamp : new Date(session.timestamp),
+          responseCount: session.responses ? session.responses.length : 0
+        }));
+
+        // Merge logic: Start with API sessions
+        finalSessions = [...formattedApiSessions];
+
+        // Add local sessions that don't exist in API (by ID)
+        const apiIds = new Set(formattedApiSessions.map(s => s.id));
+        const uniqueLocalSessions = localSessions.filter(s => !apiIds.has(s.id));
+
+        if (uniqueLocalSessions.length > 0) {
+          console.log(`Merging ${uniqueLocalSessions.length} local sessions into view`);
+          finalSessions = [...finalSessions, ...uniqueLocalSessions];
+
+          // Optional: Sort merged results by timestamp
+          finalSessions.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        }
+      } else {
+        // API failed or returned null (e.g. auth error), fallback to just local sessions
+        finalSessions = localSessions;
+      }
+
+      // Update cache
+      chatSessionsCache = finalSessions;
+      lastFetchTime = now;
+
+      setChatSessions(finalSessions);
+      setFilteredSessions(finalSessions);
+
     } catch (err) {
       console.error('Error loading chat sessions:', err);
       setError('Failed to load chat history. Please try again.');
+
+      // Attempt fallback to local storage on error
+      const savedSessions = localStorage.getItem('aiFiestaChatSessions');
+      if (savedSessions) {
+        try {
+          const parsedSessions = JSON.parse(savedSessions);
+          const sessionsWithDates = parsedSessions.map((session: any) => ({
+            ...session,
+            timestamp: session.timestamp instanceof Date ? session.timestamp : new Date(session.timestamp),
+            responseCount: session.responses ? session.responses.length : 0
+          }));
+          setChatSessions(sessionsWithDates);
+          setFilteredSessions(sessionsWithDates);
+        } catch (e) { console.error(e) }
+      }
     } finally {
       setIsLoading(false);
     }
