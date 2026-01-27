@@ -647,20 +647,27 @@ export default function ProfilePage() {
                           <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                             }`}>Email Address</label>
                           {isEditing ? (
-                            <input
-                              type="email"
-                              name="email"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
-                                ? 'border border-gray-600 bg-gray-700 text-white'
-                                : 'border border-gray-300 bg-white text-gray-900'
-                                }`}
-                            />
+                            <div className="relative">
+                              <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                disabled={true}
+                                className={`w-full px-3 py-2 rounded-lg cursor-not-allowed opacity-70 ${darkMode
+                                  ? 'border border-gray-600 bg-gray-800 text-gray-400'
+                                  : 'border border-gray-200 bg-gray-100 text-gray-500'
+                                  }`}
+                              />
+                              <Lock className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                            </div>
                           ) : (
-                            <p className={
-                              darkMode ? 'text-white py-2' : 'text-gray-900 py-2'
-                            }>{formData.email}</p>
+                            <div className="flex items-center">
+                              <p className={
+                                darkMode ? 'text-white py-2' : 'text-gray-900 py-2'
+                              }>{formData.email}</p>
+                              <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-blue-900/40 text-blue-300' : 'bg-blue-100 text-blue-700'
+                                }`}>Verified</span>
+                            </div>
                           )}
                         </div>
 
