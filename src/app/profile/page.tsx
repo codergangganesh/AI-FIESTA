@@ -29,9 +29,9 @@ export default function ProfilePage() {
     cvv: '',
     cardholderName: ''
   })
-  const [saveStatus, setSaveStatus] = useState<{type: 'success' | 'error' | null, message: string}>({type: null, message: ''})
+  const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error' | null, message: string }>({ type: null, message: '' })
   const [searchCountry, setSearchCountry] = useState('')
-  
+
   // Form data state with initial values from user context
   const [formData, setFormData] = useState({
     firstName: user?.user_metadata?.full_name?.split(' ')[0] || 'John',
@@ -63,7 +63,7 @@ export default function ProfilePage() {
       if (user) {
         // Get additional user data from user_metadata
         const userData = (user.user_metadata as Record<string, any>) || {}
-        
+
         setFormData(prev => ({
           ...prev,
           firstName: userData?.full_name?.split(' ')[0] || prev.firstName,
@@ -89,21 +89,24 @@ export default function ProfilePage() {
         }))
       }
     }
-    
+
     loadUserData()
   }, [user])
 
   const [originalFormData] = useState({ ...formData })
 
   // Filter countries based on search
-  const filteredCountries = countries.filter(country => 
+  const filteredCountries = countries.filter(country =>
     country.toLowerCase().includes(searchCountry.toLowerCase())
   )
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    
+
     if (name.includes('.')) {
       // Handle nested objects like dateOfBirth.month
       const [parent, child] = name.split('.')
@@ -120,9 +123,9 @@ export default function ProfilePage() {
         [name]: value
       })
     }
-    
+
     // Show unsaved warning if data differs from original
-    setShowUnsavedWarning(JSON.stringify(formData) !== JSON.stringify(originalFormData))
+    setShowUnsavedWarning(JSON.stringify(formData) !== JSON.stringify(originalFormData) || selectedFile !== null)
   }
 
   // Handle password form changes
@@ -147,6 +150,10 @@ export default function ProfilePage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      setSelectedFile(file)
+      // Show unsaved warning immediately when file is selected
+      setShowUnsavedWarning(true)
+
       const reader = new FileReader()
       reader.onload = (event) => {
         if (event.target?.result) {
@@ -165,11 +172,44 @@ export default function ProfilePage() {
   // Save profile changes
   const handleSave = async () => {
     try {
-      // In a real app, you would send the data to your backend here
-      console.log('Saving profile data:', formData)
-      
-      // Update user metadata in Supabase
+      setIsUploading(true)
       const supabase = createClient()
+
+      let avatarUrl = user?.user_metadata?.avatar_url
+
+      // 1. Upload new avatar if selected
+      if (selectedFile && user) {
+        try {
+          const fileExt = selectedFile.name.split('.').pop()
+          const fileName = `${user.id}/${Date.now()}.${fileExt}`
+
+          const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(fileName, selectedFile, {
+              upsert: true
+            })
+
+          if (uploadError) {
+            console.error('Error uploading image:', uploadError)
+            // Check if bucket exists error comes up
+            if (uploadError.message.toLowerCase().includes('bucket')) {
+              setSaveStatus({ type: 'error', message: 'Storage bucket "avatars" missing found in Supabase. Text changes saved.' })
+            } else {
+              setSaveStatus({ type: 'error', message: `Upload failed: ${uploadError.message}. Text changes saved.` })
+            }
+          } else {
+            const { data: { publicUrl } } = supabase.storage
+              .from('avatars')
+              .getPublicUrl(fileName)
+
+            avatarUrl = publicUrl
+          }
+        } catch (uploadErr) {
+          console.error('Unexpected error uploading file:', uploadErr)
+        }
+      }
+
+      // 2. Update user metadata
       const { error } = await supabase.auth.updateUser({
         data: {
           full_name: `${formData.firstName} ${formData.lastName}`,
@@ -185,24 +225,30 @@ export default function ProfilePage() {
           social_linkedin: formData.socialMedia.linkedin,
           social_facebook: formData.socialMedia.facebook,
           social_github: formData.socialMedia.github,
-          title: formData.professionalTitle
+          title: formData.professionalTitle,
+          avatar_url: avatarUrl // Update avatar URL
         }
       })
-      
+
       if (error) {
         console.error('Error updating profile:', error)
-        setSaveStatus({type: 'error', message: 'Failed to update profile'})
+        setSaveStatus({ type: 'error', message: 'Failed to update profile' })
       } else {
-        setSaveStatus({type: 'success', message: 'Profile updated successfully!'})
+        setSaveStatus({ type: 'success', message: 'Profile updated successfully!' })
         setShowUnsavedWarning(false)
         setIsEditing(false)
+        setSelectedFile(null)
+        // Force reload of current page to ensure all components see new data if Context doesn't pick it up fast enough
+        // router.refresh() 
       }
     } catch (error) {
       console.error('Error saving profile:', error)
-      setSaveStatus({type: 'error', message: 'An unexpected error occurred'})
+      setSaveStatus({ type: 'error', message: 'An unexpected error occurred' })
+    } finally {
+      setIsUploading(false)
     }
-    
-    setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+
+    setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
   }
 
   // Cancel editing
@@ -215,46 +261,46 @@ export default function ProfilePage() {
   // Handle password update
   const handleUpdatePassword = async () => {
     if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
-      setSaveStatus({type: 'error', message: 'Passwords do not match'})
-      setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+      setSaveStatus({ type: 'error', message: 'Passwords do not match' })
+      setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
       return
     }
-    
+
     if (passwordForm.newPassword.length < 6) {
-      setSaveStatus({type: 'error', message: 'Password must be at least 6 characters'})
-      setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+      setSaveStatus({ type: 'error', message: 'Password must be at least 6 characters' })
+      setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
       return
     }
-    
+
     const result = await updatePassword(passwordForm.currentPassword, passwordForm.newPassword)
-    
+
     if (result.error) {
-      setSaveStatus({type: 'error', message: result.error.message})
-      setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+      setSaveStatus({ type: 'error', message: result.error.message })
+      setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
       return
     }
-    
-    setSaveStatus({type: 'success', message: 'Password updated successfully!'})
+
+    setSaveStatus({ type: 'success', message: 'Password updated successfully!' })
     setPasswordForm({
       currentPassword: '',
       newPassword: '',
       confirmNewPassword: ''
     })
     setShowChangePassword(false)
-    setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+    setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
   }
 
   // Handle add payment method
   const handleAddPaymentMethod = () => {
     if (!paymentForm.cardNumber || !paymentForm.expirationDate || !paymentForm.cvv || !paymentForm.cardholderName) {
-      setSaveStatus({type: 'error', message: 'Please fill all payment fields'})
-      setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+      setSaveStatus({ type: 'error', message: 'Please fill all payment fields' })
+      setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
       return
     }
-    
+
     // Mask card number (show only last 4 digits)
     const maskedNumber = paymentForm.cardNumber.replace(/\d/g, '*').replace(/^(.*)(\d{4})$/, (_, prefix, last4) => prefix + last4)
-    
+
     setFormData({
       ...formData,
       paymentMethods: [
@@ -262,8 +308,8 @@ export default function ProfilePage() {
         { type: paymentForm.cardType, number: maskedNumber }
       ]
     })
-    
-    setSaveStatus({type: 'success', message: 'Payment method added successfully!'})
+
+    setSaveStatus({ type: 'success', message: 'Payment method added successfully!' })
     setPaymentForm({
       cardType: 'visa',
       cardNumber: '',
@@ -272,7 +318,7 @@ export default function ProfilePage() {
       cardholderName: ''
     })
     setShowAddPayment(false)
-    setTimeout(() => setSaveStatus({type: null, message: ''}), 3000)
+    setTimeout(() => setSaveStatus({ type: null, message: '' }), 3000)
   }
 
   // Get user display name
@@ -281,45 +327,51 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className={`flex min-h-screen transition-colors duration-200 ${
-      darkMode 
-        ? 'bg-gradient-to-br from-gray-900 to-gray-900' 
-        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
-    }`}>
+    <div className={`flex min-h-screen transition-colors duration-200 ${darkMode
+      ? 'bg-gradient-to-br from-gray-900 to-gray-900'
+      : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
+      }`}>
       <SharedSidebar />
-      
+
       {/* Main Content Area - Unified layout occupying remaining space */}
       <div className="flex-1 ml-80 pt-6 pb-20"> {/* ml-80 to account for sidebar width */}
         <div className="h-full">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 px-6">
             <div>
-              <h1 className={`text-2xl font-bold ${
-                darkMode ? 'text-white' : 'text-gray-900'
-              }`}>My Profile</h1>
-              <p className={`${
-                darkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>Edit your personal information</p>
+              <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'
+                }`}>My Profile</h1>
+              <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>Edit your personal information</p>
             </div>
             <div className="flex space-x-3 mt-4 sm:mt-0">
               {isEditing ? (
                 <>
                   <button
                     onClick={handleCancel}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      darkMode 
-                        ? 'border border-gray-600 text-gray-300 hover:bg-gray-700' 
-                        : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className={`px-4 py-2 rounded-lg transition-colors ${darkMode
+                      ? 'border border-gray-600 text-gray-300 hover:bg-gray-700'
+                      : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
+                      }`}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                    disabled={isUploading}
+                    className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center ${isUploading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
-                    <Save className="w-4 h-4 mr-2" />
-                    Save
+                    {isUploading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save
+                      </>
+                    )}
                   </button>
                 </>
               ) : (
@@ -336,19 +388,18 @@ export default function ProfilePage() {
           {/* Unsaved changes warning */}
           {showUnsavedWarning && (
             <div className="mb-6 px-6">
-              <div className={`p-4 rounded-lg flex items-center ${
-                darkMode 
-                  ? 'bg-amber-900/30 border border-amber-700 text-amber-200' 
-                  : 'bg-amber-50 border border-amber-200 text-amber-800'
-              }`}>
+              <div className={`p-4 rounded-lg flex items-center ${darkMode
+                ? 'bg-amber-900/30 border border-amber-700 text-amber-200'
+                : 'bg-amber-50 border border-amber-200 text-amber-800'
+                }`}>
                 <div className="flex-1">
                   You have unsaved changes. Don't forget to save before leaving.
                 </div>
-                <button 
+                <button
                   onClick={() => setShowUnsavedWarning(false)}
                   className={
-                    darkMode 
-                      ? 'text-amber-200 hover:text-amber-100' 
+                    darkMode
+                      ? 'text-amber-200 hover:text-amber-100'
                       : 'text-amber-800 hover:text-amber-900'
                   }
                 >
@@ -361,26 +412,24 @@ export default function ProfilePage() {
           {/* Save status message */}
           {saveStatus.type && (
             <div className="mb-6 px-6">
-              <div className={`p-4 rounded-lg ${
-                saveStatus.type === 'success' 
-                  ? (darkMode 
-                      ? 'bg-green-900/30 border border-green-700 text-green-200' 
-                      : 'bg-green-50 border border-green-200 text-green-800')
-                  : (darkMode 
-                      ? 'bg-red-900/30 border border-red-700 text-red-200' 
-                      : 'bg-red-50 border border-red-200 text-red-800')
-              }`}>
+              <div className={`p-4 rounded-lg ${saveStatus.type === 'success'
+                ? (darkMode
+                  ? 'bg-green-900/30 border border-green-700 text-green-200'
+                  : 'bg-green-50 border border-green-200 text-green-800')
+                : (darkMode
+                  ? 'bg-red-900/30 border border-red-700 text-red-200'
+                  : 'bg-red-50 border border-red-200 text-red-800')
+                }`}>
                 {saveStatus.message}
               </div>
             </div>
           )}
 
           {/* Unified Profile Content - Single section occupying remaining space */}
-          <div className={`h-full mx-6 rounded-xl transition-colors duration-200 ${
-            darkMode 
-              ? 'bg-gray-800 border border-gray-700' 
-              : 'bg-white border border-slate-200'
-          }`}>
+          <div className={`h-full mx-6 rounded-xl transition-colors duration-200 ${darkMode
+            ? 'bg-gray-800 border border-gray-700'
+            : 'bg-white border border-slate-200'
+            }`}>
             <div className="p-6 h-full">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
                 {/* Left Column - Profile Info */}
@@ -392,15 +441,15 @@ export default function ProfilePage() {
                       <div className="relative group mb-4">
                         <div className="relative">
                           {profileImage ? (
-                            <img 
-                              src={profileImage} 
-                              alt="Profile" 
+                            <img
+                              src={profileImage}
+                              alt="Profile"
                               className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
                             />
                           ) : user?.user_metadata?.avatar_url ? (
-                            <img 
-                              src={user.user_metadata.avatar_url} 
-                              alt="Profile" 
+                            <img
+                              src={user.user_metadata.avatar_url}
+                              alt="Profile"
                               className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
                             />
                           ) : (
@@ -410,7 +459,7 @@ export default function ProfilePage() {
                               </span>
                             </div>
                           )}
-                          
+
                           {isEditing && (
                             <button
                               onClick={triggerFileInput}
@@ -420,7 +469,7 @@ export default function ProfilePage() {
                             </button>
                           )}
                         </div>
-                        
+
                         <input
                           type="file"
                           ref={fileInputRef}
@@ -429,19 +478,16 @@ export default function ProfilePage() {
                           className="hidden"
                         />
                       </div>
-                      
+
                       {/* User Info */}
-                      <h2 className={`text-2xl font-bold ${
-                        darkMode ? 'text-white' : 'text-gray-900'
-                      }`}>{getUserDisplayName()}</h2>
-                      <p className={`mb-3 ${
-                        darkMode ? 'text-gray-300' : 'text-gray-600'
-                      }`}>{formData.professionalTitle}</p>
-                      
+                      <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'
+                        }`}>{getUserDisplayName()}</h2>
+                      <p className={`mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-600'
+                        }`}>{formData.professionalTitle}</p>
+
                       <div className="flex flex-wrap items-center justify-center gap-4">
-                        <div className={`flex items-center text-sm ${
-                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                        }`}>
+                        <div className={`flex items-center text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'
+                          }`}>
                           <Mail className="w-4 h-4 mr-1" />
                           {formData.email}
                         </div>
@@ -451,11 +497,10 @@ export default function ProfilePage() {
                     {/* Payment Methods Section */}
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className={`text-lg font-semibold ${
-                          darkMode ? 'text-white' : 'text-gray-900'
-                        }`}>Payment Methods</h3>
+                        <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'
+                          }`}>Payment Methods</h3>
                         {isEditing && (
-                          <button 
+                          <button
                             onClick={() => setShowAddPayment(true)}
                             className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
                           >
@@ -463,17 +508,16 @@ export default function ProfilePage() {
                           </button>
                         )}
                       </div>
-                      
+
                       {formData.paymentMethods.length > 0 ? (
                         <div className="space-y-3">
                           {formData.paymentMethods.map((method, index) => (
-                            <div 
-                              key={index} 
-                              className={`p-3 rounded-lg border flex items-center ${
-                                darkMode 
-                                  ? 'bg-gray-700/50 border-gray-600' 
-                                  : 'bg-gray-50 border-gray-200'
-                              }`}
+                            <div
+                              key={index}
+                              className={`p-3 rounded-lg border flex items-center ${darkMode
+                                ? 'bg-gray-700/50 border-gray-600'
+                                : 'bg-gray-50 border-gray-200'
+                                }`}
                             >
                               <div className="mr-3">
                                 {method.type === 'visa' ? (
@@ -493,22 +537,20 @@ export default function ProfilePage() {
                           ))}
                         </div>
                       ) : (
-                        <div className={`text-center py-6 rounded-lg ${
-                          darkMode 
-                            ? 'bg-gray-700/30 border border-gray-600/50' 
-                            : 'bg-gray-50 border border-gray-200'
-                        }`}>
-                          <CreditCard className="w-10 h-10 mx-auto mb-2" 
-                            color={darkMode ? '#9CA3AF' : '#6B7280'} />
-                          <p className={`text-sm ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                        <div className={`text-center py-6 rounded-lg ${darkMode
+                          ? 'bg-gray-700/30 border border-gray-600/50'
+                          : 'bg-gray-50 border border-gray-200'
                           }`}>
-                            {isEditing 
-                              ? 'No payment methods added yet' 
+                          <CreditCard className="w-10 h-10 mx-auto mb-2"
+                            color={darkMode ? '#9CA3AF' : '#6B7280'} />
+                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>
+                            {isEditing
+                              ? 'No payment methods added yet'
                               : 'No payment methods available'}
                           </p>
                           {isEditing && (
-                            <button 
+                            <button
                               onClick={() => setShowAddPayment(true)}
                               className="text-green-600 hover:text-green-700 font-medium text-sm mt-1"
                             >
@@ -520,32 +562,29 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Right Column - Profile Details */}
                 <div className="lg:col-span-2">
                   <div className="space-y-8">
                     {/* Personal Information Section */}
                     <div>
-                      <h3 className={`text-lg font-semibold mb-4 ${
-                        darkMode ? 'text-white' : 'text-gray-900'
-                      }`}>Personal Information</h3>
-                      
+                      <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'
+                        }`}>Personal Information</h3>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>First Name</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>First Name</label>
                           {isEditing ? (
                             <input
                               type="text"
                               name="firstName"
                               value={formData.firstName}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             />
                           ) : (
                             <p className={
@@ -553,22 +592,20 @@ export default function ProfilePage() {
                             }>{formData.firstName}</p>
                           )}
                         </div>
-                        
+
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Last Name</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Last Name</label>
                           {isEditing ? (
                             <input
                               type="text"
                               name="lastName"
                               value={formData.lastName}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             />
                           ) : (
                             <p className={
@@ -576,14 +613,13 @@ export default function ProfilePage() {
                             }>{formData.lastName}</p>
                           )}
                         </div>
-                        
+
                         <div>
                           <div className="flex justify-between items-center">
-                            <label className={`block text-sm font-medium mb-1 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>Password</label>
+                            <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>Password</label>
                             {isEditing && (
-                              <button 
+                              <button
                                 onClick={() => setShowChangePassword(true)}
                                 className="text-sm text-green-600 hover:text-green-700 font-medium flex items-center"
                               >
@@ -597,9 +633,8 @@ export default function ProfilePage() {
                               <p className={
                                 darkMode ? 'text-white' : 'text-gray-900'
                               }>••••••••</p>
-                              <p className={`text-xs mt-1 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`}>Click "Change" to update</p>
+                              <p className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`}>Click "Change" to update</p>
                             </div>
                           ) : (
                             <p className={
@@ -607,22 +642,20 @@ export default function ProfilePage() {
                             }>••••••••</p>
                           )}
                         </div>
-                        
+
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Email Address</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Email Address</label>
                           {isEditing ? (
                             <input
                               type="email"
                               name="email"
                               value={formData.email}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             />
                           ) : (
                             <p className={
@@ -630,22 +663,20 @@ export default function ProfilePage() {
                             }>{formData.email}</p>
                           )}
                         </div>
-                        
+
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Phone Number</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Phone Number</label>
                           {isEditing ? (
                             <input
                               type="tel"
                               name="phoneNumber"
                               value={formData.phoneNumber}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             />
                           ) : (
                             <p className={
@@ -653,22 +684,20 @@ export default function ProfilePage() {
                             }>{formData.phoneNumber}</p>
                           )}
                         </div>
-                        
+
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Address</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Address</label>
                           {isEditing ? (
                             <input
                               type="text"
                               name="address"
                               value={formData.address}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             />
                           ) : (
                             <p className={
@@ -676,26 +705,24 @@ export default function ProfilePage() {
                             }>{formData.address}</p>
                           )}
                         </div>
-                        
+
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Nation / Country</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Nation / Country</label>
                           {isEditing ? (
                             <select
                               name="country"
                               value={formData.country}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             >
                               <option value="" disabled>Select a country</option>
                               {countries.map((country) => (
-                                <option 
-                                  key={country} 
+                                <option
+                                  key={country}
                                   value={country}
                                   className={darkMode ? 'bg-gray-700' : 'bg-white'}
                                 >
@@ -714,25 +741,22 @@ export default function ProfilePage() {
 
                     {/* Additional Information Section */}
                     <div>
-                      <h3 className={`text-lg font-semibold mb-4 ${
-                        darkMode ? 'text-white' : 'text-gray-900'
-                      }`}>Additional Information</h3>
-                      
+                      <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'
+                        }`}>Additional Information</h3>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Gender</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Gender</label>
                           {isEditing ? (
                             <select
                               name="gender"
                               value={formData.gender}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             >
                               <option value="Male" className={
                                 darkMode ? 'bg-gray-700' : 'bg-white'
@@ -753,21 +777,19 @@ export default function ProfilePage() {
                             }>{formData.gender}</p>
                           )}
                         </div>
-                        
+
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Language</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Language</label>
                           {isEditing ? (
                             <select
                               name="language"
                               value={formData.language}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             >
                               <option value="English" className={
                                 darkMode ? 'bg-gray-700' : 'bg-white'
@@ -791,22 +813,20 @@ export default function ProfilePage() {
                             }>{formData.language}</p>
                           )}
                         </div>
-                        
+
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Date of Birth</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Date of Birth</label>
                           {isEditing ? (
                             <div className="grid grid-cols-3 gap-2">
                               <select
                                 name="dateOfBirth.month"
                                 value={formData.dateOfBirth.month}
                                 onChange={handleInputChange}
-                                className={`px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                  darkMode 
-                                    ? 'border border-gray-600 bg-gray-700 text-white' 
-                                    : 'border border-gray-300 bg-white text-gray-900'
-                                }`}
+                                className={`px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                  ? 'border border-gray-600 bg-gray-700 text-white'
+                                  : 'border border-gray-300 bg-white text-gray-900'
+                                  }`}
                               >
                                 <option value="January" className={
                                   darkMode ? 'bg-gray-700' : 'bg-white'
@@ -849,27 +869,25 @@ export default function ProfilePage() {
                                 name="dateOfBirth.day"
                                 value={formData.dateOfBirth.day}
                                 onChange={handleInputChange}
-                                className={`px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                  darkMode 
-                                    ? 'border border-gray-600 bg-gray-700 text-white' 
-                                    : 'border border-gray-300 bg-white text-gray-900'
-                                }`}
+                                className={`px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                  ? 'border border-gray-600 bg-gray-700 text-white'
+                                  : 'border border-gray-300 bg-white text-gray-900'
+                                  }`}
                               >
                                 {[...Array(31)].map((_, i) => (
-                                  <option key={i+1} value={i+1} className={
+                                  <option key={i + 1} value={i + 1} className={
                                     darkMode ? 'bg-gray-700' : 'bg-white'
-                                  }>{i+1}</option>
+                                  }>{i + 1}</option>
                                 ))}
                               </select>
                               <select
                                 name="dateOfBirth.year"
                                 value={formData.dateOfBirth.year}
                                 onChange={handleInputChange}
-                                className={`px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                  darkMode 
-                                    ? 'border border-gray-600 bg-gray-700 text-white' 
-                                    : 'border border-gray-300 bg-white text-gray-900'
-                                }`}
+                                className={`px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                  ? 'border border-gray-600 bg-gray-700 text-white'
+                                  : 'border border-gray-300 bg-white text-gray-900'
+                                  }`}
                               >
                                 {[...Array(100)].map((_, i) => {
                                   const year = new Date().getFullYear() - i;
@@ -887,22 +905,20 @@ export default function ProfilePage() {
                             </p>
                           )}
                         </div>
-                        
+
                         <div>
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Professional Title</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Professional Title</label>
                           {isEditing ? (
                             <input
                               type="text"
                               name="professionalTitle"
                               value={formData.professionalTitle}
                               onChange={handleInputChange}
-                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                darkMode 
-                                  ? 'border border-gray-600 bg-gray-700 text-white' 
-                                  : 'border border-gray-300 bg-white text-gray-900'
-                              }`}
+                              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                ? 'border border-gray-600 bg-gray-700 text-white'
+                                : 'border border-gray-300 bg-white text-gray-900'
+                                }`}
                             />
                           ) : (
                             <p className={
@@ -910,11 +926,10 @@ export default function ProfilePage() {
                             }>{formData.professionalTitle}</p>
                           )}
                         </div>
-                        
+
                         <div className="md:col-span-2">
-                          <label className={`block text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>Social Media Links</label>
+                          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>Social Media Links</label>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {isEditing ? (
                               <>
@@ -926,11 +941,10 @@ export default function ProfilePage() {
                                     value={formData.socialMedia.twitter}
                                     onChange={handleInputChange}
                                     placeholder="Twitter handle"
-                                    className={`flex-1 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                      darkMode 
-                                        ? 'border border-gray-600 bg-gray-700 text-white' 
-                                        : 'border border-gray-300 bg-white text-gray-900'
-                                    }`}
+                                    className={`flex-1 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                      ? 'border border-gray-600 bg-gray-700 text-white'
+                                      : 'border border-gray-300 bg-white text-gray-900'
+                                      }`}
                                   />
                                 </div>
                                 <div className="flex items-center">
@@ -941,11 +955,10 @@ export default function ProfilePage() {
                                     value={formData.socialMedia.linkedin}
                                     onChange={handleInputChange}
                                     placeholder="LinkedIn profile"
-                                    className={`flex-1 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                      darkMode 
-                                        ? 'border border-gray-600 bg-gray-700 text-white' 
-                                        : 'border border-gray-300 bg-white text-gray-900'
-                                    }`}
+                                    className={`flex-1 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                      ? 'border border-gray-600 bg-gray-700 text-white'
+                                      : 'border border-gray-300 bg-white text-gray-900'
+                                      }`}
                                   />
                                 </div>
                                 <div className="flex items-center">
@@ -956,15 +969,14 @@ export default function ProfilePage() {
                                     value={formData.socialMedia.facebook}
                                     onChange={handleInputChange}
                                     placeholder="Facebook profile"
-                                    className={`flex-1 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                      darkMode 
-                                        ? 'border border-gray-600 bg-gray-700 text-white' 
-                                        : 'border border-gray-300 bg-white text-gray-900'
-                                    }`}
+                                    className={`flex-1 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                      ? 'border border-gray-600 bg-gray-700 text-white'
+                                      : 'border border-gray-300 bg-white text-gray-900'
+                                      }`}
                                   />
                                 </div>
                                 <div className="flex items-center">
-                                  <Github className="w-4 h-4 mr-2" 
+                                  <Github className="w-4 h-4 mr-2"
                                     color={darkMode ? '#FFFFFF' : '#111827'} />
                                   <input
                                     type="text"
@@ -972,11 +984,10 @@ export default function ProfilePage() {
                                     value={formData.socialMedia.github}
                                     onChange={handleInputChange}
                                     placeholder="GitHub profile"
-                                    className={`flex-1 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                                      darkMode 
-                                        ? 'border border-gray-600 bg-gray-700 text-white' 
-                                        : 'border border-gray-300 bg-white text-gray-900'
-                                    }`}
+                                    className={`flex-1 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                                      ? 'border border-gray-600 bg-gray-700 text-white'
+                                      : 'border border-gray-300 bg-white text-gray-900'
+                                      }`}
                                   />
                                 </div>
                               </>
@@ -1001,7 +1012,7 @@ export default function ProfilePage() {
                                   }>{formData.socialMedia.facebook}</span>
                                 </div>
                                 <div className="flex items-center">
-                                  <Github className="w-4 h-4 mr-2" 
+                                  <Github className="w-4 h-4 mr-2"
                                     color={darkMode ? '#FFFFFF' : '#111827'} />
                                   <span className={
                                     darkMode ? 'text-white' : 'text-gray-900'
@@ -1024,17 +1035,15 @@ export default function ProfilePage() {
       {/* Change Password Modal */}
       {showChangePassword && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className={`relative rounded-xl shadow-xl w-full max-w-md transform transition-all duration-300 backdrop-blur-lg ${
-            darkMode 
-              ? 'bg-gray-800/30 border border-gray-700/30' 
-              : 'bg-white/30 border border-slate-200/30'
-          }`}>
+          <div className={`relative rounded-xl shadow-xl w-full max-w-md transform transition-all duration-300 backdrop-blur-lg ${darkMode
+            ? 'bg-gray-800/30 border border-gray-700/30'
+            : 'bg-white/30 border border-slate-200/30'
+            }`}>
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className={`text-lg font-semibold ${
-                  darkMode ? 'text-white' : 'text-gray-900'
-                }`}>Change Password</h3>
-                <button 
+                <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'
+                  }`}>Change Password</h3>
+                <button
                   onClick={() => {
                     setShowChangePassword(false)
                     setPasswordForm({
@@ -1044,71 +1053,65 @@ export default function ProfilePage() {
                     })
                   }}
                   className={
-                    darkMode 
-                      ? 'text-gray-400 hover:text-gray-200' 
+                    darkMode
+                      ? 'text-gray-400 hover:text-gray-200'
                       : 'text-gray-500 hover:text-gray-700'
                   }
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>Current Password</label>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>Current Password</label>
                   <input
                     type="password"
                     name="currentPassword"
                     value={passwordForm.currentPassword}
                     onChange={handlePasswordChange}
-                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                      darkMode 
-                        ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm' 
-                        : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
-                    }`}
+                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                      ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm'
+                      : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
+                      }`}
                     placeholder="Enter current password"
                   />
                 </div>
-                
+
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>New Password</label>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>New Password</label>
                   <input
                     type="password"
                     name="newPassword"
                     value={passwordForm.newPassword}
                     onChange={handlePasswordChange}
-                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                      darkMode 
-                        ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm' 
-                        : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
-                    }`}
+                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                      ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm'
+                      : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
+                      }`}
                     placeholder="Enter new password"
                   />
                 </div>
-                
+
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>Confirm New Password</label>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>Confirm New Password</label>
                   <input
                     type="password"
                     name="confirmNewPassword"
                     value={passwordForm.confirmNewPassword}
                     onChange={handlePasswordChange}
-                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                      darkMode 
-                        ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm' 
-                        : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
-                    }`}
+                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                      ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm'
+                      : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
+                      }`}
                     placeholder="Confirm new password"
                   />
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   onClick={() => {
@@ -1119,11 +1122,10 @@ export default function ProfilePage() {
                       confirmNewPassword: ''
                     })
                   }}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    darkMode 
-                      ? 'border border-gray-600 text-gray-300 hover:bg-gray-700/50 backdrop-blur-sm' 
-                      : 'border border-gray-300 text-gray-700 hover:bg-white/50 backdrop-blur-sm'
-                  }`}
+                  className={`px-4 py-2 rounded-lg transition-colors ${darkMode
+                    ? 'border border-gray-600 text-gray-300 hover:bg-gray-700/50 backdrop-blur-sm'
+                    : 'border border-gray-300 text-gray-700 hover:bg-white/50 backdrop-blur-sm'
+                    }`}
                 >
                   Cancel
                 </button>
@@ -1142,17 +1144,15 @@ export default function ProfilePage() {
       {/* Add Payment Method Modal */}
       {showAddPayment && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className={`relative rounded-xl shadow-xl w-full max-w-md transform transition-all duration-300 backdrop-blur-lg ${
-            darkMode 
-              ? 'bg-gray-800/30 border border-gray-700/30' 
-              : 'bg-white/30 border border-slate-200/30'
-                  }`}>
+          <div className={`relative rounded-xl shadow-xl w-full max-w-md transform transition-all duration-300 backdrop-blur-lg ${darkMode
+            ? 'bg-gray-800/30 border border-gray-700/30'
+            : 'bg-white/30 border border-slate-200/30'
+            }`}>
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className={`text-lg font-semibold ${
-                  darkMode ? 'text-white' : 'text-gray-900'
-                }`}>Add Payment Method</h3>
-                <button 
+                <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'
+                  }`}>Add Payment Method</h3>
+                <button
                   onClick={() => {
                     setShowAddPayment(false)
                     setPaymentForm({
@@ -1164,29 +1164,27 @@ export default function ProfilePage() {
                     })
                   }}
                   className={
-                    darkMode 
-                      ? 'text-gray-400 hover:text-gray-200' 
+                    darkMode
+                      ? 'text-gray-400 hover:text-gray-200'
                       : 'text-gray-500 hover:text-gray-700'
                   }
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>Card Type</label>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>Card Type</label>
                   <select
                     name="cardType"
                     value={paymentForm.cardType}
                     onChange={handlePaymentChange}
-                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                      darkMode 
-                        ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm' 
-                        : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
-                    }`}
+                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                      ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm'
+                      : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
+                      }`}
                   >
                     <option value="visa" className={
                       darkMode ? 'bg-gray-700' : 'bg-white'
@@ -1199,82 +1197,74 @@ export default function ProfilePage() {
                     }>American Express</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>Card Number</label>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>Card Number</label>
                   <input
                     type="text"
                     name="cardNumber"
                     value={paymentForm.cardNumber}
                     onChange={handlePaymentChange}
-                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                      darkMode 
-                        ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm' 
-                        : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
-                    }`}
+                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                      ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm'
+                      : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
+                      }`}
                     placeholder="1234 5678 9012 3456"
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${
-                      darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>Expiration Date</label>
+                    <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                      }`}>Expiration Date</label>
                     <input
                       type="text"
                       name="expirationDate"
                       value={paymentForm.expirationDate}
                       onChange={handlePaymentChange}
-                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                        darkMode 
-                          ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm' 
-                          : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
-                      }`}
+                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                        ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm'
+                        : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
+                        }`}
                       placeholder="MM/YY"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${
-                      darkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>CVV</label>
+                    <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                      }`}>CVV</label>
                     <input
                       type="text"
                       name="cvv"
                       value={paymentForm.cvv}
                       onChange={handlePaymentChange}
-                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                        darkMode 
-                          ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm' 
-                          : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
-                      }`}
+                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                        ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm'
+                        : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
+                        }`}
                       placeholder="123"
                     />
                   </div>
                 </div>
-                
+
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>Cardholder Name</label>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>Cardholder Name</label>
                   <input
                     type="text"
                     name="cardholderName"
                     value={paymentForm.cardholderName}
                     onChange={handlePaymentChange}
-                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                      darkMode 
-                        ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm' 
-                        : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
-                    }`}
+                    className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${darkMode
+                      ? 'border border-gray-600 bg-gray-700/50 text-white backdrop-blur-sm'
+                      : 'border border-gray-300 bg-white/50 text-gray-900 backdrop-blur-sm'
+                      }`}
                     placeholder="Full name as on card"
                   />
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   onClick={() => {
@@ -1287,11 +1277,10 @@ export default function ProfilePage() {
                       cardholderName: ''
                     })
                   }}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    darkMode 
-                      ? 'border border-gray-600 text-gray-300 hover:bg-gray-700/50 backdrop-blur-sm' 
-                      : 'border border-gray-300 text-gray-700 hover:bg-white/50 backdrop-blur-sm'
-                  }`}
+                  className={`px-4 py-2 rounded-lg transition-colors ${darkMode
+                    ? 'border border-gray-600 text-gray-300 hover:bg-gray-700/50 backdrop-blur-sm'
+                    : 'border border-gray-300 text-gray-700 hover:bg-white/50 backdrop-blur-sm'
+                    }`}
                 >
                   Cancel
                 </button>
