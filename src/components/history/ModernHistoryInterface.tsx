@@ -942,15 +942,13 @@ export default function ModernHistoryInterface() {
             <div className="max-w-7xl mx-auto h-full flex flex-col">
               {isLoading ? (
                 <div className="h-full flex flex-col items-center justify-center">
-                  <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+                  <div className="w-16 h-16 flex items-center justify-center mb-6">
+                    <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
                   <h2 className={`text-2xl font-bold mb-2 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
                     }`}>
-                    Loading history...
+                    History is loading...
                   </h2>
-                  <p className={`text-lg transition-colors duration-200 ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                    }`}>
-                    Retrieving your chat history
-                  </p>
                 </div>
               ) : error ? (
                 <div className="h-full flex flex-col items-center justify-center">

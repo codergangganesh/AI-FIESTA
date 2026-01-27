@@ -4,7 +4,7 @@ import ModernHistoryInterface from '@/components/history/ModernHistoryInterface'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
 import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
-import OptimizedPageTransitionLoader from '@/components/ui/OptimizedPageTransitionLoader'
+import SimpleLoader from '@/components/ui/SimpleLoader'
 import { useOptimizedLoading } from '@/contexts/OptimizedLoadingContext'
 
 export default function HistoryPage() {
@@ -24,7 +24,7 @@ export default function HistoryPage() {
 
     // Show loading while checking auth status
     if (loading) {
-        return <OptimizedPageTransitionLoader message="Loading history..." />;
+        return <SimpleLoader message="Loading history..." />;
     }
 
     // Show nothing while redirecting
