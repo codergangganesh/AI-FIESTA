@@ -6,7 +6,6 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import { PopupProvider } from "@/contexts/PopupContext";
 import { LoadingProvider } from '@/contexts/LoadingContext';
 import { OptimizedLoadingProvider } from '@/contexts/OptimizedLoadingContext';
-import PricingPopup from '@/components/ui/PricingPopup';
 import AuthPopup from '@/components/auth/AuthPopup';
 
 export const metadata: Metadata = {
@@ -31,7 +30,6 @@ export default function RootLayout({
                 <LoadingProvider>
                   <OptimizedLoadingProvider>
                     {children}
-                    <PricingPopup />
                     <AuthPopup />
                   </OptimizedLoadingProvider>
                 </LoadingProvider>

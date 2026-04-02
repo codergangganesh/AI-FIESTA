@@ -1,12 +1,13 @@
 'use client'
+/* eslint-disable @next/next/no-img-element */
 
 import { useState, useRef, useEffect } from 'react'
-import { X, Copy, User, Sparkles, Clock, Check } from 'lucide-react'
+import { X, Copy, Sparkles, Clock, Check } from 'lucide-react'
 import { useDarkMode } from '@/contexts/DarkModeContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { ChatResponse } from '@/types/chat'
 import { AIModel } from '@/types/app'
-import { getModelById, AVAILABLE_MODELS, AiModel } from '@/lib/models'
+import { getModelById } from '@/lib/models'
 
 interface HistoryDetailModalProps {
   session: {
@@ -122,7 +123,7 @@ export default function HistoryDetailModal({ session, onClose }: HistoryDetailMo
             : 'bg-gradient-to-br from-white/90 to-gray-100/90 border-gray-200'
           } md:max-w-5xl lg:max-w-6xl transform-gpu`}
       >
-        {/* Close button */}`
+        {/* Close button */}
         <button
           onClick={handleClose}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors z-10"

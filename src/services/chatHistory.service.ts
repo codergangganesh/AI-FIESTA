@@ -61,7 +61,7 @@ export class ChatHistoryService {
           } else {
             console.error('Error saving chat session - Non-JSON response:', errorText)
           }
-        } catch (e) {
+        } catch {
           console.error('Error saving chat session - Could not parse error as JSON:', errorText)
         }
         return false
@@ -132,7 +132,7 @@ export class ChatHistoryService {
           } else {
             console.error('Error fetching chat sessions - Non-JSON response:', errorText)
           }
-        } catch (e) {
+        } catch {
           console.error('Error fetching chat sessions - Could not parse error as JSON:', errorText)
         }
         this.isFetching = false
@@ -227,7 +227,7 @@ export class ChatHistoryService {
           } else {
             console.error('Error deleting chat session - Non-JSON response:', errorText)
           }
-        } catch (e) {
+        } catch {
           console.error('Error deleting chat session - Could not parse error as JSON:', errorText)
         }
         return false

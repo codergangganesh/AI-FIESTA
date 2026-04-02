@@ -1,8 +1,7 @@
 'use client'
 
-import React from 'react'
 import Link from 'next/link'
-import { ChevronRight, Brain, Twitter, Linkedin, Facebook, Github } from 'lucide-react'
+import { ChevronRight, Twitter, Linkedin, Facebook, Github } from 'lucide-react'
 
 import AIFiestaLogo from '../AIFiestaLogo'
 
@@ -162,29 +161,6 @@ export default function SiteFooter({ darkMode, socialLinks }: SiteFooterProps) {
               </ul>
             </div>
 
-            {/* Payment Details */}
-            <div>
-              <h4 className={`font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                Payment Details
-              </h4>
-              <ul className="space-y-2">
-                {[
-                  { name: 'Pricing', href: '/pricing' },
-                  // { name: 'Payment Methods', href: '/payment' },
-                  // { name: 'Billing', href: '/account-settings#billing' }
-                ].map((link, index) => (
-                  <li key={index}>
-                    <Link
-                      href={link.href}
-                      className={`hover:text-blue-500 transition-colors duration-200 text-sm flex items-center space-x-2 ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>
-                      <ChevronRight className="w-3 h-3" />
-                      <span>{link.name}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </div>

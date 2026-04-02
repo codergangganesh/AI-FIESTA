@@ -2,7 +2,6 @@
 
 import { AVAILABLE_MODELS } from '@/lib/models'
 import { Brain, Zap, Star } from 'lucide-react'
-import { useDarkMode } from '@/contexts/DarkModeContext'
 
 export default function ModernModelShowcase() {
   // Force dark mode for this component

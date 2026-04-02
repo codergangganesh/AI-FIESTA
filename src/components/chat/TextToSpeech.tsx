@@ -11,7 +11,6 @@ interface TextToSpeechProps {
 export default function TextToSpeech({ text, isVisible = true }: TextToSpeechProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
-  const [currentPosition, setCurrentPosition] = useState(0)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
 
   const speak = () => {
@@ -45,13 +44,11 @@ export default function TextToSpeech({ text, isVisible = true }: TextToSpeechPro
     utterance.onend = () => {
       setIsPlaying(false)
       setIsPaused(false)
-      setCurrentPosition(0)
     }
 
     utterance.onerror = () => {
       setIsPlaying(false)
       setIsPaused(false)
-      setCurrentPosition(0)
     }
 
     speechSynthesis.speak(utterance)
@@ -69,7 +66,6 @@ export default function TextToSpeech({ text, isVisible = true }: TextToSpeechPro
     speechSynthesis.cancel()
     setIsPlaying(false)
     setIsPaused(false)
-    setCurrentPosition(0)
   }
 
   if (!isVisible) return null

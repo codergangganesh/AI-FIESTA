@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { Bell, X, User, MessageSquare, Settings, CreditCard } from 'lucide-react'
+import { Bell, X, User, MessageSquare, Settings } from 'lucide-react'
 
 const NotificationBell = () => {
   const [showNotifications, setShowNotifications] = useState(false)
@@ -27,14 +27,6 @@ const NotificationBell = () => {
     },
     {
       id: 3,
-      title: "Payment successful",
-      description: "Your subscription payment was processed successfully",
-      time: "1 day ago",
-      icon: CreditCard,
-      read: true
-    },
-    {
-      id: 4,
       title: "Settings changed",
       description: "Dark mode has been enabled on your account",
       time: "2 days ago",

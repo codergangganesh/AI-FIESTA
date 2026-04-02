@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Activity,
   Brain,
@@ -70,7 +70,6 @@ export default function DashboardPage() {
   const [lineChartMetricLabels, setLineChartMetricLabels] = useState<Record<string, string>>({})
   const [accuracyData, setAccuracyData] = useState<{ [key: string]: string | number; period: string }[]>([])
   const [lossData, setLossData] = useState<{ [key: string]: string | number; period: string }[]>([])
-  const [userPlan] = useState('free')
 
   useEffect(() => {
     dashboardService.clearCache()
@@ -196,7 +195,6 @@ export default function DashboardPage() {
   const generateDashboardData = () => ({
     metrics,
     usageData,
-    userPlan,
     exportDate: new Date().toISOString(),
     userId: user?.id || 'anonymous'
   })
@@ -258,46 +256,29 @@ export default function DashboardPage() {
     setIsExportOpen(false)
   }
 
-  const getPlanDisplayName = () => (userPlan === 'pro' || userPlan === 'pro_plus' ? 'Pro Plus' : 'Free')
-  const getPlanLimits = (planType: string) => {
-    switch (planType) {
-      case 'pro':
-        return { apiCalls: 2500, comparisons: 500, storage: 10 * 1024 }
-      case 'pro_plus':
-        return { apiCalls: 10000, comparisons: Infinity, storage: 100 * 1024 }
-      default:
-        return { apiCalls: 100, comparisons: 10, storage: 50 }
+  const usageCards = [
+    {
+      title: 'API Calls',
+      value: usageData.apiCalls.toString(),
+      description: 'Total requests made to the chat API',
+      progress: Math.min(100, usageData.apiCalls * 2),
+      tone: 'bg-blue-500'
+    },
+    {
+      title: 'Comparisons',
+      value: usageData.comparisons.toString(),
+      description: 'Total chat sessions compared',
+      progress: Math.min(100, usageData.comparisons * 10),
+      tone: 'bg-violet-500'
+    },
+    {
+      title: 'Avg Responses',
+      value: avgResponsesPerComparison.toString(),
+      description: 'Average model responses per comparison',
+      progress: 100,
+      tone: 'bg-emerald-500'
     }
-  }
-
-  const usageCards = useMemo(() => {
-    const limits = getPlanLimits(userPlan)
-    const calculateUsagePercentage = (current: number, limit: number) => (limit === Infinity ? 0 : Math.min(100, (current / limit) * 100))
-
-    return [
-      {
-        title: 'API Calls',
-        value: `${usageData.apiCalls} / ${limits.apiCalls === Infinity ? 'Infinity' : limits.apiCalls}`,
-        description: `${calculateUsagePercentage(usageData.apiCalls, limits.apiCalls).toFixed(1)}% used`,
-        progress: calculateUsagePercentage(usageData.apiCalls, limits.apiCalls),
-        tone: 'bg-blue-500'
-      },
-      {
-        title: 'Comparisons',
-        value: `${usageData.comparisons} / ${limits.comparisons === Infinity ? 'Infinity' : limits.comparisons}`,
-        description: `${calculateUsagePercentage(usageData.comparisons, limits.comparisons).toFixed(1)}% used`,
-        progress: calculateUsagePercentage(usageData.comparisons, limits.comparisons),
-        tone: 'bg-violet-500'
-      },
-      {
-        title: 'Avg Responses',
-        value: avgResponsesPerComparison.toString(),
-        description: 'Average model responses per comparison',
-        progress: 100,
-        tone: 'bg-emerald-500'
-      }
-    ]
-  }, [avgResponsesPerComparison, usageData, userPlan])
+  ]
 
   if (loading || loadingData) {
     return <SimpleLoader message="Loading dashboard..." />
@@ -339,9 +320,6 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/10 px-4 py-2 text-sm font-medium text-cyan-200">
-                  {getPlanDisplayName()}
-                </div>
               </div>
             </div>
           </div>

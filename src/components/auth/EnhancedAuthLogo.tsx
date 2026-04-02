@@ -1,8 +1,6 @@
 'use client'
 
-import React from 'react'
 import Image from 'next/image'
-import { useDarkMode } from '@/contexts/DarkModeContext'
 
 interface EnhancedAuthLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'
@@ -13,8 +11,6 @@ export default function EnhancedAuthLogo({
   size = 'md',
   className = ''
 }: EnhancedAuthLogoProps) {
-  const { darkMode } = useDarkMode()
-
   const sizeClasses = {
     sm: 'w-10 h-10',
     md: 'w-12 h-12',

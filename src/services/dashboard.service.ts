@@ -54,16 +54,16 @@ export class DashboardService {
       if (savedMetrics) {
         try {
           this.cumulativeMetrics = JSON.parse(savedMetrics)
-        } catch (e) {
-          console.error('Failed to parse saved dashboard metrics:', e)
+        } catch (error) {
+          console.error('Failed to parse saved dashboard metrics:', error)
         }
       }
 
       if (savedUsage) {
         try {
           this.cumulativeUsageData = JSON.parse(savedUsage)
-        } catch (e) {
-          console.error('Failed to parse saved usage data:', e)
+        } catch (error) {
+          console.error('Failed to parse saved usage data:', error)
         }
       }
     }
@@ -174,7 +174,7 @@ export class DashboardService {
         try {
           const responsesString = JSON.stringify(session.responses)
           totalStorageBytes += new Blob([responsesString]).size
-        } catch (e) {
+        } catch {
           // If JSON stringify fails, estimate size differently
           totalStorageBytes += session.responses.length * 100 // rough estimate
         }

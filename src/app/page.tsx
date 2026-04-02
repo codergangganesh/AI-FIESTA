@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useOptimizedLoading } from "@/contexts/OptimizedLoadingContext";
 
 export default function Home() {
-  const { user, loading: authLoading } = useAuth();
+  const { loading: authLoading } = useAuth();
   const { setPageLoading } = useOptimizedLoading();
   const [pageLoading, setPageLoadingState] = useState(true);
 

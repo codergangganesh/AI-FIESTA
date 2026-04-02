@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import Image from 'next/image'
 
 interface AIFiestaLogoProps {
@@ -16,6 +15,9 @@ export default function AIFiestaLogo({
   darkMode = false,
   simplified = false
 }: AIFiestaLogoProps) {
+  void darkMode
+  void simplified
+
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-10 h-10',

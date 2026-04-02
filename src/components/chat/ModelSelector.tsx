@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { AVAILABLE_MODELS } from '@/lib/models'
-import { Check, Brain, Zap, Star, Code, Image, FileText, DollarSign, Clock } from 'lucide-react'
+import { Check, Brain, Zap, Star, Code, Image as ImageIcon, FileText, DollarSign, Clock } from 'lucide-react'
 
 interface ModelSelectorProps {
   selectedModels: string[]
@@ -51,7 +50,7 @@ export default function ModelSelector({ selectedModels, onModelToggle }: ModelSe
   const getCapabilityIcon = (capability: string) => {
     switch (capability) {
       case 'text': return <FileText className="w-3 h-3" />
-      case 'image': return <Image className="w-3 h-3" />
+      case 'image': return <ImageIcon className="w-3 h-3" />
       case 'code': return <Code className="w-3 h-3" />
       case 'audio': return <Zap className="w-3 h-3" />
       case 'video': return <Zap className="w-3 h-3" />

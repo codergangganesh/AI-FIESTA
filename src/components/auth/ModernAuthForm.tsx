@@ -4,10 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
 import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Github, Sparkles } from 'lucide-react'
-
-import AIFiestaLogo from '@/components/landing/AIFiestaLogo'
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Github } from 'lucide-react'
 import EnhancedAuthLogo from '@/components/auth/EnhancedAuthLogo'
 import { useDarkMode } from '@/contexts/DarkModeContext'
 
@@ -78,7 +75,7 @@ export default function ModernAuthForm({ darkMode: propDarkMode }: ModernAuthFor
           setSuccessMessage('Account created successfully. Please sign in.')
         }
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)
@@ -91,7 +88,7 @@ export default function ModernAuthForm({ darkMode: propDarkMode }: ModernAuthFor
       setError('')
       setSuccessMessage('')
       await signInWithGoogle()
-    } catch (err) {
+    } catch {
       setError('Failed to sign in with Google. Please try again.')
       setLoading(false)
     }
@@ -103,7 +100,7 @@ export default function ModernAuthForm({ darkMode: propDarkMode }: ModernAuthFor
       setError('')
       setSuccessMessage('')
       await signInWithGithub()
-    } catch (err) {
+    } catch {
       setError('Failed to sign in with GitHub. Please try again.')
       setLoading(false)
     }
