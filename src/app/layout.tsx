@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { DarkModeProvider } from "@/contexts/DarkModeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -9,16 +8,6 @@ import { LoadingProvider } from '@/contexts/LoadingContext';
 import { OptimizedLoadingProvider } from '@/contexts/OptimizedLoadingContext';
 import PricingPopup from '@/components/ui/PricingPopup';
 import AuthPopup from '@/components/auth/AuthPopup';
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "AI Fiesta - Compare AI Models Side-by-Side",
@@ -33,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} fiesta-shell antialiased min-h-screen text-white overflow-x-hidden`}
+        className="fiesta-shell min-h-screen overflow-x-hidden text-white antialiased"
       >
         <DarkModeProvider>
           <AuthProvider>

@@ -212,35 +212,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (showLoadingFn) {
         showLoadingFn('Deleting account...')
       }
-      
-      // First, re-authenticate the user with their password
-      const { data: { user: authUser }, error: signInError } = await supabase.auth.signInWithPassword({
-        email: user?.email || '',
-        password,
+
+      const response = await fetch('/api/account', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
       })
-      
-      if (signInError) {
+
+      const result = await response.json().catch(() => null)
+      if (!response.ok) {
         if (hideLoadingFn) {
           hideLoadingFn()
         }
-        return { error: { message: 'Incorrect password. Please try again.' } }
-      }
-      
-      if (!authUser) {
-        if (hideLoadingFn) {
-          hideLoadingFn()
-        }
-        return { error: { message: 'Failed to authenticate user.' } }
-      }
-      
-      // Delete the user
-      const { error } = await supabase.auth.admin.deleteUser(authUser.id)
-      
-      if (error) {
-        if (hideLoadingFn) {
-          hideLoadingFn()
-        }
-        return { error: { message: 'Failed to delete account. Please try again.' } }
+        return { error: { message: result?.error || 'Failed to delete account. Please try again.' } }
       }
       
       // Sign out and clear local user data

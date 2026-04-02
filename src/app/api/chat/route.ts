@@ -1,17 +1,7 @@
 import { NextRequest } from "next/server";
-
-interface ChatMessage { 
-  role: "system" | "user" | "assistant"; 
-  content: string; 
-}
-
-interface MultiChatBody { 
-  models: string[]; 
-  messages: ChatMessage[]; 
-  maxTokens?: number; 
-  temperature?: number;
-  message?: string; // For single message comparisons
-}
+import { getAuthenticatedUser } from "@/lib/auth/user";
+import { rateLimit } from "@/lib/security/rate-limit";
+import { validateChatPayload } from "@/lib/security/chat-validation";
 
 // Define a proper error type
 interface ApiError {
@@ -25,6 +15,28 @@ function delay(ms: number) {
 }
 
 export async function POST(req: NextRequest) {
+  const { user, error: authError } = await getAuthenticatedUser();
+  if (authError || !user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const ipAddress = forwardedFor?.split(",")[0]?.trim() || "unknown";
+  const limiter = rateLimit(`chat:${user.id}:${ipAddress}`, 20, 60_000);
+  if (!limiter.allowed) {
+    return new Response(
+      JSON.stringify({
+        error: "Rate limit exceeded. Please retry later.",
+      }),
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(limiter.retryAfterSeconds),
+        },
+      },
+    );
+  }
+
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return new Response(JSON.stringify({ 
@@ -33,43 +45,34 @@ export async function POST(req: NextRequest) {
     }), { status: 500 });
   }
 
-  let body: MultiChatBody;
+  let body: unknown;
   try {
-    body = await req.json() as MultiChatBody;
+    body = await req.json();
   } catch (parseError) {
     return new Response(JSON.stringify({ 
       error: "Invalid JSON in request body",
       details: parseError instanceof Error ? parseError.message : String(parseError)
     }), { status: 400 });
   }
-  
-  // Handle both single message and messages array formats
-  let messages: ChatMessage[] = [];
-  if (body.message) {
-    messages = [{ role: "user", content: body.message }];
-  } else if (Array.isArray(body.messages) && body.messages.length > 0) {
-    messages = body.messages;
-  } else {
-    return new Response(JSON.stringify({ 
-      error: "Either message or messages[] required",
-      details: "Please provide a message to send to the AI models"
-    }), { status: 400 });
+  const validation = validateChatPayload(body);
+  if (validation.error || !validation.data) {
+    return new Response(
+      JSON.stringify({
+        error: validation.error ?? "Invalid request.",
+      }),
+      { status: 400 },
+    );
   }
 
-  if (!Array.isArray(body.models) || body.models.length === 0) {
-    return new Response(JSON.stringify({ 
-      error: "models[] required",
-      details: "Please select at least one AI model to compare"
-    }), { status: 400 });
-  }
+  const { models, messages, maxTokens, temperature } = validation.data;
 
   try {
     const startTime = Date.now(); // Track start time for response time calculation
     
     // Process requests sequentially with rate limiting to avoid 429 errors
     const results: Array<{model: string; content?: string; error?: string; details?: string}> = [];
-    for (let i = 0; i < body.models.length; i++) {
-      const modelId = body.models[i];
+    for (let i = 0; i < models.length; i++) {
+      const modelId = models[i];
       
       try {
         let res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -85,8 +88,8 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             model: modelId,
             messages: messages,
-            max_tokens: body.maxTokens ?? 512, // Reduced default tokens
-            temperature: body.temperature ?? 0.7,
+            max_tokens: maxTokens,
+            temperature,
             stream: true,
           }),
         });
@@ -120,8 +123,8 @@ export async function POST(req: NextRequest) {
                 body: JSON.stringify({
                   model: modelId,
                   messages: messages,
-                  max_tokens: body.maxTokens ?? 512, // Reduced tokens for retries
-                  temperature: body.temperature ?? 0.7,
+                  max_tokens: maxTokens,
+                  temperature,
                   stream: true,
                 }),
               });
@@ -204,9 +207,9 @@ export async function POST(req: NextRequest) {
       
       // Add increased delay between requests to avoid rate limiting
       // Increase delay based on number of models to reduce rate limit issues
-      if (i < body.models.length - 1) {
+      if (i < models.length - 1) {
         const baseDelay = 500; // Increased from 200ms to 500ms
-        const additionalDelay = body.models.length > 3 ? 300 : 0; // Extra delay for many models
+        const additionalDelay = models.length > 2 ? 300 : 0;
         await delay(baseDelay + additionalDelay);
       }
     }

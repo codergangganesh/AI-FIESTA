@@ -10,7 +10,7 @@ interface DarkModeContextType {
 const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined)
 
 export function DarkModeProvider({ children }: { children: ReactNode }) {
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useState(true)
 
   const applyTheme = (isDark: boolean) => {
     if (typeof window === 'undefined') return
@@ -22,9 +22,7 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const isDark = localStorage.getItem('darkMode') === 'true' || 
-        (localStorage.getItem('darkMode') === null && 
-         window.matchMedia('(prefers-color-scheme: dark)').matches)
+      const isDark = localStorage.getItem('darkMode') !== 'false'
       
       setDarkMode(isDark)
       applyTheme(isDark)

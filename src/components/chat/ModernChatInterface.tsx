@@ -70,32 +70,12 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
         return
       }
 
-      const savedSessions = localStorage.getItem('aiFiestaChatSessions')
-      if (!savedSessions) return
-
-      try {
-        const parsedSessions = JSON.parse(savedSessions)
-        const sessionsWithDates: ChatSession[] = parsedSessions.map((session: ChatSession) => ({
-          ...session,
-          timestamp: session.timestamp instanceof Date ? session.timestamp : new Date(session.timestamp),
-          selectedModels: session.selectedModels || []
-        }))
-        setChatSessions(sessionsWithDates)
-
-        if (!currentSessionId && sessionsWithDates.length > 0) {
-          const mostRecentSession = sessionsWithDates.reduce((latest, session) =>
-            new Date(session.timestamp) > new Date(latest.timestamp) ? session : latest,
-            sessionsWithDates[0]
-          )
-          setCurrentSessionId(mostRecentSession.id)
-        }
-      } catch (e) {
-        console.error('Failed to parse saved sessions:', e)
-      }
+      localStorage.removeItem('aiFiestaChatSessions')
     }
 
     loadChatSessions()
-  }, [currentSessionId, initialConversation])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialConversation])
 
   useEffect(() => {
     const saveChatSessions = async () => {
@@ -112,12 +92,6 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
           }
         }
 
-        const sessionsToSave = chatSessions.map(session => ({
-          ...session,
-          timestamp: (session.timestamp instanceof Date ? session.timestamp : new Date(session.timestamp)).toISOString(),
-          selectedModels: session.selectedModels
-        }))
-        localStorage.setItem('aiFiestaChatSessions', JSON.stringify(sessionsToSave))
       }
     }
 
@@ -173,11 +147,16 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
     setMessage('')
   }
 
-  const startNewComparison = () => {
+  const startNewComparison = (prompt?: string) => {
     setChatSessions([])
     setCurrentSessionId(null)
     localStorage.removeItem('aiFiestaChatSessions')
     setShowBlankPage(false)
+    
+    if (typeof prompt === 'string') {
+      setMessage(prompt)
+      setTimeout(() => textareaRef.current?.focus(), 50)
+    }
   }
 
   const handleModelToggle = (modelId: string) => {
@@ -223,6 +202,12 @@ export default function ModernChatInterface({ initialConversation }: ModernChatI
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
+        if (response.status === 401) {
+          throw new Error('Please sign in to use AI comparisons.')
+        }
+        if (response.status === 429) {
+          throw new Error(errorData.error || 'Rate limit exceeded. Please wait and try again.')
+        }
         throw new Error(`HTTP ${response.status}: ${errorData.error || response.statusText}`)
       }
 

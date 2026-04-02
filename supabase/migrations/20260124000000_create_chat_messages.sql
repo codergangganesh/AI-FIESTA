@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS "chat_messages" (
 
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS "idx_chat_messages_session_id" ON "chat_messages"("session_id");
-CREATE INDEX IF NOT EXISTS "idx_chat_messages_timestamp" ON "chat_messages"("timestamp");
+CREATE INDEX IF NOT EXISTS "idx_chat_messages_created_at" ON "chat_messages"("created_at");
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE "chat_messages" ENABLE ROW LEVEL SECURITY;

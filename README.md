@@ -57,11 +57,12 @@ AI Fiesta is a state-of-the-art AI comparison platform designed to help users fi
 - Supabase account
 
 ### Environment Setup
-Create a `.env` file in the root directory:
+Create a local `.env` file in the root directory from `.env.example`:
 ```bash
 OPENROUTER_API_KEY=your_key_here
 NEXT_PUBLIC_SUPABASE_URL=your_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_SITE_NAME=AI Fiesta
 ```
