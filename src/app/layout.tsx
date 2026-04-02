@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-zinc-950 to-zinc-900 text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} fiesta-shell antialiased min-h-screen text-white overflow-x-hidden`}
       >
         <DarkModeProvider>
           <AuthProvider>

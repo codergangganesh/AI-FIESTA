@@ -209,7 +209,7 @@ function ProfileContent({ user, darkMode, toggleDarkMode }: {
       <SharedSidebar />
 
       {/* Adjusted layout to match chat interface with flex and responsive margins */}
-      <div className="lg:ml-80 ml-16 transition-all duration-300">
+      <div className="lg:ml-72 ml-16 transition-all duration-300">
         <div className={`backdrop-blur-sm border-b transition-colors duration-200 ${darkMode
             ? 'bg-gray-800/60 border-gray-700/30'
             : 'bg-white/60 border-slate-200/30'

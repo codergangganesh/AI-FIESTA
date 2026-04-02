@@ -122,17 +122,17 @@ const CombinedPerformanceChart: React.FC<CombinedPerformanceChartProps> = ({
   const lossAreaPath = useMemo(() => generateAreaPath(lossPoints), [lossPoints]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+    <div className="fiesta-panel rounded-3xl p-6 transition-all duration-300 relative">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
         <div className="flex space-x-4">
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
-            <span className="text-xs text-gray-600 dark:text-gray-300">Accuracy</span>
+            <span className="text-xs text-slate-300">Accuracy</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
-            <span className="text-xs text-gray-600 dark:text-gray-300">Loss</span>
+            <span className="text-xs text-slate-300">Loss</span>
           </div>
         </div>
       </div>
@@ -140,25 +140,25 @@ const CombinedPerformanceChart: React.FC<CombinedPerformanceChartProps> = ({
       {accuracySeries.length > 0 && lossSeries.length > 0 ? (
         <div className="relative h-80">
           {/* Y-axis labels for Accuracy */}
-          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-blue-500 py-4 pr-2">
+          <div className="absolute left-0 top-0 h-full flex flex-col justify-between py-4 pr-2 text-xs text-blue-300">
             <span>{maxAccuracy.toFixed(0)}%</span>
             <span>{((maxAccuracy + minAccuracy) / 2).toFixed(0)}%</span>
             <span>{minAccuracy.toFixed(0)}%</span>
           </div>
 
           {/* Y-axis labels for Loss (right side) */}
-          <div className="absolute right-0 top-0 h-full flex flex-col justify-between text-xs text-red-500 py-4 pl-2">
+          <div className="absolute right-0 top-0 h-full flex flex-col justify-between py-4 pl-2 text-xs text-rose-300">
             <span>{(maxLoss).toFixed(2)}</span>
             <span>{(maxLoss / 2).toFixed(2)}</span>
             <span>0.00</span>
           </div>
 
           {/* Grid */}
-          <div className="absolute inset-0 ml-10 mr-10 border-l border-r border-b border-gray-200 dark:border-gray-700">
+          <div className="absolute inset-0 ml-10 mr-10 border-b border-l border-r border-white/8">
             {[0, 0.25, 0.5, 0.75, 1].map((fraction, i) => (
               <div 
                 key={i} 
-                className="absolute left-0 right-0 h-px bg-gray-100 dark:bg-gray-700" 
+                className="absolute left-0 right-0 h-px bg-white/6" 
                 style={{ top: `${fraction * 90}%` }}
               ></div>
             ))}
@@ -216,7 +216,7 @@ const CombinedPerformanceChart: React.FC<CombinedPerformanceChartProps> = ({
                 .map((point, i) => (
                   <span 
                     key={i} 
-                    className="text-xs text-gray-500 dark:text-gray-400"
+                    className="text-xs text-slate-400"
                     style={{ 
                       transform: 'translateX(-50%)',
                       left: `${point.x}%`,
@@ -233,13 +233,13 @@ const CombinedPerformanceChart: React.FC<CombinedPerformanceChartProps> = ({
             {hoverData && (
               <>
                 <div 
-                  className="absolute top-0 bottom-0 w-0.5 bg-gray-300 dark:bg-gray-600"
+                  className="absolute top-0 bottom-0 w-0.5 bg-white/12"
                   style={{ left: `${hoverData.x}%` }}
                 ></div>
                 
                 {/* Accuracy dot */}
                 <div 
-                  className="absolute w-3 h-3 bg-blue-500 rounded-full -translate-x-1.5 -translate-y-1.5 border-2 border-white dark:border-gray-800"
+                  className="absolute w-3 h-3 rounded-full bg-blue-500 -translate-x-1.5 -translate-y-1.5 border-2 border-slate-950"
                   style={{ 
                     left: `${hoverData.x}%`, 
                     top: `${hoverData.accuracyY}%`
@@ -248,7 +248,7 @@ const CombinedPerformanceChart: React.FC<CombinedPerformanceChartProps> = ({
                 
                 {/* Loss dot */}
                 <div 
-                  className="absolute w-3 h-3 bg-red-500 rounded-full -translate-x-1.5 -translate-y-1.5 border-2 border-white dark:border-gray-800"
+                  className="absolute w-3 h-3 rounded-full bg-red-500 -translate-x-1.5 -translate-y-1.5 border-2 border-slate-950"
                   style={{ 
                     left: `${hoverData.x}%`, 
                     top: `${hoverData.lossY}%`
@@ -256,31 +256,31 @@ const CombinedPerformanceChart: React.FC<CombinedPerformanceChartProps> = ({
                 ></div>
                 
                 <div 
-                  className="absolute bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 text-sm z-10 min-w-[180px]"
+                  className="absolute z-10 min-w-[180px] rounded-lg border border-white/10 bg-slate-950/95 p-3 text-sm shadow-lg"
                   style={{ 
                     left: `${Math.min(85, Math.max(15, hoverData.x))}%`, 
                     top: '20px',
                     transform: hoverData.x > 70 ? 'translateX(-100%)' : 'none'
                   }}
                 >
-                  <div className="font-medium text-gray-900 dark:text-white mb-2">
+                    <div className="mb-2 font-medium text-white">
                     {hoverData.period}
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center">
                       <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                      <span className="text-xs text-gray-600 dark:text-gray-300">Accuracy:</span>
+                      <span className="text-xs text-slate-300">Accuracy:</span>
                     </div>
-                    <span className="text-blue-600 dark:text-blue-400 font-medium">
+                      <span className="font-medium text-blue-300">
                       {hoverData.accuracyValue.toFixed(1)}%
                     </span>
                   </div>
                   <div className="flex justify-between items-center mt-1">
                     <div className="flex items-center">
                       <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
-                      <span className="text-xs text-gray-600 dark:text-gray-300">Loss:</span>
+                      <span className="text-xs text-slate-300">Loss:</span>
                     </div>
-                    <span className="text-red-600 dark:text-red-400 font-medium">
+                      <span className="font-medium text-red-300">
                       {hoverData.lossValue.toFixed(4)}
                     </span>
                   </div>
@@ -327,7 +327,7 @@ const CombinedPerformanceChart: React.FC<CombinedPerformanceChartProps> = ({
         </div>
       ) : (
         <div className="flex items-center justify-center h-80">
-          <p className="text-gray-500 dark:text-gray-400">No data available</p>
+          <p className="text-slate-400">No data available</p>
         </div>
       )}
     </div>

@@ -2,8 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import {
-    Plus, Lightbulb, Paperclip, Image, FileCode,
-    ChevronDown, Check, Sparkles, Zap, Brain,
+    ChevronDown, Check, Sparkles,
     SendHorizontal
 } from 'lucide-react'
 
@@ -32,9 +31,6 @@ export function ModelSelector({
     const [isOpen, setIsOpen] = useState(false)
 
     // Find full model objects for selected IDs
-    const selectedModelObjects = availableModels.filter(m => selectedModels.includes(m.id));
-    const displayModel = selectedModelObjects.length > 0 ? selectedModelObjects[0] : availableModels[0];
-
     return (
         <div className="relative">
             <button
@@ -142,27 +138,32 @@ export function ChatInput({
 
     return (
         <div className="relative w-full max-w-[1000px] mx-auto z-30">
-            {/* Glow Effects */}
-            <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-b from-white/[0.08] to-transparent pointer-events-none" />
+            <div className="absolute -inset-[1px] rounded-[1.5rem] bg-gradient-to-b from-cyan-300/20 via-blue-400/10 to-transparent pointer-events-none" />
 
-            {/* Main Container */}
-            <div className={`relative rounded-2xl backdrop-blur-xl ring-1 shadow-2xl transition-all duration-300 ${darkMode
-                ? 'bg-[#1e1e22]/90 ring-white/[0.1] shadow-black/50 focus-within:ring-white/[0.2] focus-within:shadow-[0_0_0_1px_rgba(255,255,255,0.1),0_12px_60px_rgba(0,0,0,0.6)]'
-                : 'bg-[#1e1e22]/90 ring-black/[0.1] shadow-blue-500/10 focus-within:ring-black/[0.2] focus-within:shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_12px_40px_rgba(0,0,0,0.2)]'
+            <div className={`relative rounded-[1.5rem] backdrop-blur-xl ring-1 shadow-2xl transition-all duration-300 ${darkMode
+                ? 'bg-[#0c1828]/88 ring-white/[0.08] shadow-black/50 focus-within:ring-cyan-300/20'
+                : 'bg-white/90 ring-black/[0.08] shadow-blue-500/10 focus-within:ring-blue-400/20'
                 }`}>
-                <div className="relative">
+                <div className="relative px-4 pt-4">
                     <textarea
                         ref={textareaRef}
                         value={value}
                         onChange={onChange}
                         onKeyDown={handleKeyDown}
                         placeholder={placeholder}
-                        className={`w-full resize-none bg-transparent text-[18px] placeholder-[#5a5a5f] px-6 pt-6 pb-4 focus:outline-none min-h-[120px] max-h-[400px] text-white placeholder:text-gray-500`}
-                        style={{ height: '120px' }}
+                        className={`min-h-[84px] max-h-[240px] w-full resize-none rounded-[1.25rem] border pr-14 pl-4 pt-3 pb-3 text-[15px] focus:outline-none ${darkMode ? 'border-white/8 bg-white/[0.03] text-white placeholder:text-slate-500' : 'border-slate-200 bg-white text-slate-900 placeholder:text-slate-400'}`}
+                        style={{ height: '84px' }}
                     />
+                    <button
+                        onClick={onSend}
+                        disabled={!value?.trim()}
+                        className="fiesta-button-primary absolute bottom-3 right-7 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 active:scale-95"
+                    >
+                        <SendHorizontal className="size-4" />
+                    </button>
                 </div>
 
-                <div className="flex items-center justify-between px-4 pb-4 pt-2">
+                <div className="flex items-center justify-between px-4 pb-3 pt-2">
                     <div className="flex items-center gap-3">
                         <ModelSelector
                             selectedModels={selectedModels}
@@ -173,16 +174,6 @@ export function ChatInput({
                     </div>
 
                     <div className="flex-1" />
-
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={onSend}
-                            disabled={!value?.trim()}
-                            className="flex items-center justify-center w-12 h-12 rounded-full bg-[#1488fc] hover:bg-[#1a94ff] text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 shadow-[0_0_20px_rgba(20,136,252,0.3)] hover:shadow-[0_0_25px_rgba(20,136,252,0.5)]"
-                        >
-                            <SendHorizontal className="size-5" />
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>

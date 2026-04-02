@@ -1,40 +1,29 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Activity,
+  Brain,
+  Download,
+  GitCompare,
+  MessageSquare,
+  TrendingUp
+} from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
-import { useDarkMode } from '@/contexts/DarkModeContext'
+import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
+import { useOptimizedLoading } from '@/contexts/OptimizedLoadingContext'
+import { createClient } from '@/utils/supabase/client'
+import SimpleLoader from '@/components/ui/SimpleLoader'
 import SharedSidebar from '@/components/layout/SharedSidebar'
 import BarChart from '@/components/dashboard/BarChart'
 import LineChart from '@/components/dashboard/LineChart'
 import SimpleCircleChart from '@/components/dashboard/SimpleCircleChart'
 import ResponseTimeDistribution from '@/components/dashboard/ResponseTimeDistribution'
 import CombinedPerformanceChart from '@/components/dashboard/CombinedPerformanceChart'
-import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
-import OptimizedPageTransitionLoader from '@/components/ui/OptimizedPageTransitionLoader'
-import SimpleLoader from '@/components/ui/SimpleLoader'
-import { useOptimizedLoading } from '@/contexts/OptimizedLoadingContext'
 import { dashboardService } from '@/services/dashboard.service'
 import { chatHistoryService } from '@/services/chatHistory.service'
 import { ChatSession } from '@/types/chat'
-import { createClient } from '@/utils/supabase/client'
-import { AI_MODELS } from '@/config/ai-models'
-import { generateAccuracyData, generateLossData, getMetricColorClasses } from '@/lib/chartUtils'
-
-import {
-  TrendingUp,
-  GitCompare,
-  Brain,
-  Activity,
-  Sparkles,
-  Download,
-  Bell,
-  MessageSquare,
-  Eye,
-  EyeOff
-} from 'lucide-react'
-import SimpleProfileIcon from '@/components/layout/SimpleProfileIcon'
-
-
+import { generateAccuracyData, generateLossData } from '@/lib/chartUtils'
 
 interface MetricCard {
   title: string
@@ -48,71 +37,29 @@ interface MetricCard {
 export default function DashboardPage() {
   const { user, loading } = useAuth()
   const router = useOptimizedRouter()
-  const { darkMode } = useDarkMode()
   const { setPageLoading } = useOptimizedLoading()
   const supabase = createClient()
   const realtimeSubscriptionRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
 
   const [metrics, setMetrics] = useState<MetricCard[]>([
-    {
-      title: 'Total Comparisons',
-      value: '0',
-      change: '+0%',
-      trend: 'up',
-      icon: GitCompare,
-      color: 'blue'
-    },
-    {
-      title: 'Models Analyzed',
-      value: '0',
-      change: '+0%',
-      trend: 'up',
-      icon: Brain,
-      color: 'purple'
-    },
-    {
-      title: 'Accuracy Score',
-      value: '0%',
-      change: '+0%',
-      trend: 'up',
-      icon: TrendingUp,
-      color: 'green'
-    },
-    {
-      title: 'API Usage',
-      value: '0%',
-      change: '-0%',
-      trend: 'down',
-      icon: Activity,
-      color: 'orange'
-    }
+    { title: 'Total Comparisons', value: '0', change: '+0%', trend: 'up', icon: GitCompare, color: 'from-blue-500 to-cyan-400' },
+    { title: 'Models Analyzed', value: '0', change: '+0%', trend: 'up', icon: Brain, color: 'from-violet-500 to-blue-500' },
+    { title: 'Accuracy Score', value: '0%', change: '+0%', trend: 'up', icon: TrendingUp, color: 'from-emerald-500 to-cyan-500' },
+    { title: 'API Usage', value: '0%', change: '-0%', trend: 'down', icon: Activity, color: 'from-amber-500 to-orange-500' }
   ])
 
-  const [usageData, setUsageData] = useState({
-    apiCalls: 0,
-    comparisons: 0,
-    storage: 0
-  })
-  const [avgResponsesPerComparison, setAvgResponsesPerComparison] = useState<number>(0)
-  const [uniqueModelCount, setUniqueModelCount] = useState<number>(0)
-
-  // State for visibility control of charts (showing first 4 models by default)
+  const [usageData, setUsageData] = useState({ apiCalls: 0, comparisons: 0, storage: 0 })
+  const [avgResponsesPerComparison, setAvgResponsesPerComparison] = useState(0)
   const [chartVisibility, setChartVisibility] = useState<Record<string, boolean>>({
     'model-latency': false,
     'prompts-per-model': false,
     'throughput-by-model': false,
     'latency-trends': false,
-    'latency-distribution': false,
-    'accuracy-trends': false,
-    'loss-trends': false
+    'latency-distribution': false
   })
-
-  const [sessions, setSessions] = useState<ChatSession[]>([])
   const [loadingData, setLoadingData] = useState(true)
   const [isExportOpen, setIsExportOpen] = useState(false)
-  const [availableModels, setAvailableModels] = useState<typeof AI_MODELS>([])
   const [hasUsedModels, setHasUsedModels] = useState(false)
-
 
   const [responseTimeData, setResponseTimeData] = useState<{ name: string; value: number; color: string }[]>([])
   const [messagesTypedData, setMessagesTypedData] = useState<{ name: string; value: number; color: string }[]>([])
@@ -121,136 +68,88 @@ export default function DashboardPage() {
   const [lineChartData, setLineChartData] = useState<{ [key: string]: string | number; period: string }[]>([])
   const [lineChartMetrics, setLineChartMetrics] = useState<string[]>([])
   const [lineChartMetricLabels, setLineChartMetricLabels] = useState<Record<string, string>>({})
-
-  // State for accuracy and loss data
   const [accuracyData, setAccuracyData] = useState<{ [key: string]: string | number; period: string }[]>([])
-  const [accuracyMetrics, setAccuracyMetrics] = useState<string[]>([])
-  const [accuracyMetricLabels, setAccuracyMetricLabels] = useState<Record<string, string>>({})
   const [lossData, setLossData] = useState<{ [key: string]: string | number; period: string }[]>([])
-  const [lossMetrics, setLossMetrics] = useState<string[]>([])
-  const [lossMetricLabels, setLossMetricLabels] = useState<Record<string, string>>({})
   const [userPlan] = useState('free')
 
-  // Reset color map when component mounts
   useEffect(() => {
-    // Reset the model color map for consistent coloring
     dashboardService.clearCache()
   }, [])
 
-  // Redirect unauthenticated users to the auth page
   useEffect(() => {
     if (!loading && !user) {
-      setPageLoading(true, "Redirecting to authentication...")
+      setPageLoading(true, 'Redirecting to authentication...')
       router.push('/auth')
     } else if (user && !loading) {
       setPageLoading(false)
     }
-  }, [user, loading, router, setPageLoading])
+  }, [loading, router, setPageLoading, user])
 
-  // Load available models
-  useEffect(() => {
-    setAvailableModels(AI_MODELS)
-  }, [])
-
-  // Filter sessions by selected models and time range
-  const filterSessions = (sessionsToFilter: ChatSession[]): ChatSession[] => sessionsToFilter
-
-  // Function to update dashboard data
   const updateDashboardData = async (fetchedSessions: ChatSession[] | null = null) => {
     try {
-      // If no sessions provided, fetch them
       const sessionsToUse = fetchedSessions || await dashboardService.getChatSessions(false) || []
+      setHasUsedModels(sessionsToUse.length > 0)
 
-      if (sessionsToUse) {
-        // Check if user has used models
-        const hasSessions = sessionsToUse.length > 0
-        setHasUsedModels(hasSessions)
+      const dashboardMetrics = dashboardService.calculateDashboardMetrics(sessionsToUse)
+      setMetrics([
+        {
+          title: 'Total Comparisons',
+          value: dashboardMetrics.totalComparisons.toString(),
+          change: dashboardMetrics.totalComparisons > 0 ? '+12.5%' : '+0%',
+          trend: 'up',
+          icon: GitCompare,
+          color: 'from-blue-500 to-cyan-400'
+        },
+        {
+          title: 'Models Analyzed',
+          value: dashboardMetrics.modelsAnalyzed.toString(),
+          change: dashboardMetrics.modelsAnalyzed > 0 ? '+8.2%' : '+0%',
+          trend: 'up',
+          icon: Brain,
+          color: 'from-violet-500 to-blue-500'
+        },
+        {
+          title: 'Accuracy Score',
+          value: `${dashboardMetrics.accuracyScore}%`,
+          change: dashboardMetrics.accuracyScore > 0 ? '+2.1%' : '+0%',
+          trend: 'up',
+          icon: TrendingUp,
+          color: 'from-emerald-500 to-cyan-500'
+        },
+        {
+          title: 'API Usage',
+          value: `${dashboardMetrics.apiUsage}%`,
+          change: dashboardMetrics.apiUsage > 0 ? '-5.4%' : '-0%',
+          trend: dashboardMetrics.apiUsage > 50 ? 'down' : 'up',
+          icon: Activity,
+          color: 'from-amber-500 to-orange-500'
+        }
+      ])
 
-        // Apply filters
-        const filteredSessions = filterSessions(sessionsToUse)
-        setSessions(filteredSessions)
+      const usage = dashboardService.getUsageData(sessionsToUse)
+      setUsageData(usage)
 
-        // Calculate metrics based on actual session data
-        const dashboardMetrics = dashboardService.calculateDashboardMetrics(filteredSessions)
+      const totalResponses = sessionsToUse.reduce((sum, s) => sum + (s.responses ? s.responses.length : 0), 0)
+      const avg = sessionsToUse.length > 0 ? totalResponses / sessionsToUse.length : 0
+      setAvgResponsesPerComparison(Number.isFinite(avg) ? parseFloat(avg.toFixed(2)) : 0)
 
-        // Update metrics with actual values
-        setMetrics([
-          {
-            title: 'Total Comparisons',
-            value: dashboardMetrics.totalComparisons.toString(),
-            change: dashboardMetrics.totalComparisons > 0 ? '+12.5%' : '+0%',
-            trend: 'up',
-            icon: GitCompare,
-            color: 'blue'
-          },
-          {
-            title: 'Models Analyzed',
-            value: dashboardMetrics.modelsAnalyzed.toString(),
-            change: dashboardMetrics.modelsAnalyzed > 0 ? '+8.2%' : '+0%',
-            trend: 'up',
-            icon: Brain,
-            color: 'purple'
-          },
-          {
-            title: 'Accuracy Score',
-            value: `${dashboardMetrics.accuracyScore}%`,
-            change: dashboardMetrics.accuracyScore > 0 ? '+2.1%' : '+0%',
-            trend: 'up',
-            icon: TrendingUp,
-            color: 'green'
-          },
-          {
-            title: 'API Usage',
-            value: `${dashboardMetrics.apiUsage}%`,
-            change: dashboardMetrics.apiUsage > 0 ? '-5.4%' : '-0%',
-            trend: dashboardMetrics.apiUsage > 50 ? 'down' : 'up',
-            icon: Activity,
-            color: 'orange'
-          }
-        ])
+      setResponseTimeData(dashboardService.getResponseTimeData(sessionsToUse))
+      setMessagesTypedData(dashboardService.getMessagesTypedData(sessionsToUse))
+      setModelDataTimeData(dashboardService.getModelDataTimeData(sessionsToUse))
+      setResponseTimeDistributionData(dashboardService.getResponseTimeDistributionData(sessionsToUse))
 
-        // Calculate usage data
-        const usage = dashboardService.getUsageData(filteredSessions)
-        setUsageData(usage)
-        // Derived metrics
-        const totalResponses = filteredSessions.reduce((sum, s) => sum + (s.responses ? s.responses.length : 0), 0)
-        const avg = filteredSessions.length > 0 ? totalResponses / filteredSessions.length : 0
-        setAvgResponsesPerComparison(Number.isFinite(avg) ? parseFloat(avg.toFixed(2)) : 0)
-        const uniq = new Set<string>()
-        filteredSessions.forEach(s => (s.selectedModels || []).forEach(id => uniq.add(id)))
-        setUniqueModelCount(uniq.size)
+      const lineData = dashboardService.getLineChartData(sessionsToUse)
+      const metricsList = dashboardService.getLineChartMetrics(sessionsToUse)
+      const labels: Record<string, string> = {}
+      metricsList.forEach(metric => {
+        labels[metric] = metric
+      })
 
-        // Update charts with actual data
-        setResponseTimeData(dashboardService.getResponseTimeData(filteredSessions))
-        setMessagesTypedData(dashboardService.getMessagesTypedData(filteredSessions))
-        setModelDataTimeData(dashboardService.getModelDataTimeData(filteredSessions))
-        setResponseTimeDistributionData(dashboardService.getResponseTimeDistributionData(filteredSessions))
-
-        // Calculate line chart data
-        const lineData = dashboardService.getLineChartData(filteredSessions)
-        setLineChartData(lineData)
-
-        const metricsList = dashboardService.getLineChartMetrics(filteredSessions)
-        setLineChartMetrics(metricsList)
-
-        const metricLabels: Record<string, string> = {}
-        metricsList.forEach(metric => {
-          metricLabels[metric] = metric
-        })
-        setLineChartMetricLabels(metricLabels)
-
-        // Generate mock accuracy data (in a real app, this would come from actual model training data)
-        const accuracyDataPoints = generateAccuracyData(metricsList, lineData);
-        setAccuracyData(accuracyDataPoints);
-        setAccuracyMetrics(metricsList);
-        setAccuracyMetricLabels(metricLabels);
-
-        // Generate mock loss data (in a real app, this would come from actual model training data)
-        const lossDataPoints = generateLossData(metricsList, lineData);
-        setLossData(lossDataPoints);
-        setLossMetrics(metricsList);
-        setLossMetricLabels(metricLabels);
-      }
+      setLineChartData(lineData)
+      setLineChartMetrics(metricsList)
+      setLineChartMetricLabels(labels)
+      setAccuracyData(generateAccuracyData(metricsList, lineData))
+      setLossData(generateLossData(metricsList, lineData))
     } catch (error) {
       console.error('Error updating dashboard data:', error)
     } finally {
@@ -258,123 +157,50 @@ export default function DashboardPage() {
     }
   }
 
-  // Toggle visibility of a specific chart
-  const toggleChartVisibility = (chartId: string) => {
-    setChartVisibility(prev => ({
-      ...prev,
-      [chartId]: !prev[chartId]
-    }))
-  }
-
-  // Fetch dashboard data
   useEffect(() => {
     const fetchData = async () => {
       if (!user || loading) return
-
       setLoadingData(true)
-      try {
-        // Fetch chat sessions
-        const fetchedSessions = await chatHistoryService.getChatSessions()
-        await updateDashboardData(fetchedSessions || [])
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
-      } finally {
-        setLoadingData(false)
-      }
+      const fetchedSessions = await chatHistoryService.getChatSessions()
+      await updateDashboardData(fetchedSessions || [])
     }
 
     fetchData()
-  }, [user, loading])
+  }, [loading, user])
 
-  // Set up real-time subscription for chat sessions
   useEffect(() => {
     if (!user || loading) return
 
-    // Subscribe to chat session changes
     const channel = supabase
       .channel('dashboard-chat-sessions-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat_sessions',
-          filter: `user_id=eq.${user.id}`
-        },
-        async (payload) => {
-          console.log('New chat session added:', payload.new)
-          // Clear cache and fetch updated data
-          dashboardService.clearCache()
-          const fetchedSessions = await chatHistoryService.getChatSessions(false)
-          await updateDashboardData(fetchedSessions || [])
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'chat_sessions',
-          filter: `user_id=eq.${user.id}`
-        },
-        async (payload) => {
-          console.log('Chat session updated:', payload.new)
-          // Clear cache and fetch updated data
-          dashboardService.clearCache()
-          const fetchedSessions = await chatHistoryService.getChatSessions(false)
-          await updateDashboardData(fetchedSessions || [])
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'chat_sessions',
-          filter: `user_id=eq.${user.id}`
-        },
-        async (payload) => {
-          console.log('Chat session deleted:', payload.old)
-          // Clear cache and fetch updated data
-          dashboardService.clearCache()
-          const fetchedSessions = await chatHistoryService.getChatSessions(false)
-          await updateDashboardData(fetchedSessions || [])
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_sessions', filter: `user_id=eq.${user.id}` }, async () => {
+        dashboardService.clearCache()
+        const fetchedSessions = await chatHistoryService.getChatSessions(false)
+        await updateDashboardData(fetchedSessions || [])
+      })
       .subscribe()
 
     realtimeSubscriptionRef.current = channel
 
-    // Clean up subscription
     return () => {
       if (realtimeSubscriptionRef.current) {
         supabase.removeChannel(realtimeSubscriptionRef.current)
       }
     }
-  }, [user, loading])
+  }, [loading, supabase, user])
 
-  // Show loading while checking auth status
-  if (loading || loadingData) {
-    return <SimpleLoader message="Loading dashboard..." />
+  const toggleChartVisibility = (chartId: string) => {
+    setChartVisibility(prev => ({ ...prev, [chartId]: !prev[chartId] }))
   }
 
-  // Show nothing while redirecting
-  if (!user) {
-    return null
-  }
+  const generateDashboardData = () => ({
+    metrics,
+    usageData,
+    userPlan,
+    exportDate: new Date().toISOString(),
+    userId: user?.id || 'anonymous'
+  })
 
-  // Function to generate dashboard data for export
-  const generateDashboardData = () => {
-    return {
-      metrics: metrics,
-      usageData: usageData,
-      userPlan: userPlan,
-      exportDate: new Date().toISOString(),
-      userId: user?.id
-    }
-  }
-
-  // Function to export data as JSON
   const exportToJSON = () => {
     const data = generateDashboardData()
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
@@ -389,25 +215,16 @@ export default function DashboardPage() {
     setIsExportOpen(false)
   }
 
-  // Function to export data as CSV
   const exportToCSV = () => {
     const data = generateDashboardData()
     let csvContent = 'Dashboard Data Export\n'
     csvContent += `Export Date: ${data.exportDate}\n\n`
-
-    // Metrics data
-    csvContent += 'Metrics:\n'
-    csvContent += 'Title,Value,Change,Trend\n'
+    csvContent += 'Metrics:\nTitle,Value,Change,Trend\n'
     data.metrics.forEach(metric => {
       csvContent += `${metric.title},${metric.value},${metric.change},${metric.trend}\n`
     })
-
     csvContent += '\nUsage Data:\n'
-    csvContent += `API Calls,${data.usageData.apiCalls}\n`
-    csvContent += `Comparisons,${data.usageData.comparisons}\n`
-    csvContent += `Storage,${data.usageData.storage} MB\n`
-
-    csvContent += `\nUser Plan,${data.userPlan}\n`
+    csvContent += `API Calls,${data.usageData.apiCalls}\nComparisons,${data.usageData.comparisons}\nStorage,${data.usageData.storage} MB\n`
 
     const blob = new Blob([csvContent], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -421,24 +238,13 @@ export default function DashboardPage() {
     setIsExportOpen(false)
   }
 
-  // Function to export data as PDF
   const exportToPDF = () => {
     const data = generateDashboardData()
-    let pdfContent = `Dashboard Data Export\n\n`
+    let pdfContent = 'Dashboard Data Export\n\n'
     pdfContent += `Export Date: ${new Date(data.exportDate).toLocaleString()}\n\n`
-
-    // Metrics data
-    pdfContent += `Metrics:\n`
     data.metrics.forEach(metric => {
       pdfContent += `- ${metric.title}: ${metric.value} (${metric.change} ${metric.trend})\n`
     })
-
-    pdfContent += `\nUsage Data:\n`
-    pdfContent += `- API Calls: ${data.usageData.apiCalls}\n`
-    pdfContent += `- Comparisons: ${data.usageData.comparisons}\n`
-    pdfContent += `- Storage: ${data.usageData.storage.toFixed(2)} MB\n`
-
-    pdfContent += `\nUser Plan: ${data.userPlan}\n`
 
     const blob = new Blob([pdfContent], { type: 'application/pdf' })
     const url = URL.createObjectURL(blob)
@@ -452,430 +258,198 @@ export default function DashboardPage() {
     setIsExportOpen(false)
   }
 
-  // Function to get plan display name
-  const getPlanDisplayName = () => {
-    switch (userPlan) {
-      case 'pro':
-      case 'pro_plus':
-        return 'Pro Plus'
-      default:
-        return 'Free'
-    }
-  }
-
-  // Function to get plan limits based on plan type
+  const getPlanDisplayName = () => (userPlan === 'pro' || userPlan === 'pro_plus' ? 'Pro Plus' : 'Free')
   const getPlanLimits = (planType: string) => {
     switch (planType) {
       case 'pro':
-        return {
-          apiCalls: 2500,
-          comparisons: 500,
-          storage: 10 * 1024 // Convert GB to MB (10 GB = 10240 MB)
-        }
+        return { apiCalls: 2500, comparisons: 500, storage: 10 * 1024 }
       case 'pro_plus':
-        return {
-          apiCalls: 10000,
-          comparisons: Infinity, // unlimited
-          storage: 100 * 1024 // Convert GB to MB (100 GB = 102400 MB)
-        }
-      default: // free plan
-        return {
-          apiCalls: 100,
-          comparisons: 10,
-          storage: 50 // 50 MB for free plan
-        }
+        return { apiCalls: 10000, comparisons: Infinity, storage: 100 * 1024 }
+      default:
+        return { apiCalls: 100, comparisons: 10, storage: 50 }
     }
   }
 
+  const usageCards = useMemo(() => {
+    const limits = getPlanLimits(userPlan)
+    const calculateUsagePercentage = (current: number, limit: number) => (limit === Infinity ? 0 : Math.min(100, (current / limit) * 100))
 
+    return [
+      {
+        title: 'API Calls',
+        value: `${usageData.apiCalls} / ${limits.apiCalls === Infinity ? 'Infinity' : limits.apiCalls}`,
+        description: `${calculateUsagePercentage(usageData.apiCalls, limits.apiCalls).toFixed(1)}% used`,
+        progress: calculateUsagePercentage(usageData.apiCalls, limits.apiCalls),
+        tone: 'bg-blue-500'
+      },
+      {
+        title: 'Comparisons',
+        value: `${usageData.comparisons} / ${limits.comparisons === Infinity ? 'Infinity' : limits.comparisons}`,
+        description: `${calculateUsagePercentage(usageData.comparisons, limits.comparisons).toFixed(1)}% used`,
+        progress: calculateUsagePercentage(usageData.comparisons, limits.comparisons),
+        tone: 'bg-violet-500'
+      },
+      {
+        title: 'Avg Responses',
+        value: avgResponsesPerComparison.toString(),
+        description: 'Average model responses per comparison',
+        progress: 100,
+        tone: 'bg-emerald-500'
+      }
+    ]
+  }, [avgResponsesPerComparison, usageData, userPlan])
 
-  // Function to calculate usage percentage
-  const calculateUsagePercentage = (current: number, limit: number) => {
-    if (limit === Infinity) return 0
-    return Math.min(100, (current / limit) * 100)
+  if (loading || loadingData) {
+    return <SimpleLoader message="Loading dashboard..." />
   }
 
+  if (!user) return null
+
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${darkMode
-      ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
-      : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
-      }`}>
+    <div className="flex h-screen bg-transparent text-white">
       <SharedSidebar />
 
-      {/* Adjusted layout to match chat interface with flex and responsive margins */}
-      <div className="lg:ml-80 ml-16 transition-all duration-300">
-        {/* Header */}
-        <div className={`backdrop-blur-sm border-b transition-colors duration-200 ${darkMode
-          ? 'bg-gray-800/60 border-gray-700/30'
-          : 'bg-white/60 border-slate-200/30'
-          }`}>
-          <div className="px-6 py-6">
-            <div className="flex items-center justify-between">
+      <main className="m-4 flex min-w-0 flex-1 flex-col">
+        <div className="fiesta-panel relative z-30 overflow-visible rounded-[1.75rem] px-5 py-5 sm:px-6">
+          <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-5">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div>
-                <h1 className={`text-3xl font-bold transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
-                  Dashboard
-                </h1>
-                <p className={`mt-1 transition-colors duration-200 ${darkMode ? 'text-gray-300' : 'text-slate-600'
-                  }`}>
-                  Welcome back, <span className="font-semibold">
-                    {user?.user_metadata?.full_name ||
-                      (user?.email ? user.email.split('@')[0] : 'User')}
-                  </span>!
-                </p>
+                <h1 className="text-2xl font-bold text-white">Dashboard</h1>
                 {!hasUsedModels && (
-                  <p className={`mt-2 text-sm transition-colors duration-200 ${darkMode ? 'text-gray-400' : 'text-slate-500'
-                    }`}>
-                    Start using AI models to see dashboard metrics and analytics
-                  </p>
+                  <p className="mt-2 text-sm text-slate-400">Start using AI models to populate real dashboard metrics and charts.</p>
                 )}
               </div>
 
-              <div className="flex items-center space-x-3">
-                {/* Simple Profile Icon */}
-                <SimpleProfileIcon />
-
-                {/* Export Dropdown - Icon Only */}
-                <div className="relative">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative z-40">
                   <button
                     onClick={() => setIsExportOpen(!isExportOpen)}
-                    className={`p-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md ${darkMode
-                      ? 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-indigo-500/20'
-                      : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20'
-                      }`}
+                    className="fiesta-button-secondary rounded-2xl p-3"
                     title="Export"
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="h-4 w-4" />
                   </button>
 
-                  {/* Dropdown menu for export options */}
                   {isExportOpen && (
-                    <div
-                      className={`absolute right-0 w-56 rounded-xl shadow-xl z-20 overflow-hidden transform transition-all duration-200 ease-in-out mt-2 ${darkMode
-                        ? 'bg-gray-800/95 border border-gray-700 backdrop-blur-xl'
-                        : 'bg-white/95 border border-slate-200 backdrop-blur-xl'
-                        }`}
-                    >
-                      <div className="py-1">
-                        <div className={`px-4 py-3 border-b ${darkMode ? 'border-gray-700' : 'border-slate-200'
-                          }`}>
-                          <h3 className={`text-sm font-semibold ${darkMode ? 'text-gray-200' : 'text-slate-800'
-                            }`}>
-                            Export Dashboard Data
-                          </h3>
-                        </div>
-                        <button
-                          onClick={exportToJSON}
-                          className={`w-full text-left px-4 py-3 text-sm transition-colors duration-200 flex items-center justify-between ${darkMode
-                            ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
-                            : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
-                            }`}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <div className={`w-8 h-8 rounded-md flex items-center justify-center ${darkMode ? 'bg-blue-900/30' : 'bg-blue-100'
-                              }`}>
-                              <span className={`text-xs font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'
-                                }`}>JSON</span>
-                            </div>
-                            <span>Export to JSON</span>
-                          </div>
-                        </button>
-                        <button
-                          onClick={exportToCSV}
-                          className={`w-full text-left px-4 py-3 text-sm transition-colors duration-200 flex items-center justify-between ${darkMode
-                            ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
-                            : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
-                            }`}>
-                          <div className="flex items-center space-x-2">
-                            <div className={`w-8 h-8 rounded-md flex items-center justify-center ${darkMode ? 'bg-green-900/30' : 'bg-green-100'
-                              }`}>
-                              <span className={`text-xs font-bold ${darkMode ? 'text-green-400' : 'text-green-600'
-                                }`}>CSV</span>
-                            </div>
-                            <span>Export to CSV</span>
-                          </div>
-                        </button>
-                        <button
-                          onClick={exportToPDF}
-                          className={`w-full text-left px-4 py-3 text-sm transition-colors duration-200 flex items-center justify-between ${darkMode
-                            ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
-                            : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'
-                            }`}>
-                          <div className="flex items-center space-x-2">
-                            <div className={`w-8 h-8 rounded-md flex items-center justify-center ${darkMode ? 'bg-red-900/30' : 'bg-red-100'
-                              }`}>
-                              <span className={`text-xs font-bold ${darkMode ? 'text-red-400' : 'text-red-600'
-                                }`}>PDF</span>
-                            </div>
-                            <span>Export to PDF</span>
-                          </div>
-                        </button>
-                      </div>
+                    <div className="fiesta-panel absolute right-0 z-[90] mt-2 w-56 rounded-2xl p-2 shadow-[0_28px_80px_rgba(15,23,42,0.45)]">
+                      <button onClick={exportToJSON} className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-slate-200 hover:bg-white/5">Export to JSON</button>
+                      <button onClick={exportToCSV} className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-slate-200 hover:bg-white/5">Export to CSV</button>
+                      <button onClick={exportToPDF} className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-slate-200 hover:bg-white/5">Export to PDF</button>
                     </div>
                   )}
                 </div>
 
-                <div className={`px-4 py-2 rounded-xl border transition-all duration-200 ${darkMode
-                  ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300'
-                  : 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                  }`}>
-                  <div className="flex items-center space-x-2">
-                    <Sparkles className="w-4 h-4" />
-                    <span className="text-sm font-semibold">
-                      {getPlanDisplayName()}
-                    </span>
-                  </div>
+                <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/10 px-4 py-2 text-sm font-medium text-cyan-200">
+                  {getPlanDisplayName()}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="p-6 space-y-6">
-          {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {metrics.map((metric, index) => {
-              const Icon = metric.icon
-              return (
-                <div
-                  key={index}
-                  className={`rounded-2xl p-6 transition-all duration-200 hover:scale-105 ${darkMode
-                    ? 'bg-gray-800/60 border border-gray-700/50'
-                    : 'bg-white/80 border border-slate-200/50'
-                    }`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-xl ${metric.color === 'blue' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' :
-                      metric.color === 'purple' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' :
-                        metric.color === 'green' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' :
-                          metric.color === 'orange' ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/20' :
-                            'bg-slate-600 text-white shadow-lg shadow-slate-500/20'
-                      }`}>
-                      <Icon className="w-6 h-6" />
+        <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
+          <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-6">
+            <section className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-4">
+              {metrics.map((metric) => {
+                const Icon = metric.icon
+                return (
+                  <div key={metric.title} className="fiesta-panel rounded-3xl p-6">
+                    <div className="mb-5 flex items-center justify-between">
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${metric.color} text-white shadow-lg`}>
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <div className={`text-sm font-medium ${metric.trend === 'up' ? 'text-emerald-300' : 'text-amber-300'}`}>
+                        {metric.change}
+                      </div>
                     </div>
-                    <div className={`flex items-center space-x-1 text-sm ${metric.trend === 'up' ? 'text-green-500' : 'text-red-500'
-                      }`}>
-                      <TrendingUp className={`w-4 h-4 ${metric.trend === 'down' ? 'rotate-180' : ''
-                        }`} />
-                      <span>{metric.change}</span>
+                    <div className="text-3xl font-semibold text-white">{metric.value}</div>
+                    <p className="mt-2 text-sm text-slate-400">{metric.title}</p>
+                  </div>
+                )
+              })}
+            </section>
+
+            <section>
+              <div className="mb-4">
+                <h2 className="text-2xl font-semibold text-white">Resource usage</h2>
+                <p className="mt-1 text-sm text-slate-400">Usage cards resized for desktop scanning and aligned to the active theme.</p>
+              </div>
+              <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
+                {usageCards.map((card) => (
+                  <div key={card.title} className="fiesta-panel rounded-3xl p-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                      <MessageSquare className="h-5 w-5 text-slate-400" />
+                    </div>
+                    <div className="mt-5 text-3xl font-semibold text-white">{card.value}</div>
+                    <p className="mt-2 text-sm text-slate-400">{card.description}</p>
+                    <div className="mt-5 h-2 rounded-full bg-white/8">
+                      <div className={`${card.tone} h-2 rounded-full`} style={{ width: `${Math.min(card.progress, 100)}%` }} />
                     </div>
                   </div>
-
-                  <div>
-                    <h3 className={`text-2xl font-bold mb-1 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
-                      }`}>
-                      {metric.value}
-                    </h3>
-                    <p className={`text-sm transition-colors duration-200 ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>
-                      {metric.title}
-                    </p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Usage Summary Section */}
-          <div>
-            <h2 className={`text-2xl font-bold mb-4 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-              Resource Usage Overview
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* API Calls Usage */}
-              <div className={`rounded-2xl p-6 transition-all duration-200 ${darkMode
-                ? 'bg-gray-800/60 border border-gray-700/50'
-                : 'bg-white/80 border border-slate-200/50'
-                }`}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${darkMode
-                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                    }`}>
-                    <Activity className="w-6 h-6" />
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>
-                      {usageData.apiCalls} / {getPlanLimits(userPlan).apiCalls === Infinity ? '∞' : getPlanLimits(userPlan).apiCalls}
-                    </p>
-                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-slate-500'
-                      }`}>
-                      calls
-                    </p>
-                  </div>
-                </div>
-
-                <h3 className={`text-lg font-bold mb-2 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
-                  API Calls to Compare Models
-                </h3>
-
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full"
-                    style={{
-                      width: `${calculateUsagePercentage(usageData.apiCalls, getPlanLimits(userPlan).apiCalls)}%`
-                    }}
-                  ></div>
-                </div>
-
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>
-                  {calculateUsagePercentage(usageData.apiCalls, getPlanLimits(userPlan).apiCalls).toFixed(1)}% used
-                </p>
+                ))}
               </div>
+            </section>
 
-              {/* Model Comparisons Usage */}
-              <div className={`rounded-2xl p-6 transition-all duration-200 ${darkMode
-                ? 'bg-gray-800/60 border border-gray-700/50'
-                : 'bg-white/80 border border-slate-200/50'
-                }`}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${darkMode
-                    ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                    : 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                    }`}>
-                    <GitCompare className="w-6 h-6" />
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>
-                      {usageData.comparisons} / {getPlanLimits(userPlan).comparisons === Infinity ? '∞' : getPlanLimits(userPlan).comparisons}
-                    </p>
-                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-slate-500'
-                      }`}>
-                      comparisons
-                    </p>
-                  </div>
-                </div>
+            <section className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
+              <BarChart
+                data={responseTimeData}
+                title="Model Latency Comparison"
+                unit="s"
+                chartId="model-latency"
+                isExpanded={chartVisibility['model-latency']}
+                onToggleExpand={() => toggleChartVisibility('model-latency')}
+              />
+              <SimpleCircleChart
+                data={messagesTypedData}
+                title="Prompts per Model"
+                chartId="prompts-per-model"
+                isExpanded={chartVisibility['prompts-per-model']}
+                onToggleExpand={() => toggleChartVisibility('prompts-per-model')}
+              />
+            </section>
 
-                <h3 className={`text-lg font-bold mb-2 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
-                  Model Comparisons Performed
-                </h3>
+            <section className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
+              <BarChart
+                data={modelDataTimeData}
+                title="Throughput by Model"
+                unit="s"
+                chartId="throughput-by-model"
+                isExpanded={chartVisibility['throughput-by-model']}
+                onToggleExpand={() => toggleChartVisibility('throughput-by-model')}
+              />
+              <LineChart
+                data={lineChartData}
+                title="Latency Trends Over Time"
+                metrics={lineChartMetrics}
+                metricLabels={lineChartMetricLabels}
+                chartId="latency-trends"
+                isExpanded={chartVisibility['latency-trends']}
+                onToggleExpand={() => toggleChartVisibility('latency-trends')}
+              />
+            </section>
 
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                  <div
-                    className="bg-purple-600 h-2 rounded-full"
-                    style={{
-                      width: `${calculateUsagePercentage(usageData.comparisons, getPlanLimits(userPlan).comparisons)}%`
-                    }}
-                  ></div>
-                </div>
+            <section className="grid grid-cols-1 gap-6">
+              <ResponseTimeDistribution
+                data={responseTimeDistributionData}
+                title="Latency Distribution"
+                unit="s"
+                chartId="latency-distribution"
+                isExpanded={chartVisibility['latency-distribution']}
+                onToggleExpand={() => toggleChartVisibility('latency-distribution')}
+              />
+            </section>
 
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>
-                  {calculateUsagePercentage(usageData.comparisons, getPlanLimits(userPlan).comparisons).toFixed(1)}% used
-                </p>
+            <section className="pt-2">
+              <div className="mb-4">
+                <h2 className="text-2xl font-semibold text-white">Performance metrics</h2>
+                <p className="mt-1 text-sm text-slate-400">A cleaner combined chart section for wider desktop screens.</p>
               </div>
-
-              {/* Avg Responses per Comparison */}
-              <div className={`rounded-2xl p-6 transition-all duration-200 ${darkMode
-                ? 'bg-gray-800/60 border border-gray-700/50'
-                : 'bg-white/80 border border-slate-200/50'
-                }`}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${darkMode
-                    ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                    : 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                    }`}>
-                    <MessageSquare className="w-6 h-6" />
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>
-                      Average
-                    </p>
-                    <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'
-                      }`}>
-                      {avgResponsesPerComparison}
-                    </p>
-                  </div>
-                </div>
-
-                <h3 className={`text-lg font-bold mb-2 transition-colors duration-200 ${darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
-                  Avg Responses per Comparison
-                </h3>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>
-                  Average number of model responses generated per comparison
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Display all graphs by default */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <BarChart
-              data={responseTimeData}
-              title="Model Latency Comparison"
-              unit="s"
-              chartId="model-latency"
-              isExpanded={chartVisibility['model-latency']}
-              onToggleExpand={() => toggleChartVisibility('model-latency')}
-            />
-            <SimpleCircleChart
-              data={messagesTypedData}
-              title="Prompts per Model"
-              chartId="prompts-per-model"
-              isExpanded={chartVisibility['prompts-per-model']}
-              onToggleExpand={() => toggleChartVisibility('prompts-per-model')}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <BarChart
-              data={modelDataTimeData}
-              title="Throughput by Model"
-              unit="s"
-              chartId="throughput-by-model"
-              isExpanded={chartVisibility['throughput-by-model']}
-              onToggleExpand={() => toggleChartVisibility('throughput-by-model')}
-            />
-            <LineChart
-              data={lineChartData}
-              title="Latency Trends Over Time"
-              metrics={lineChartMetrics}
-              metricLabels={lineChartMetricLabels}
-              chartId="latency-trends"
-              isExpanded={chartVisibility['latency-trends']}
-              onToggleExpand={() => toggleChartVisibility('latency-trends')}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-6">
-            <ResponseTimeDistribution
-              data={responseTimeDistributionData}
-              title="Latency Distribution"
-              unit="s"
-              chartId="latency-distribution"
-              isExpanded={chartVisibility['latency-distribution']}
-              onToggleExpand={() => toggleChartVisibility('latency-distribution')}
-            />
-          </div>
-
-          {/* Chart Section Header */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Performance Metrics</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Track your AI model performance with professional-grade analytics
-            </p>
-          </div>
-
-          {/* Combined Accuracy and Loss Chart */}
-          <div className="grid grid-cols-1 gap-6">
-            <CombinedPerformanceChart
-              accuracyData={accuracyData}
-              lossData={lossData}
-              title="Accuracy and Loss Trends"
-            />
+              <CombinedPerformanceChart accuracyData={accuracyData} lossData={lossData} title="Accuracy and Loss Trends" />
+            </section>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

@@ -1,15 +1,15 @@
 'use client'
 
 import React from 'react'
-import { MessageSquare, Zap, BarChart3, Shield, Clock, Users } from 'lucide-react'
+import { BarChart3, Clock, MessageSquare, Shield, Users, Zap } from 'lucide-react'
 import ScrollReveal from '@/components/ui/scroll-reveal'
 
 interface Feature {
   icon: React.ComponentType<{ className?: string }>
   title: string
   description: string
-  gradient: string
   stats: string
+  tone: string
 }
 
 interface FeaturesSectionProps {
@@ -20,112 +20,82 @@ export default function FeaturesSection({ darkMode }: FeaturesSectionProps) {
   const features: Feature[] = [
     {
       icon: MessageSquare,
-      title: 'Universal Input',
-      description: 'One message box sends to all selected AI models simultaneously. No need to repeat yourself.',
-      gradient: 'from-blue-500 to-cyan-500',
-      stats: '1 Input → 9+ Models'
+      title: 'Single Prompt Workflow',
+      description: 'Write once and send the same prompt to every selected model without duplicate effort.',
+      stats: '1 prompt, many answers',
+      tone: 'from-blue-500 to-cyan-400'
     },
     {
       icon: Zap,
-      title: 'Lightning Fast',
-      description: 'Get instant responses from multiple AI models in real-time with optimized parallel processing.',
-      gradient: 'from-yellow-500 to-orange-500',
-      stats: '<0.5s Response Time'
+      title: 'Faster Evaluation',
+      description: 'Trim review time with parallel responses and a layout that makes differences easier to scan.',
+      stats: 'Parallel comparison',
+      tone: 'from-sky-500 to-blue-500'
     },
     {
       icon: BarChart3,
-      title: 'Smart Comparison',
-      description: 'Side-by-side cards make it easy to compare quality, style, and accuracy of responses.',
-      gradient: 'from-green-500 to-emerald-500',
-      stats: 'Visual Side-by-Side'
+      title: 'Clearer Decisions',
+      description: 'Side-by-side result cards help teams compare quality, tone, and usefulness with less noise.',
+      stats: 'Readable output',
+      tone: 'from-emerald-500 to-teal-400'
     },
     {
       icon: Shield,
-      title: 'Secure & Private',
-      description: 'Enterprise-grade security with encrypted storage and user authentication.',
-      gradient: 'from-purple-500 to-violet-500',
-      stats: 'End-to-End Encrypted'
+      title: 'Trusted Product Shell',
+      description: 'The interface now uses stronger contrast, steadier surfaces, and cleaner information density.',
+      stats: 'Production-focused UI',
+      tone: 'from-amber-500 to-orange-500'
     },
     {
       icon: Clock,
-      title: 'Fast Responses',
-      description: 'Get instant responses from multiple AI models simultaneously with optimized performance.',
-      gradient: 'from-pink-500 to-rose-500',
-      stats: 'Under 1 Second'
+      title: 'History-Friendly Flow',
+      description: 'Navigate from active comparisons to dashboard and history with less visual friction.',
+      stats: 'Built for reuse',
+      tone: 'from-indigo-500 to-blue-500'
     },
     {
       icon: Users,
-      title: 'Premium Models',
-      description: 'Access to cutting-edge AI models including GPT-5, Claude 4, and emerging models.',
-      gradient: 'from-indigo-500 to-blue-500',
-      stats: '9+ AI Providers'
+      title: 'Team-Ready Experience',
+      description: 'Works better for developers, researchers, and product teams reviewing prompts together.',
+      stats: 'Research to production',
+      tone: 'from-cyan-500 to-emerald-400'
     }
   ]
 
   return (
-    <section className="py-24 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-20">
-          <div className={`inline-flex items-center space-x-2 backdrop-blur-xl rounded-full px-5 py-2.5 mb-6 relative overflow-hidden transition-all duration-300 ${darkMode
-            ? 'bg-gray-800/60 border border-gray-700/50 shadow-xl shadow-violet-500/10'
-            : 'bg-white/70 border border-slate-200/50 shadow-xl shadow-blue-500/10'
-            }`}>
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 via-transparent to-yellow-400/10 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
-            <Zap className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
-            <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-slate-700'}`}>
-              Powerful Features
-            </span>
+    <section className="relative py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto mb-16 max-w-3xl text-center">
+          <div className="fiesta-eyebrow mx-auto inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
+            <Zap className={`h-4 w-4 ${darkMode ? 'text-cyan-300' : 'text-blue-500'}`} />
+            Powerful features
           </div>
-          <h2 className={`text-4xl sm:text-5xl font-bold bg-gradient-to-r transition-all duration-500 ${darkMode
-            ? 'from-white to-gray-300'
-            : 'from-slate-900 to-slate-700'
-            } bg-clip-text text-transparent mb-6`}>
-            Everything You Need
+          <h2 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            Built to feel like a product,
+            <span className="block text-slate-300">not a prototype.</span>
           </h2>
-          <p className={`text-xl max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-slate-600'
-            }`}>
-            Built for researchers, developers, and AI enthusiasts who demand the best
+          <p className="mt-5 text-lg leading-8 text-slate-300">
+            Every major surface now leans into clarity, speed, and consistency so users can focus on the answers.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {features.map((feature, index) => {
             const Icon = feature.icon
+
             return (
-              <ScrollReveal key={index} delay={index * 0.1}>
-                <div
-                  className={`group relative backdrop-blur-xl border rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] ${darkMode
-                    ? 'bg-gray-800/60 border-gray-700/50 shadow-lg shadow-violet-500/10'
-                    : 'bg-white/70 border-slate-200/50 shadow-lg shadow-blue-500/10'
-                    }`}
-                >
-                  {/* Enhanced glowing effect on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-
-                  <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg relative z-10 ${darkMode ? 'shadow-violet-500/30' : 'shadow-blue-500/30'
-                    }`}>
-                    <Icon className="w-8 h-8 text-white" />
+              <ScrollReveal key={feature.title} delay={index * 0.08}>
+                <div className="fiesta-panel h-full rounded-3xl p-7">
+                  <div className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.tone} text-white shadow-lg`}>
+                    <Icon className="h-7 w-7" />
                   </div>
-                  <div className="flex items-center justify-between mb-4 relative z-10">
-                    <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'
-                      }`}>
-                      {feature.title}
-                    </h3>
-                    <div className={`px-3 py-1 bg-gradient-to-r ${feature.gradient} text-white text-xs font-bold rounded-full opacity-90 shadow ${darkMode ? 'shadow-violet-500/30' : 'shadow-blue-500/30'
-                      }`}>
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    <h3 className="text-xl font-semibold text-white">{feature.title}</h3>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
                       {feature.stats}
-                    </div>
+                    </span>
                   </div>
-                  <p className={`leading-relaxed relative z-10 ${darkMode ? 'text-gray-300' : 'text-slate-600'
-                    }`}>
-                    {feature.description}
-                  </p>
-                  <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-
-                  {/* Enhanced floating indicator */}
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-emerald-400 to-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 animate-pulse shadow-lg">
-                    <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                  </div>
+                  <p className="text-sm leading-7 text-slate-300">{feature.description}</p>
                 </div>
               </ScrollReveal>
             )

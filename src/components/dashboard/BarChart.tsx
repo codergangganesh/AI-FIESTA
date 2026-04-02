@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { TrendingUp, TrendingDown, Info, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, TrendingDown, TrendingUp } from 'lucide-react'
 
 interface BarChartProps {
   data: { name: string; value: number; color: string }[]
@@ -16,7 +16,6 @@ const BarChart: React.FC<BarChartProps> = ({
   data, 
   title, 
   unit = '',
-  chartId,
   isExpanded = false,
   onToggleExpand
 }) => {
@@ -47,27 +46,27 @@ const BarChart: React.FC<BarChartProps> = ({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300 relative">
+    <div className="fiesta-panel rounded-3xl p-6 transition-shadow duration-300 relative">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
         {data.length > 0 && (
           <div className="flex items-center space-x-2">
-            <div className="flex items-center text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700">
-              <span className="text-gray-500 dark:text-gray-400 mr-1">Avg:</span>
-              <span className="font-medium text-gray-900 dark:text-white">
+            <div className="flex items-center rounded-full border border-white/8 bg-white/5 px-2.5 py-1 text-xs">
+              <span className="mr-1 text-slate-400">Avg:</span>
+              <span className="font-medium text-white">
                 {averageValue.toFixed(2)}{unit}
               </span>
             </div>
             {data.length > 4 && onToggleExpand && (
               <button 
                 onClick={onToggleExpand}
-                className="p-1 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="rounded-full bg-white/5 p-1 hover:bg-white/10 transition-colors"
                 aria-label={isExpanded ? `Show fewer ${title}` : `Show all ${title}`}
               >
                 {isExpanded ? (
-                  <EyeOff className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                  <EyeOff className="w-4 h-4 text-slate-300" />
                 ) : (
-                  <Eye className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                  <Eye className="w-4 h-4 text-slate-300" />
                 )}
               </button>
             )}
@@ -89,7 +88,7 @@ const BarChart: React.FC<BarChartProps> = ({
                 onMouseMove={(e) => setTooltipPosition({ x: e.clientX, y: e.clientY })}
                 onMouseLeave={handleMouseLeave}
               >
-                <div className="w-24 text-sm text-gray-600 dark:text-gray-300 truncate">
+                <div className="w-24 truncate text-sm text-slate-300">
                   {item.name}
                 </div>
                 <div className="flex-1 ml-2">
@@ -101,7 +100,7 @@ const BarChart: React.FC<BarChartProps> = ({
                         backgroundColor: item.color
                       }}
                     ></div>
-                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                    <span className="ml-2 whitespace-nowrap text-sm text-slate-300">
                       {item.value}{unit}
                     </span>
                     {diffFromAvg !== 0 && (
@@ -122,12 +121,12 @@ const BarChart: React.FC<BarChartProps> = ({
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center h-32">
-          <div className="text-gray-400 dark:text-gray-500 mb-2">
+          <div className="mb-2 text-slate-500">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-center">No data available<br/><span className="text-sm">History has been cleared</span></p>
+          <p className="text-center text-slate-400">No data available<br/><span className="text-sm">History has been cleared</span></p>
         </div>
       )}
       

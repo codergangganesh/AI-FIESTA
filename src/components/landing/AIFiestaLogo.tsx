@@ -33,7 +33,7 @@ export default function AIFiestaLogo({
   return (
     <div className={`${sizeClasses[size]} ${className} relative flex items-center justify-center rounded-full overflow-hidden`}>
       <Image
-        src="/logo-new.png"
+        src="/logo.png"
         alt="AI Fiesta Logo"
         width={dimSizes[size]}
         height={dimSizes[size]}

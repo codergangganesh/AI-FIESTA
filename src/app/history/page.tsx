@@ -33,7 +33,7 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="h-screen">
+        <div className="h-screen overflow-hidden">
             <ModernHistoryInterface />
         </div>
     )

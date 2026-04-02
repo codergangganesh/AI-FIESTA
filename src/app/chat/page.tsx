@@ -33,7 +33,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="h-screen">
+    <div className="h-screen overflow-hidden">
       <ModernChatInterface />
     </div>
   )

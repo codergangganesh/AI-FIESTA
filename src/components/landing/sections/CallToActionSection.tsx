@@ -1,9 +1,7 @@
 'use client'
 
 import React from 'react'
-import Link from 'next/link'
-import { ChevronRight, Shield, Award, TrendingUp, Sparkles } from 'lucide-react'
-import { useAuth } from '@/contexts/AuthContext'
+import { Award, ChevronRight, Shield, Sparkles, TrendingUp } from 'lucide-react'
 import { usePopup } from '@/contexts/PopupContext'
 import { useOptimizedRouter } from '@/hooks/useOptimizedRouter'
 import ScrollReveal from '@/components/ui/scroll-reveal'
@@ -14,109 +12,72 @@ interface CallToActionSectionProps {
 }
 
 export default function CallToActionSection({ darkMode, user }: CallToActionSectionProps) {
-  const { signOut } = useAuth()
   const { openAuthPopup } = usePopup()
   const router = useOptimizedRouter()
 
   const handleAuthNavigation = () => {
     if (user) {
-      router.push('/chat');
+      router.push('/chat')
     } else {
-      openAuthPopup();
+      openAuthPopup()
     }
-  };
+  }
 
   return (
-    <section className={`py-24 relative overflow-hidden ${darkMode
-      ? 'bg-transparent'
-      : 'bg-transparent'
-      }`}>
-      {/* Enhanced Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, ${darkMode ? 'white' : 'white'} 2px, transparent 2px)`,
-          backgroundSize: '50px 50px'
-        }}></div>
-      </div>
+    <section className="relative overflow-hidden py-24">
+      <div className="absolute inset-x-0 top-12 mx-auto h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
 
-      {/* Enhanced gradient overlay for depth */}
-      <div className={`absolute inset-0 bg-gradient-to-t ${darkMode ? 'from-black/30 via-transparent to-transparent' : 'from-black/5 via-transparent to-transparent'
-        }`}></div>
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="fiesta-panel rounded-[2rem] px-6 py-10 text-center sm:px-10 sm:py-14">
+          <ScrollReveal>
+            <div className="fiesta-eyebrow mx-auto inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
+              <Sparkles className={`h-4 w-4 ${darkMode ? 'text-cyan-300' : 'text-blue-500'}`} />
+              Ready to compare AI models?
+            </div>
+          </ScrollReveal>
 
-      {/* Additional ambient lights */}
-      <div className={`absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-3xl ${darkMode ? 'bg-blue-500/20' : 'bg-blue-400/30'
-        }`}></div>
-      <div className={`absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl ${darkMode ? 'bg-purple-500/20' : 'bg-purple-400/30'
-        }`}></div>
-
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Enhanced heading with animated underline */}
-        <ScrollReveal>
-          <div className="relative inline-block mb-6">
-            <h2 className={`text-4xl sm:text-5xl font-bold relative z-10 transition-all duration-500 ${darkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-              Ready to Compare AI Models?
+          <ScrollReveal delay={0.15}>
+            <h2 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+              Upgrade the experience from
+              <span className="block bg-gradient-to-r from-cyan-300 via-blue-300 to-amber-200 bg-clip-text text-transparent">
+                curiosity to confident choice.
+              </span>
             </h2>
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full"></div>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
 
-        <ScrollReveal delay={0.2}>
-          <p className={`text-xl mb-12 max-w-2xl mx-auto leading-relaxed ${darkMode ? 'text-blue-200' : 'text-slate-600'
-            }`}>
-            Join thousands of researchers and developers who trust AI Fiesta for their AI model comparisons.
-            <span className={`block mt-2 font-bold ${darkMode ? 'text-white/90' : 'text-slate-800'
-              }`}>
-              Start your journey to AI excellence today.
-            </span>
-          </p>
-        </ScrollReveal>
+          <ScrollReveal delay={0.25}>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-300">
+              AI Fiesta now feels more deliberate, more readable, and much closer to a production product surface for real comparison work.
+            </p>
+          </ScrollReveal>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
-          <button
-            onClick={handleAuthNavigation}
-            className="group relative bg-white text-blue-600 px-8 py-4 rounded-2xl text-lg font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center space-x-3 overflow-hidden backdrop-blur-sm cursor-pointer"
-          >
-            {/* Animated background on hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-2xl"></div>
+          <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
+            <button
+              onClick={handleAuthNavigation}
+              className="fiesta-button-primary inline-flex items-center gap-3 rounded-2xl px-7 py-4 text-base font-semibold transition-transform duration-200 hover:-translate-y-0.5"
+            >
+              <Sparkles className="h-5 w-5" />
+              Start Free Today
+              <ChevronRight className="h-5 w-5" />
+            </button>
 
-            {/* Enhanced glowing effect on hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/30 to-yellow-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-
-            <Sparkles className="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform duration-300" />
-            <span className="relative z-10">Start Free Today</span>
-            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform relative z-10" />
-
-            {/* Enhanced shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-2xl"></div>
-          </button>
-
-          <div className={`text-sm space-y-1 backdrop-blur-sm px-4 py-3 rounded-xl ${darkMode ? 'bg-white/10' : 'bg-white/20'
-            }`}>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="font-semibold">Free to use</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-              <span>No credit card required</span>
+            <div className="fiesta-panel-soft rounded-2xl px-4 py-3 text-left text-sm text-slate-300">
+              <div className="font-medium text-white">Free to explore</div>
+              <div>No credit card required</div>
             </div>
           </div>
-        </div>
 
-        {/* Enhanced Trust badges */}
-        <div className="flex flex-wrap justify-center items-center gap-8 opacity-90">
-          <div className={`flex items-center space-x-2 backdrop-blur-sm px-4 py-2 rounded-full ${darkMode ? 'text-white/90 bg-white/10' : 'text-slate-700 bg-slate-200/50'}`}>
-            <Shield className="w-4 h-4" />
-            <span className="text-sm font-semibold">SOC 2 Compliant</span>
-          </div>
-          <div className={`flex items-center space-x-2 backdrop-blur-sm px-4 py-2 rounded-full ${darkMode ? 'text-white/90 bg-white/10' : 'text-slate-700 bg-slate-200/50'}`}>
-            <Award className="w-4 h-4" />
-            <span className="text-sm font-semibold">99.9% Uptime</span>
-          </div>
-          <div className={`flex items-center space-x-2 backdrop-blur-sm px-4 py-2 rounded-full ${darkMode ? 'text-white/90 bg-white/10' : 'text-slate-700 bg-slate-200/50'}`}>
-            <TrendingUp className="w-4 h-4" />
-            <span className="text-sm font-semibold">10K+ Users</span>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            {[
+              { icon: Shield, label: 'Secure product shell' },
+              { icon: Award, label: 'Cleaner UI hierarchy' },
+              { icon: TrendingUp, label: 'Built for repeat usage' }
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="fiesta-panel-soft flex items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-300">
+                <Icon className="h-4 w-4 text-cyan-300" />
+                {label}
+              </div>
+            ))}
           </div>
         </div>
       </div>

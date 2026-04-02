@@ -20,7 +20,6 @@ const LineChart: React.FC<LineChartProps> = ({
   title, 
   metrics, 
   metricLabels,
-  chartId,
   isExpanded = false,
   onToggleExpand
 }) => {
@@ -67,21 +66,21 @@ const LineChart: React.FC<LineChartProps> = ({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+    <div className="fiesta-panel rounded-3xl p-6 transition-all duration-300 relative">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
         {metrics.length > 0 && (
           <div className="flex items-center space-x-2">
             {metrics.length > 4 && onToggleExpand && (
               <button 
                 onClick={onToggleExpand}
-                className="p-1 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="rounded-full bg-white/5 p-1 hover:bg-white/10 transition-colors"
                 aria-label={isExpanded ? `Show fewer ${title}` : `Show all ${title}`}
               >
                 {isExpanded ? (
-                  <EyeOff className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                  <EyeOff className="w-4 h-4 text-slate-300" />
                 ) : (
-                  <Eye className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                  <Eye className="w-4 h-4 text-slate-300" />
                 )}
               </button>
             )}
@@ -93,7 +92,7 @@ const LineChart: React.FC<LineChartProps> = ({
           {/* Simple line chart representation */}
           <div className="relative flex-grow">
             {/* Y-axis labels */}
-            <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 dark:text-gray-400 py-4">
+            <div className="absolute left-0 top-0 h-full flex flex-col justify-between py-4 text-xs text-slate-400">
               <span>{maxValue.toFixed(1)}</span>
               <span>{((maxValue + minValue) / 2).toFixed(1)}</span>
               <span>{minValue.toFixed(1)}</span>
@@ -102,11 +101,11 @@ const LineChart: React.FC<LineChartProps> = ({
             {/* Chart area */}
             <div className="ml-8 h-full">
               {/* Grid lines */}
-              <div className="absolute inset-0 ml-8 border-l border-b border-gray-200 dark:border-gray-700">
+              <div className="absolute inset-0 ml-8 border-b border-l border-white/10">
                 {[0, 1, 2, 3, 4].map(i => (
                   <div 
                     key={i} 
-                    className="absolute left-0 right-0 h-px bg-gray-100 dark:bg-gray-700"
+                    className="absolute left-0 right-0 h-px bg-white/6"
                     style={{ top: `${(i / 4) * 100}%` }}
                   ></div>
                 ))}
@@ -122,14 +121,12 @@ const LineChart: React.FC<LineChartProps> = ({
               }}></div>
               
               {/* Lines for each metric */}
-              {displayedMetrics.map((metric, metricIndex) => {
+              {displayedMetrics.map((metric) => {
                 // Get distinct color for this model
                 const model = AI_MODELS.find(m => m.displayName === metric);
                 const color = dashboardService.getModelColor(model?.id || metric);
                 
                 // Calculate trend
-                const trend = calculateTrend(metric)
-                
                 return (
                   <div key={metric} className="absolute inset-0 ml-8">
                     {/* Points and lines */}
@@ -216,7 +213,7 @@ const LineChart: React.FC<LineChartProps> = ({
               })}
               
               {/* X-axis labels */}
-              <div className="absolute bottom-0 left-8 right-0 flex justify-between text-xs text-gray-500 dark:text-gray-400 pb-4">
+              <div className="absolute bottom-0 left-8 right-0 flex justify-between pb-4 text-xs text-slate-400">
                 {data.map((point, index) => (
                   <span key={index} className="transform -translate-x-1/2">{point.period}</span>
                 ))}
@@ -225,7 +222,7 @@ const LineChart: React.FC<LineChartProps> = ({
           </div>
           
           {/* Legend with trends */}
-          <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="mt-6 flex flex-wrap gap-4 border-t border-white/8 pt-4">
             {displayedMetrics.map((metric) => {
               // Get distinct color for this model
               const model = AI_MODELS.find(m => m.displayName === metric);
@@ -263,7 +260,7 @@ const LineChart: React.FC<LineChartProps> = ({
               return (
                 <div key={metric} className="flex items-center min-w-max">
                   <div className={`w-3 h-3 rounded-full ${colorClass}`}></div>
-                  <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span className="ml-2 text-sm font-medium text-slate-300">
                     {metricLabels[metric] || metric}
                   </span>
                   {trend !== 0 && (
@@ -279,12 +276,12 @@ const LineChart: React.FC<LineChartProps> = ({
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center h-64">
-          <div className="text-gray-400 dark:text-gray-500 mb-2">
+          <div className="mb-2 text-slate-500">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-center">No data available<br/><span className="text-sm">History has been cleared</span></p>
+          <p className="text-center text-slate-400">No data available<br/><span className="text-sm">History has been cleared</span></p>
         </div>
       )}
       

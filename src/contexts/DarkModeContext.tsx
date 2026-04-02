@@ -12,37 +12,31 @@ const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined
 export function DarkModeProvider({ children }: { children: ReactNode }) {
   const [darkMode, setDarkMode] = useState(false)
 
+  const applyTheme = (isDark: boolean) => {
+    if (typeof window === 'undefined') return
+
+    document.documentElement.classList.toggle('dark', isDark)
+    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light'
+    document.body.style.colorScheme = isDark ? 'dark' : 'light'
+  }
+
   useEffect(() => {
-    // Check if we're running on the client side
     if (typeof window !== 'undefined') {
-      // Check system preference or saved preference
       const isDark = localStorage.getItem('darkMode') === 'true' || 
         (localStorage.getItem('darkMode') === null && 
          window.matchMedia('(prefers-color-scheme: dark)').matches)
       
       setDarkMode(isDark)
-      
-      // Apply class to document
-      if (isDark) {
-        document.documentElement.classList.add('dark')
-      } else {
-        document.documentElement.classList.remove('dark')
-      }
+      applyTheme(isDark)
     }
   }, [])
 
   const toggleDarkMode = () => {
-    // Only run on client side
     if (typeof window !== 'undefined') {
       const newDarkMode = !darkMode
       setDarkMode(newDarkMode)
       localStorage.setItem('darkMode', String(newDarkMode))
-      
-      if (newDarkMode) {
-        document.documentElement.classList.add('dark')
-      } else {
-        document.documentElement.classList.remove('dark')
-      }
+      applyTheme(newDarkMode)
     }
   }
 
