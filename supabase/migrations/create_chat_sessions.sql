@@ -19,22 +19,23 @@ CREATE INDEX IF NOT EXISTS "idx_chat_sessions_timestamp" ON "chat_sessions"("tim
 ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for RLS
--- Users can only view their own chat sessions
-CREATE POLICY "Users can view their own chat sessions" 
-ON chat_sessions FOR SELECT 
+DROP POLICY IF EXISTS "Users can view their own chat sessions" ON chat_sessions;
+DROP POLICY IF EXISTS "Users can insert their own chat sessions" ON chat_sessions;
+DROP POLICY IF EXISTS "Users can update their own chat sessions" ON chat_sessions;
+DROP POLICY IF EXISTS "Users can delete their own chat sessions" ON chat_sessions;
+
+CREATE POLICY "Users can view their own chat sessions"
+ON chat_sessions FOR SELECT
 USING (auth.uid() = user_id);
 
--- Users can only insert their own chat sessions
-CREATE POLICY "Users can insert their own chat sessions" 
-ON chat_sessions FOR INSERT 
+CREATE POLICY "Users can insert their own chat sessions"
+ON chat_sessions FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
--- Users can only update their own chat sessions
-CREATE POLICY "Users can update their own chat sessions" 
-ON chat_sessions FOR UPDATE 
+CREATE POLICY "Users can update their own chat sessions"
+ON chat_sessions FOR UPDATE
 USING (auth.uid() = user_id);
 
--- Users can only delete their own chat sessions
-CREATE POLICY "Users can delete their own chat sessions" 
-ON chat_sessions FOR DELETE 
+CREATE POLICY "Users can delete their own chat sessions"
+ON chat_sessions FOR DELETE
 USING (auth.uid() = user_id);

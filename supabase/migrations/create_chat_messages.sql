@@ -22,26 +22,30 @@ CREATE INDEX IF NOT EXISTS "idx_chat_messages_created_at" ON "chat_messages"("cr
 ALTER TABLE "chat_messages" ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for RLS
-CREATE POLICY "Users can view messages of their own sessions" 
-ON "chat_messages" FOR SELECT 
+DROP POLICY IF EXISTS "Users can view messages of their own sessions" ON "chat_messages";
+DROP POLICY IF EXISTS "Users can insert messages into their own sessions" ON "chat_messages";
+DROP POLICY IF EXISTS "Users can modify messages of their own sessions" ON "chat_messages";
+
+CREATE POLICY "Users can view messages of their own sessions"
+ON "chat_messages" FOR SELECT
 USING (EXISTS (
-  SELECT 1 FROM chat_sessions 
-  WHERE chat_sessions.id = chat_messages.session_id 
+  SELECT 1 FROM chat_sessions
+  WHERE chat_sessions.id = chat_messages.session_id
   AND chat_sessions.user_id = auth.uid()
 ));
 
-CREATE POLICY "Users can insert messages into their own sessions" 
-ON "chat_messages" FOR INSERT 
+CREATE POLICY "Users can insert messages into their own sessions"
+ON "chat_messages" FOR INSERT
 WITH CHECK (EXISTS (
-  SELECT 1 FROM chat_sessions 
-  WHERE chat_sessions.id = chat_messages.session_id 
+  SELECT 1 FROM chat_sessions
+  WHERE chat_sessions.id = chat_messages.session_id
   AND chat_sessions.user_id = auth.uid()
 ));
 
-CREATE POLICY "Users can modify messages of their own sessions" 
-ON "chat_messages" FOR ALL 
+CREATE POLICY "Users can modify messages of their own sessions"
+ON "chat_messages" FOR ALL
 USING (EXISTS (
-  SELECT 1 FROM chat_sessions 
-  WHERE chat_sessions.id = chat_messages.session_id 
+  SELECT 1 FROM chat_sessions
+  WHERE chat_sessions.id = chat_messages.session_id
   AND chat_sessions.user_id = auth.uid()
 ));

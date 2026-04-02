@@ -1,6 +1,15 @@
 import { NextRequest } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { getAuthenticatedUser } from "@/lib/auth/user";
+
+function getEdgeFunctionBaseUrl() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!supabaseUrl) {
+    return null;
+  }
+
+  return `${supabaseUrl.replace(/\/$/, "")}/functions/v1`;
+}
 
 export async function DELETE(req: NextRequest) {
   const { supabase, user, error } = await getAuthenticatedUser();
@@ -30,36 +39,36 @@ export async function DELETE(req: NextRequest) {
     return Response.json({ error: "Incorrect password." }, { status: 401 });
   }
 
-  try {
-    const admin = createAdminClient();
+  const edgeBaseUrl = getEdgeFunctionBaseUrl();
+  const edgeSecret = process.env.EDGE_FUNCTION_SHARED_SECRET;
 
-    const { error: sessionDeleteError } = await admin
-      .from("chat_sessions")
-      .delete()
-      .eq("user_id", user.id);
-
-    if (sessionDeleteError) {
-      return Response.json(
-        { error: "Failed to delete account data." },
-        { status: 500 },
-      );
-    }
-
-    const { error: deleteUserError } = await admin.auth.admin.deleteUser(user.id);
-    if (deleteUserError) {
-      return Response.json(
-        { error: "Failed to delete account." },
-        { status: 500 },
-      );
-    }
-
-    await supabase.auth.signOut();
-
-    return Response.json({ success: true }, { status: 200 });
-  } catch (routeError) {
-    const message =
-      routeError instanceof Error ? routeError.message : "Account deletion failed.";
-
-    return Response.json({ error: message }, { status: 500 });
+  if (!edgeBaseUrl || !edgeSecret) {
+    return Response.json(
+      {
+        error: "Edge function is not configured.",
+      },
+      { status: 500 },
+    );
   }
+
+  const response = await fetch(`${edgeBaseUrl}/account`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-edge-secret": edgeSecret,
+      "x-user-id": user.id,
+    },
+    body: JSON.stringify({
+      route: "/api/account",
+    }),
+  });
+
+  const responseText = await response.text();
+
+  return new Response(responseText, {
+    status: response.status,
+    headers: {
+      "Content-Type": response.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }

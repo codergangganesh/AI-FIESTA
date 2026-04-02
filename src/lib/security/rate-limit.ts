@@ -5,8 +5,7 @@ type RateLimitResult = {
 };
 
 type Bucket = {
-  count: number;
-  resetAt: number;
+  timestamps: number[];
 };
 
 const buckets = new Map<string, Bucket>();
@@ -18,34 +17,34 @@ export function rateLimit(
 ): RateLimitResult {
   const now = Date.now();
   const current = buckets.get(key);
+  const windowStart = now - windowMs;
 
-  if (!current || current.resetAt <= now) {
-    buckets.set(key, {
-      count: 1,
-      resetAt: now + windowMs,
-    });
-
+  if (!current) {
+    buckets.set(key, { timestamps: [now] });
     return {
       allowed: true,
       retryAfterSeconds: Math.ceil(windowMs / 1000),
-      remaining: limit - 1,
+      remaining: Math.max(0, limit - 1),
     };
   }
 
-  if (current.count >= limit) {
+  current.timestamps = current.timestamps.filter((timestamp) => timestamp > windowStart);
+
+  if (current.timestamps.length >= limit) {
+    const oldest = current.timestamps[0];
     return {
       allowed: false,
-      retryAfterSeconds: Math.max(1, Math.ceil((current.resetAt - now) / 1000)),
+      retryAfterSeconds: Math.max(1, Math.ceil((oldest + windowMs - now) / 1000)),
       remaining: 0,
     };
   }
 
-  current.count += 1;
+  current.timestamps.push(now);
   buckets.set(key, current);
 
   return {
     allowed: true,
-    retryAfterSeconds: Math.max(1, Math.ceil((current.resetAt - now) / 1000)),
-    remaining: Math.max(0, limit - current.count),
+    retryAfterSeconds: Math.max(1, Math.ceil((current.timestamps[0] + windowMs - now) / 1000)),
+    remaining: Math.max(0, limit - current.timestamps.length),
   };
 }

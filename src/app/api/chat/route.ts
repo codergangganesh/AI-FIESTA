@@ -1,29 +1,37 @@
 import { NextRequest } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/user";
+import { getRequestContext } from "@/lib/security/request-context";
 import { rateLimit } from "@/lib/security/rate-limit";
+import { logSecurityEvent } from "@/lib/security/audit-log";
 import { validateChatPayload } from "@/lib/security/chat-validation";
 
-// Define a proper error type
-interface ApiError {
-  message: string;
-  details?: string;
-}
+function getEdgeFunctionBaseUrl() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-// Function to delay execution
-function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  if (!supabaseUrl) {
+    return null;
+  }
+
+  return `${supabaseUrl.replace(/\/$/, "")}/functions/v1`;
 }
 
 export async function POST(req: NextRequest) {
-  const { user, error: authError } = await getAuthenticatedUser();
+  const { supabase, user, error: authError } = await getAuthenticatedUser();
   if (authError || !user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const forwardedFor = req.headers.get("x-forwarded-for");
-  const ipAddress = forwardedFor?.split(",")[0]?.trim() || "unknown";
+  const { ipAddress, userAgent } = getRequestContext(req);
   const limiter = rateLimit(`chat:${user.id}:${ipAddress}`, 20, 60_000);
   if (!limiter.allowed) {
+    await logSecurityEvent(supabase, "rate_limited", {
+      route: "/api/chat",
+      ipAddress,
+      userAgent,
+      limit: 20,
+      windowMs: 60_000,
+    });
+
     return new Response(
       JSON.stringify({
         error: "Rate limit exceeded. Please retry later.",
@@ -32,30 +40,42 @@ export async function POST(req: NextRequest) {
         status: 429,
         headers: {
           "Retry-After": String(limiter.retryAfterSeconds),
+          "X-RateLimit-Limit": "20",
+          "X-RateLimit-Remaining": String(limiter.remaining),
         },
       },
     );
-  }
-
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return new Response(JSON.stringify({ 
-      error: "Missing OPENROUTER_API_KEY",
-      details: "Please add your OpenRouter API key to the .env file"
-    }), { status: 500 });
   }
 
   let body: unknown;
   try {
     body = await req.json();
   } catch (parseError) {
-    return new Response(JSON.stringify({ 
-      error: "Invalid JSON in request body",
-      details: parseError instanceof Error ? parseError.message : String(parseError)
-    }), { status: 400 });
+    await logSecurityEvent(supabase, "invalid_request", {
+      route: "/api/chat",
+      reason: "invalid_json",
+      ipAddress,
+      userAgent,
+    });
+
+    return new Response(
+      JSON.stringify({
+        error: "Invalid JSON in request body",
+        details: parseError instanceof Error ? parseError.message : String(parseError),
+      }),
+      { status: 400 },
+    );
   }
+
   const validation = validateChatPayload(body);
   if (validation.error || !validation.data) {
+    await logSecurityEvent(supabase, "invalid_request", {
+      route: "/api/chat",
+      reason: validation.error ?? "invalid_payload",
+      ipAddress,
+      userAgent,
+    });
+
     return new Response(
       JSON.stringify({
         error: validation.error ?? "Invalid request.",
@@ -64,170 +84,37 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { models, messages, maxTokens, temperature } = validation.data;
+  const edgeBaseUrl = getEdgeFunctionBaseUrl();
+  const edgeSecret = process.env.EDGE_FUNCTION_SHARED_SECRET;
 
-  try {
-    const startTime = Date.now(); // Track start time for response time calculation
-    
-    // Process requests sequentially with rate limiting to avoid 429 errors
-    const results: Array<{model: string; content?: string; error?: string; details?: string}> = [];
-    for (let i = 0; i < models.length; i++) {
-      const modelId = models[i];
-      
-      try {
-        let res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-            "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-            "X-Title": process.env.NEXT_PUBLIC_SITE_NAME || "AI Fiesta",
-            "Connection": "keep-alive",
-            "Accept": "text/event-stream",
-          },
-          body: JSON.stringify({
-            model: modelId,
-            messages: messages,
-            max_tokens: maxTokens,
-            temperature,
-            stream: true,
-          }),
-        });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          
-          // If we get a 429 error, implement exponential backoff
-          if (res.status === 429) {
-            console.log(`Rate limited for model ${modelId}, implementing exponential backoff...`);
-            
-            // Exponential backoff: start with 2 seconds, double each time, up to 3 attempts
-            let retryDelay = 2000; // 2 seconds
-            let retryAttempts = 0;
-            const maxRetries = 3;
-            
-            while (retryAttempts < maxRetries) {
-              console.log(`Retry attempt ${retryAttempts + 1}/${maxRetries} after ${retryDelay}ms delay...`);
-              await delay(retryDelay);
-              
-              const retryRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${apiKey}`,
-                  "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-                  "X-Title": process.env.NEXT_PUBLIC_SITE_NAME || "AI Fiesta",
-                  "Connection": "keep-alive",
-                  "Accept": "text/event-stream",
-                },
-                body: JSON.stringify({
-                  model: modelId,
-                  messages: messages,
-                  max_tokens: maxTokens,
-                  temperature,
-                  stream: true,
-                }),
-              });
-              
-              if (retryRes.ok) {
-                res = retryRes;
-                break;
-              }
-              
-              retryAttempts++;
-              retryDelay *= 2; // Double the delay for next attempt
-              
-              if (retryAttempts >= maxRetries) {
-                const retryErrorText = await retryRes.text();
-                results.push({ 
-                  model: modelId, 
-                  error: `HTTP ${retryRes.status}: ${retryRes.statusText}`,
-                  details: retryErrorText || `Failed to get response from ${modelId} after ${maxRetries} retries`
-                });
-                break;
-              }
-            }
-            
-            if (!res.ok && retryAttempts >= maxRetries) {
-              continue;
-            }
-          } else {
-            results.push({ 
-              model: modelId, 
-              error: `HTTP ${res.status}: ${res.statusText}`,
-              details: errorText || `Failed to get response from ${modelId}`
-            });
-            continue;
-          }
-        }
-        
-        // Stream parser for OpenRouter SSE format
-        let content = '';
-        const reader = res.body?.getReader();
-        const decoder = new TextDecoder();
-        
-        if (reader) {
-          try {
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              
-              const chunk = decoder.decode(value);
-              const lines = chunk.split('\n').filter(line => line.trim() !== '');
-              
-              for (const line of lines) {
-                if (line.startsWith('data:')) {
-                  const data = line.slice(5).trim();
-                  if (data === '[DONE]') continue;
-                  
-                  try {
-                    const json = JSON.parse(data);
-                    const token = json.choices[0]?.delta?.content;
-                    if (token) content += token;
-                  } catch (e) {
-                    console.error('Error parsing SSE:', e);
-                  }
-                }
-              }
-            }
-          } finally {
-            reader.releaseLock();
-          }
-        }
-
-        results.push({ model: modelId, content });
-      } catch (modelError) {
-        console.error(`Error with model ${modelId}:`, modelError);
-        results.push({ 
-          model: modelId, 
-          error: modelError instanceof Error ? modelError.message : String(modelError),
-          details: "Failed to get response from this model"
-        });
-      }
-      
-      // Add increased delay between requests to avoid rate limiting
-      // Increase delay based on number of models to reduce rate limit issues
-      if (i < models.length - 1) {
-        const baseDelay = 500; // Increased from 200ms to 500ms
-        const additionalDelay = models.length > 2 ? 300 : 0;
-        await delay(baseDelay + additionalDelay);
-      }
-    }
-
-    const endTime = Date.now();
-    const responseTime = (endTime - startTime) / 1000; // Calculate response time in seconds
-
-    return Response.json({ 
-      results,
-      responseTime // Include response time in the response
-    });
-  } catch (err: unknown) {
-    // Type the error properly
-    const error: ApiError = {
-      message: err instanceof Error ? err.message : String(err),
-      details: "Unexpected error in chat API route"
-    };
-    console.error("Unexpected error in chat API:", error);
-    return new Response(JSON.stringify({ error: error.message, details: error.details }), { status: 500 });
+  if (!edgeBaseUrl || !edgeSecret) {
+    return new Response(
+      JSON.stringify({
+        error: "Edge function is not configured.",
+        details: "Missing Supabase edge function settings.",
+      }),
+      { status: 500 },
+    );
   }
+
+  const response = await fetch(`${edgeBaseUrl}/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-edge-secret": edgeSecret,
+      "x-user-id": user.id,
+      "x-request-ip": ipAddress,
+      "x-request-user-agent": userAgent,
+    },
+    body: JSON.stringify(validation.data),
+  });
+
+  const responseText = await response.text();
+
+  return new Response(responseText, {
+    status: response.status,
+    headers: {
+      "Content-Type": response.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }
